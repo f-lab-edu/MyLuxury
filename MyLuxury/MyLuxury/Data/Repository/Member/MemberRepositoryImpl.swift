@@ -13,7 +13,12 @@ public class MemberRepositoryImpl: MemberRepository {
     let urlSession: URLSession
     
     init(urlSession: URLSession) {
+        print("MemberRepositoryImpl init")
         self.urlSession = urlSession
+    }
+    
+    deinit {
+        print("MemberRepositoryImpl deinit")
     }
     
     /// 로그인 기능 구현 전까지 임시로 True 값을 반환하게 설정했습니다.

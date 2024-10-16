@@ -13,7 +13,12 @@ public class MemberUseCase {
     private let cancellabes = Set<AnyCancellable>()
     
     init(memberRepository: MemberRepository) {
+        print("MemberUseCase init")
         self.memberRepository = memberRepository
+    }
+    
+    deinit {
+        print("MemberUseCase deinit")
     }
     
     /// 로그인 메소드

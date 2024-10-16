@@ -12,6 +12,11 @@ public class PostUseCase {
     let postRepository: PostRepository
     
     init(postRepository: PostRepository) {
+        print("PostUseCase init")
         self.postRepository = postRepository
+    }
+    
+    deinit {
+        print("PostUseCase deinit")
     }
 }

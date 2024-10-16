@@ -13,11 +13,17 @@ class HomeViewController: UIViewController {
     let homeVM: HomeViewModel
     
     init(homeVM: HomeViewModel) {
+        print("HomeViewController init")
         self.homeVM = homeVM
+        super.init(nibName: nil, bundle: nil)
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    deinit {
+        print("HomeViewController deinit")
     }
     
     override func viewDidLoad() {

@@ -13,11 +13,17 @@ class SearchViewController: UIViewController {
     let searchVM: SearchViewModel
     
     init(searchVM: SearchViewModel) {
+        print("SearchViewController init")
         self.searchVM = searchVM
+        super.init(nibName: nil, bundle: nil)
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    deinit {
+        print("SearchViewController deinit")
     }
     
     override func viewDidLoad() {
