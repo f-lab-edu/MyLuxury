@@ -14,17 +14,22 @@ final class LoginViewModel {
     var cancellables = Set<AnyCancellable>()
     
     init(memberUseCase: MemberUseCase) {
+        print("LoginViewModel init")
         self.memberUseCase = memberUseCase
+    }
+    
+    deinit {
+        print("LoginViewModel deinit")
     }
     
     func transform(input: AnyPublisher<Input, Never>) -> AnyPublisher<Output, Never> {
         
-        input.sink { event in
+        input.sink { [weak self] event in
             
             switch event {
         
             case .loginBtnTap:  /// 로그인 버튼이 눌렸을 경우 로그인 요청 메소드 실행
-                self.login()
+                self!.login()
             }
         }.store(in: &cancellables)
         

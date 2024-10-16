@@ -24,8 +24,15 @@ public class LoginCoordinator: Coordinator, LoginViewControllerDelegate {
     var delegate: LoginCoordinatorDelegate?
     
     init(navigationController: UINavigationController, appComponent: AppComponent) {
+        
+        print("LoginCoordinator init")
+        
         self.navigationController = navigationController
         self.appComponent = appComponent
+    }
+    
+    deinit {
+        print("LoginCoordinator deinit")
     }
     
     public func start() {

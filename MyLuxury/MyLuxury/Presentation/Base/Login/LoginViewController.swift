@@ -9,7 +9,7 @@ import UIKit
 import Combine
 
 /// LoginCoordinator 에게 로그인 이벤트 전달
-protocol LoginViewControllerDelegate {
+protocol LoginViewControllerDelegate: AnyObject {
     
     func login()
 }
@@ -25,12 +25,15 @@ class LoginViewController: UIViewController {
         return loginBtn
     }()
     
-    var delegate: LoginViewControllerDelegate?
+    /// LoginCoordinator를 약한 참조함으로써 로그인 플로우가 종료되었을 때
+    /// LoginCoordinator가 메모리에서 삭제되도록 했습니다.
+    weak var delegate: LoginViewControllerDelegate?
     let loginVM: LoginViewModel
     let input: PassthroughSubject<LoginViewModel.Input, Never> = .init()
     var cancellables = Set<AnyCancellable>()
     
     init(loginVM: LoginViewModel) {
+        print("LoginViewController init")
         self.loginVM = loginVM
         super.init(nibName: nil, bundle: nil)
     }
@@ -40,7 +43,7 @@ class LoginViewController: UIViewController {
     }
     
     deinit {
-        print("LoginController deinit")
+        print("LoginViewController deinit")
     }
     
     override func viewDidLoad() {
@@ -55,16 +58,16 @@ class LoginViewController: UIViewController {
             loginBtn.widthAnchor.constraint(equalToConstant: 200),
             loginBtn.heightAnchor.constraint(equalToConstant: 120)
         ])
+        
+        bind()
     }
     
-    /// 로그인 성공 여부에 따른 메인 플로우로 이동하는 메소드입니다.
-    func goToMainFlow() {
+    func bind() {
         
         let output = loginVM.transform(input: input.eraseToAnyPublisher())
-        
         output
             .receive(on: DispatchQueue.main)
-            .sink { event in
+            .sink { [weak self] event in
                 
                 switch event {
                  
@@ -73,7 +76,7 @@ class LoginViewController: UIViewController {
                     /// 로그인 성공 응답을 받았다면
                     if value {
                         /// 코디네이터를 통한 화면 전환
-                        self.delegate?.login()
+                        self!.delegate?.login()
                     }
                 }
             }
