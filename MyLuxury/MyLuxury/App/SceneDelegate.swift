@@ -19,10 +19,20 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         
         window = UIWindow(windowScene: windowScene)
-        let viewController = ExampleViewController()
-//        let viewController = ViewController()
-        window?.rootViewController = viewController
-        window?.makeKeyAndVisible()
+
+        /// 앱 진입 시 로그인 요구 상태로 지정. 추후에 변경할 예정입니다.
+        UserDefaults.standard.set(false, forKey: "isLogin")
+
+        let navigationController = UINavigationController()
+        self.window?.rootViewController = navigationController
+        
+        print("SceneDelegate init")
+        
+        /// AppCoordinator 인스턴스 생성 및 실행
+        let coordinator = AppCoordinator(navigationController: navigationController)
+        coordinator.start()
+        
+        self.window?.makeKeyAndVisible()
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {
