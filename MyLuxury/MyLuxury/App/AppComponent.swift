@@ -20,7 +20,7 @@ public class AppComponent {
     /// 다른 인스턴스로 실행하고 싶다면 이 생성자에서 해당하는 인스턴스로 바꿔주시면 됩니다.
     public init() {
         self.urlSession = URLSession.shared
-        self.memberRepository = MemberRepositoryImpl()
+        self.memberRepository = MemberRepositoryImpl(urlSession: self.urlSession)
         self.postRepository = PostRepositoryImpl()
         self.memberUseCase = MemberUseCase(memberRepository: self.memberRepository)
         self.postUseCase = PostUseCase(postRepository: self.postRepository)
