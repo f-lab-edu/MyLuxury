@@ -33,6 +33,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         coordinator.start()
         
         self.window?.makeKeyAndVisible()
+        
+        SplashView(window: self.window)
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {
