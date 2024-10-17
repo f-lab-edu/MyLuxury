@@ -8,12 +8,17 @@
 import UIKit
 
 /// AppCoordinator에게 로그인 완료 이벤트 전달
+
+protocol LoginCoordinator: Coordinator {
+  var delegate: LoginCoordinatorDelegate? { get }
+}
+
 protocol LoginCoordinatorDelegate {
     
     func didLogin(_ coordinator: LoginCoordinator)
 }
 
-public class LoginCoordinator: Coordinator, LoginViewControllerDelegate {
+public class LoginCoordinatorImp: Coordinator, LoginViewControllerDelegate {
     
     public var appComponent: AppComponent
     

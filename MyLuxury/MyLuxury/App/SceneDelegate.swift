@@ -10,7 +10,7 @@ import UIKit
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
-
+  var component: AppComponent?
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.
@@ -29,8 +29,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         print("SceneDelegate init")
         
         /// AppCoordinator 인스턴스 생성 및 실행
-        let coordinator = AppCoordinator(navigationController: navigationController)
-        coordinator.start()
+//        let coordinator = AppCoordinator(navigationController: navigationController)
+//        coordinator.start()
+        
         
         self.window?.makeKeyAndVisible()
         

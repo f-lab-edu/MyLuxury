@@ -21,20 +21,29 @@ public protocol Coordinator: AnyObject {
     func start()
 }
 
+protocol AppCoordinatorDependency {
+  var loginCoordinator: Coordinator { get }
+  var mainCoordinator: Coordinator { get }
+}
+
 /// 앱의 실행과 생명주기를 같이 하는 유일한 코디네이터입니다.
 /// 로그인 및 탭바 델리게이트를 위임함으로써 로그인과 메인 플로우 화면 전환을 담당합니다.
 public class AppCoordinator: Coordinator, LoginCoordinatorDelegate, TabBarCoordinatorDelegate {
     
-    public var appComponent: AppComponent
     public var navigationController: UINavigationController
     public var childCoordinators: [Coordinator] = []
-    
-    init(navigationController: UINavigationController) {
+  
+  private let dependency: AppCoordinatorDependency
+  
+    init(
+      navigationController: UINavigationController,
+      dependency: AppCoordinatorDependency
+    ) {
         
         print("AppCoordinator init")
         
         /// 코디네이터가 SceneDelegate에서 생성될 때 AppComponent도 함께 생성합니다.
-        self.appComponent = AppComponent()
+      self.dependency = dependency
         /// SceneDelegate에서 생성된 UINavigationController 인스턴스를 넘겨받습니다.
         self.navigationController = navigationController
     }
@@ -50,10 +59,11 @@ public class AppCoordinator: Coordinator, LoginCoordinatorDelegate, TabBarCoordi
         
         print("메인 플로우 실행")
 
-        let coordinator = TabBarCoordinator(appComponent: self.appComponent, navigationController: self.navigationController)
+      let coordinator = self.dependency.mainCoordinator
         coordinator.delegate = self
         coordinator.start()
         self.childCoordinators.append(coordinator)
+      //순환참조: AppCoordinator -> childCoordinator -> TabBarCoordinator -> AppCoordinator
     }
     
     /// 로그인 플로우 실행 메소드
@@ -66,6 +76,8 @@ public class AppCoordinator: Coordinator, LoginCoordinatorDelegate, TabBarCoordi
         coordinator.delegate = self
         coordinator.start()
         self.childCoordinators.append(coordinator)
+      
+      //순환참조: AppCoordinator -> childCoordinator -> LoginCoordinator -> AppCoordinator
     }
     
     /// LoginCoordinator가 실행하는 메소드. 로그인 코디네이터를 없애고 메인 플로우 코디네이터를 실행합니다.
