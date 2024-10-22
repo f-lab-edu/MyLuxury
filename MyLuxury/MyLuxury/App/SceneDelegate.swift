@@ -10,12 +10,15 @@ import UIKit
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
-
+    var appComponent: AppComponent?
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.
         // If using a storyboard, the `window` property will automatically be initialized and attached to the scene.
         // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
+        
+        print("SceneDelegate init")
+        
         guard let windowScene = (scene as? UIWindowScene) else { return }
         
         window = UIWindow(windowScene: windowScene)
@@ -26,15 +29,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let navigationController = UINavigationController()
         self.window?.rootViewController = navigationController
         
-        print("SceneDelegate init")
-        
-        /// AppCoordinator 인스턴스 생성 및 실행
-        let coordinator = AppCoordinator(navigationController: navigationController)
-        coordinator.start()
+        self.appComponent = AppComponent(navigationController: navigationController)
+        self.appComponent?.appCoordinator.start()
         
         self.window?.makeKeyAndVisible()
-        
-        SplashView(window: self.window)
+
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {
