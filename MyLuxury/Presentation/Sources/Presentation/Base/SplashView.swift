@@ -8,7 +8,6 @@
 import UIKit
 
 class SplashView: UIView {
-    
     var sceneDelegateWindow: UIWindow?
     
     init(window: UIWindow?) {
@@ -51,12 +50,11 @@ class SplashView: UIView {
             })
         }
         
-        // 일정 시간 후 스플래시 화면 제거
         DispatchQueue.main.asyncAfter(deadline: .now() + 4.5) {
             UIView.animate(withDuration: 0.5, animations: {
                 self.alpha = 0.0
             }) { _ in
-                self.removeFromSuperview() // 스플래시 뷰 제거
+                self.removeFromSuperview() 
             }
         }
     }

@@ -9,7 +9,6 @@ import UIKit
 import Combine
 
 class SearchViewController: UIViewController {
-    
     let searchVM: SearchViewModel
     
     init(searchVM: SearchViewModel) {

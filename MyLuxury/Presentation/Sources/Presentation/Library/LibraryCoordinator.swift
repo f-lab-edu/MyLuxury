@@ -8,19 +8,15 @@
 import UIKit
 
 public protocol LibraryCoordinator: Coordinator {
-    
     var navigationController: UINavigationController { get set }
 }
 
 public class LibraryCoordinatorImpl: LibraryCoordinator {
-    
     public var navigationController: UINavigationController
     public var childCoordinators: [Coordinator] = []
     
     public init(navigationController: UINavigationController) {
-        
         print("LibraryCoordinatorImpl init")
-        
         self.navigationController = navigationController
     }
     
@@ -29,10 +25,8 @@ public class LibraryCoordinatorImpl: LibraryCoordinator {
     }
     
     public func start() {
-        
         let libraryVM = LibraryViewModel()
         let libraryVC = LibraryViewController(libraryVM: libraryVM)
-        
         self.navigationController = UINavigationController(rootViewController: libraryVC)
         libraryVC.tabBarItem = UITabBarItem(title: TabBarItem.library.title, image: UIImage(systemName: TabBarItem.library.image), tag: 2)
     }

@@ -8,6 +8,5 @@
 import Combine
 
 public protocol ExampleRepository {
-    
     func fetchData() -> AnyPublisher<ExampleEntity, Error>
 }

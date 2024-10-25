@@ -6,7 +6,6 @@
 //
 
 public struct ExampleEntity {
-    
     public let value: String
     
     public init(value: String) {

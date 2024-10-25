@@ -8,12 +8,10 @@
 import Combine
 
 public protocol PostUseCase {
-    
     var postRepository: PostRepository { get }
 }
 
 public class PostUseCaseImpl: PostUseCase {
-    
     public var postRepository: PostRepository
     
     public init(postRepository: PostRepository) {

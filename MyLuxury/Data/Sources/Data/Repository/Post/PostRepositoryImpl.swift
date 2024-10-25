@@ -9,7 +9,6 @@ import Combine
 import Domain
 
 public class PostRepositoryImpl: PostRepository {
-    
     public init() {
         print("PostRepositoryImpl init")
     }

@@ -8,19 +8,15 @@
 import UIKit
 
 public protocol SearchCoordinator: Coordinator {
-    
     var navigationController: UINavigationController { get set }
 }
 
 public class SearchCoordinatorImpl: SearchCoordinator {
-    
     public var navigationController: UINavigationController
     public var childCoordinators: [Coordinator] = []
     
     public init(navigationController: UINavigationController) {
-        
         print("SearchCoordinatorImpl init")
-        
         self.navigationController = navigationController
     }
     
@@ -29,7 +25,6 @@ public class SearchCoordinatorImpl: SearchCoordinator {
     }
     
     public func start() {
-        
         let searchVM = SearchViewModel()
         let searchVC = SearchViewController(searchVM: searchVM)
         self.navigationController = UINavigationController(rootViewController: searchVC)

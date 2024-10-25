@@ -8,7 +8,6 @@
 import Combine
 
 public protocol MemberRepository {
-    
-    /// 로그인 메소드
+    /// 임시 로그인 메소드
     func login() -> AnyPublisher<Bool, Never>
 }

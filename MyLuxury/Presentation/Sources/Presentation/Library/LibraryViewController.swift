@@ -9,7 +9,6 @@ import UIKit
 import Combine
 
 class LibraryViewController: UIViewController {
-    
     let libraryVM: LibraryViewModel
     
     init(libraryVM: LibraryViewModel) {
