@@ -14,7 +14,7 @@ class HomeViewController: UIViewController {
         let label = UILabel()
         label.text = "안녕하세요"
         label.textColor = .white
-        label.font = UIFont.pretendard(.thin, size: 80)
+        label.font = UIFont.pretendard(.thin, size: 80) 
         return label
     }()
     
