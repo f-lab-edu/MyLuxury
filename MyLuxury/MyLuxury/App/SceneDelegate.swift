@@ -22,6 +22,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         UserDefaults.standard.set(false, forKey: "isLogin")
 
         let navigationController = UINavigationController()
+        navigationController.navigationBar.isHidden = true
         self.window?.rootViewController = navigationController
         
         self.appComponent = AppComponent(navigationController: navigationController)

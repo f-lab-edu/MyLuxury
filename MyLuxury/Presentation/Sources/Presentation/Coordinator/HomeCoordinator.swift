@@ -28,6 +28,7 @@ public class HomeCoordinatorImpl: HomeCoordinator {
         let homeVM = HomeViewModel()
         let homeVC = HomeViewController(homeVM: homeVM)
         self.navigationController = UINavigationController(rootViewController: homeVC)
+        self.navigationController.isNavigationBarHidden = true
         homeVC.tabBarItem = UITabBarItem(title: TabBarItem.home.title, image: UIImage(systemName: TabBarItem.home.image), tag: 0)
     }
 }
