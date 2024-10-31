@@ -29,6 +29,6 @@ public class LibraryCoordinatorImpl: LibraryCoordinator {
         let libraryVC = LibraryViewController(libraryVM: libraryVM)
         self.navigationController = UINavigationController(rootViewController: libraryVC)
         self.navigationController.isNavigationBarHidden = true
-        libraryVC.tabBarItem = UITabBarItem(title: TabBarItem.library.title, image: UIImage(systemName: TabBarItem.library.image), tag: 2)
+        libraryVC.tabBarItem = UITabBarItem(title: nil, image: UIImage(systemName: TabBarItem.library.image)?.withTintColor(.gray, renderingMode: .alwaysOriginal), selectedImage: UIImage(systemName: TabBarItem.library.image)?.withTintColor(.white, renderingMode: .alwaysOriginal))
     }
 }

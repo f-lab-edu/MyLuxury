@@ -36,6 +36,7 @@ public class TabBarCoordinatorImpl: TabBarCoordinator {
         self.navigationController = navigationController
         self.dependency = dependency
         self.tabBarController = UITabBarController()
+        tabBarController.tabBar.tintColor = .white
     }
     
     deinit {

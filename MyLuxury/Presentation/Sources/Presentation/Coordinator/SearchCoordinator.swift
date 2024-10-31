@@ -29,6 +29,6 @@ public class SearchCoordinatorImpl: SearchCoordinator {
         let searchVC = SearchViewController(searchVM: searchVM)
         self.navigationController = UINavigationController(rootViewController: searchVC)
         self.navigationController.isNavigationBarHidden = true
-        searchVC.tabBarItem = UITabBarItem(title: TabBarItem.search.title, image: UIImage(systemName: TabBarItem.search.image), tag: 1)
+        searchVC.tabBarItem = UITabBarItem(title: nil, image: UIImage(systemName: TabBarItem.search.image)?.withTintColor(.gray, renderingMode: .alwaysOriginal), selectedImage: UIImage(systemName: TabBarItem.search.image)?.withTintColor(.white, renderingMode: .alwaysOriginal))
     }
 }
