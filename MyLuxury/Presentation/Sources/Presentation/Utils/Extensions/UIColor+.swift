@@ -12,6 +12,7 @@ extension UIColor {
         case customBlue
         case lightGray
         case darkGray
+        case textGray
         
         var name: String {
             switch self {
@@ -21,6 +22,8 @@ extension UIColor {
                 return "lightGray"
             case .darkGray:
                 return "darkGray"
+            case .textGray:
+                return "textGray"
             }
         }
     }
