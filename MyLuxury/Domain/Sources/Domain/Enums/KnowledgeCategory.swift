@@ -1,5 +1,5 @@
 //
-//  Category.swift
+//  KnowledgeCategory.swift
 //  Domain
 //
 //  Created by KoSungmin on 10/28/24.
