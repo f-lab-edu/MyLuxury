@@ -31,13 +31,14 @@ public class HomeViewModel {
     
     func transform(input: AnyPublisher<Input, Never>) -> AnyPublisher<Output, Never> {
         input.sink { [weak self] event in
+            guard let self = self else { return }
             switch event {
             case .viewLoaded:
-                self!.getHomeViewData()
+                self.getHomeViewData()
             case .viewReload:
-                self?.getHomeViewData()
+                self.getHomeViewData()
             case .postTapped:
-                self!.goToPost()
+                self.goToPost()
             }
         }.store(in: &cancellables)
         return output.eraseToAnyPublisher()
@@ -46,13 +47,13 @@ public class HomeViewModel {
     func getHomeViewData() {
         postUseCase.getHomeViewData()
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] homeData in
-                self!.todayPickPost = homeData.todayPickPostData
-                self!.newPosts = homeData.newPostData
-                self!.weeklyTopPosts = homeData.weeklyTopPostData
-                self!.customizedPosts = homeData.customizedPostData
-                self!.editorRecommendationPosts = homeData.editorRecommendationPostData
-                self!.output.send(.getHomePostData)
+            .sink { homeData in
+                self.todayPickPost = homeData.todayPickPostData
+                self.newPosts = homeData.newPostData
+                self.weeklyTopPosts = homeData.weeklyTopPostData
+                self.customizedPosts = homeData.customizedPostData
+                self.editorRecommendationPosts = homeData.editorRecommendationPostData
+                self.output.send(.getHomePostData)
             }.store(in: &cancellables)
     }
     

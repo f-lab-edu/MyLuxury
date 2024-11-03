@@ -14,7 +14,6 @@ protocol HomeControllerDelegate: AnyObject {
 }
 
 class HomeViewController: UIViewController {
-    
     let rootView = HomeMainView()
     weak var delegate: HomeControllerDelegate?
     let homeVM: HomeViewModel
@@ -60,15 +59,16 @@ class HomeViewController: UIViewController {
         output
             .receive(on: DispatchQueue.main)
             .sink { [weak self] event in
+                guard let self = self else { return }
                 switch event {
                 case .getHomePostData:
-                    self!.rootView.contentView.homeTodayPickView.post = self!.homeVM.todayPickPost
-                    self!.rootView.contentView.homeGridCV.posts = self!.homeVM.customizedPosts
-                    self!.rootView.contentView.newPostsCV.posts = self!.homeVM.newPosts
-                    self!.rootView.contentView.weeklyTopPostsCV.posts = self!.homeVM.weeklyTopPosts
-                    self!.rootView.contentView.homeEditorRecommendCV.posts = self!.homeVM.editorRecommendationPosts
+                    self.rootView.contentView.homeTodayPickView.post = self.homeVM.todayPickPost
+                    self.rootView.contentView.newPostsCV.posts = self.homeVM.newPosts
+                    self.rootView.contentView.weeklyTopPostsCV.posts = self.homeVM.weeklyTopPosts
+                    self.rootView.contentView.preferPostCV.posts = self.homeVM.customizedPosts
+                    self.rootView.contentView.homeEditorRecommendCV.posts = self.homeVM.editorRecommendationPosts
                 case .goToPost:
-                    self?.delegate?.goToPost()
+                    self.delegate?.goToPost()
                 }
             }.store(in: &cancellabes)
     }
