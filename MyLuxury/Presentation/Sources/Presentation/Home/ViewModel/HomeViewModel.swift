@@ -37,8 +37,8 @@ public class HomeViewModel {
                 self.getHomeViewData()
             case .viewReload:
                 self.getHomeViewData()
-            case .postTapped:
-                self.goToPost()
+            case .postTapped(let post):
+                self.goToPost(post: post)
             }
         }.store(in: &cancellables)
         return output.eraseToAnyPublisher()
@@ -46,7 +46,6 @@ public class HomeViewModel {
     
     func getHomeViewData() {
         postUseCase.getHomeViewData()
-            .receive(on: DispatchQueue.main)
             .sink { homeData in
                 self.todayPickPost = homeData.todayPickPostData
                 self.newPosts = homeData.newPostData
@@ -57,8 +56,8 @@ public class HomeViewModel {
             }.store(in: &cancellables)
     }
     
-    func goToPost() {
-        
+    func goToPost(post: Post) {
+        self.output.send(.goToPost(post))
     }
 }
 
@@ -66,10 +65,10 @@ extension HomeViewModel {
     enum Input {
         case viewLoaded
         case viewReload
-        case postTapped
+        case postTapped(Post)
     }
     enum Output {
         case getHomePostData
-        case goToPost
+        case goToPost(Post)
     }
 }

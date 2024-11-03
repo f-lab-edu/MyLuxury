@@ -7,8 +7,10 @@
 
 import UIKit
 import Domain
+import Combine
 
 final class HomeEditorRecommendCollectionView: UIView {
+    let postTappedSubject = PassthroughSubject<Post, Never>()
     
     /// 해당 뷰의 제목
     private let titleLabel: UILabel = {
@@ -103,5 +105,10 @@ extension HomeEditorRecommendCollectionView: UICollectionViewDataSource, UIColle
         cell.title = post.postTitle
         cell.thumbnailImage = post.postThumbnailImage
         return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let post = posts[indexPath.row]
+        self.postTappedSubject.send(post)
     }
 }

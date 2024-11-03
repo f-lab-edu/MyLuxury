@@ -16,7 +16,8 @@ public protocol HomeCoordinatorDependency {
     var postUseCase: PostUseCase { get }
 }
 
-public class HomeCoordinatorImpl: HomeCoordinator {
+public class HomeCoordinatorImpl: HomeCoordinator, @preconcurrency HomeControllerDelegate {
+    
     public var navigationController: UINavigationController
     public var childCoordinators: [Coordinator] = []
     public let dependency: HomeCoordinatorDependency
@@ -34,8 +35,16 @@ public class HomeCoordinatorImpl: HomeCoordinator {
     public func start() {
         let homeVM = HomeViewModel(postUseCase: self.dependency.postUseCase)
         let homeVC = HomeViewController(homeVM: homeVM)
+        homeVC.delegate = self
         self.navigationController = UINavigationController(rootViewController: homeVC)
         self.navigationController.isNavigationBarHidden = true
         homeVC.tabBarItem = UITabBarItem(title: nil, image: UIImage(systemName: TabBarItem.home.image)?.withTintColor(.gray, renderingMode: .alwaysOriginal), selectedImage: UIImage(systemName: TabBarItem.home.image)?.withTintColor(.white, renderingMode: .alwaysOriginal))
+    }
+    
+    @MainActor
+    func goToPost(post: Post) {
+        let postVM = PostViewModel(post: post)
+        let postVC = PostViewController(postVM: postVM)
+        self.navigationController.pushViewController(postVC, animated: true)
     }
 }

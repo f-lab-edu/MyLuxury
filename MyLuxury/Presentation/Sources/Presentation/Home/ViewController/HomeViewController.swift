@@ -10,7 +10,7 @@ import Combine
 import Domain
 
 protocol HomeControllerDelegate: AnyObject {
-    func goToPost()
+    func goToPost(post: Post)
 }
 
 class HomeViewController: UIViewController {
@@ -67,10 +67,24 @@ class HomeViewController: UIViewController {
                     self.rootView.contentView.weeklyTopPostsCV.posts = self.homeVM.weeklyTopPosts
                     self.rootView.contentView.preferPostCV.posts = self.homeVM.customizedPosts
                     self.rootView.contentView.homeEditorRecommendCV.posts = self.homeVM.editorRecommendationPosts
-                case .goToPost:
-                    self.delegate?.goToPost()
+                case .goToPost(let post):
+                    self.delegate?.goToPost(post: post)
                 }
             }.store(in: &cancellabes)
+        
+        let postTappedSubjects = [
+            rootView.contentView.homeTodayPickView.postTappedSubject,
+            rootView.contentView.newPostsCV.postTappedSubject,
+            rootView.contentView.weeklyTopPostsCV.postTappedSubject,
+            rootView.contentView.preferPostCV.postTappedSubject,
+            rootView.contentView.homeEditorRecommendCV.postTappedSubject
+        ]
+        postTappedSubjects.forEach { subject in
+            subject.sink { [weak self] post in
+                guard let self = self else { return }
+                self.input.send(.postTapped(post))
+            }.store(in: &cancellabes)
+        }
     }
 }
 

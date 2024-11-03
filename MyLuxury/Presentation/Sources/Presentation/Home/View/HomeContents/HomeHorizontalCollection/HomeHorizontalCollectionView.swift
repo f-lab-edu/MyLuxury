@@ -10,6 +10,7 @@ import Combine
 import Domain
 
 class HomeHorizontalCollectionView: UIView {
+    let postTappedSubject = PassthroughSubject<Post, Never>()
     
     private let titleLabel: UILabel = {
         let label = UILabel()
@@ -50,7 +51,7 @@ class HomeHorizontalCollectionView: UIView {
     }
     
     required init?(coder: NSCoder) {
-        super.init(coder: coder)
+        fatalError("init(coder:) has not been implemented")
     }
     
     private func setUpHierarchy() {
@@ -92,5 +93,10 @@ extension HomeHorizontalCollectionView: UICollectionViewDataSource, UICollection
         cell.image = post.postThumbnailImage
         cell.title = post.postTitle
         return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let post = posts[indexPath.row]
+        postTappedSubject.send(post)
     }
 }
