@@ -46,7 +46,8 @@ public class HomeViewModel {
     
     func getHomeViewData() {
         postUseCase.getHomeViewData()
-            .sink { homeData in
+            .sink { [weak self] homeData in
+                guard let self = self else { return }
                 self.todayPickPost = homeData.todayPickPostData
                 self.newPosts = homeData.newPostData
                 self.weeklyTopPosts = homeData.weeklyTopPostData
