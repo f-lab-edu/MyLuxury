@@ -22,9 +22,9 @@ final class HomeEditorRecommendCVC: UICollectionViewCell {
     /// 게시물의 제목
     private let contentTitle: UILabel = {
        let label = UILabel()
-        label.font = UIFont.pretendard(.extrabold, size: 24)
+        label.font = UIFont.pretendard(.extrabold, size: 36)
         label.textColor = .white
-        label.numberOfLines = 1
+        label.numberOfLines = 2
         return label
     }()
     /// 게시물의 썸네일
@@ -64,7 +64,7 @@ final class HomeEditorRecommendCVC: UICollectionViewCell {
     override func layoutSubviews() {
         super.layoutSubviews()
         /// 그림자 레이어 추가
-        contentThumbnail.addTopBottomShadow(shadowHeight: 100)
+        contentThumbnail.addTopBottomShadow(shadowHeight: homeEditorRecommendCVCLength/2)
     }
     
     func setUpHierarchy() {
@@ -76,16 +76,17 @@ final class HomeEditorRecommendCVC: UICollectionViewCell {
     func setUpLayout() {
         contentThumbnail.translatesAutoresizingMaskIntoConstraints = false
         contentTitle.translatesAutoresizingMaskIntoConstraints = false
-        contentCategory.translatesAutoresizingMaskIntoConstraints = false
+//        contentCategory.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             contentThumbnail.centerXAnchor.constraint(equalTo: self.centerXAnchor),
             contentThumbnail.centerYAnchor.constraint(equalTo: self.centerYAnchor),
             contentThumbnail.widthAnchor.constraint(equalToConstant: homeEditorRecommendCVCLength),
             contentThumbnail.heightAnchor.constraint(equalToConstant: homeEditorRecommendCVCLength),
-            contentCategory.topAnchor.constraint(equalTo: self.topAnchor, constant: 15),
-            contentCategory.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 15),
+//            contentCategory.topAnchor.constraint(equalTo: self.topAnchor, constant: 15),
+//            contentCategory.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 15),
             contentTitle.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -15),
-            contentTitle.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 15)
+            contentTitle.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 15),
+            contentTitle.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: 15)
         ])
     }
 }

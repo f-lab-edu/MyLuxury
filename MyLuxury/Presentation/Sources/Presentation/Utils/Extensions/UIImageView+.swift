@@ -32,7 +32,7 @@ extension UIImageView {
         bottomShadowLayer.startPoint = CGPoint(x: 0.5, y: 1.0)
         bottomShadowLayer.endPoint = CGPoint(x: 0.5, y: 0.0)
         
-        self.layer.addSublayer(topShadowLayer)
+//        self.layer.addSublayer(topShadowLayer)
         self.layer.addSublayer(bottomShadowLayer)
     }
 }
