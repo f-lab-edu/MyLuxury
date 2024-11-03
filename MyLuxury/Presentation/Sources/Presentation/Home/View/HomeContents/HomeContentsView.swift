@@ -40,11 +40,17 @@ final class HomeContentsView: UIView {
         return cv
     }()
     
-    let homeGridCV: HomeGridCollectionView = {
-        let cv = HomeGridCollectionView()
+    let preferPostCV: HomeHorizontalCollectionView = {
+        let cv = HomeHorizontalCollectionView()
         cv.title = "회원님이 좋아할 만한"
         return cv
     }()
+    
+//    let homeGridCV: HomeGridCollectionView = {
+//        let cv = HomeGridCollectionView()
+//        cv.title = "회원님이 좋아할 만한"
+//        return cv
+//    }()
     
     let homeEditorRecommendCV: HomeEditorRecommendCollectionView = {
         let cv = HomeEditorRecommendCollectionView()
@@ -70,7 +76,8 @@ final class HomeContentsView: UIView {
         stackView.addArrangedSubview(homeTodayPickView)
         stackView.addArrangedSubview(newPostsCV)
         stackView.addArrangedSubview(weeklyTopPostsCV)
-        stackView.addArrangedSubview(homeGridCV)
+//        stackView.addArrangedSubview(homeGridCV)
+        stackView.addArrangedSubview(preferPostCV)
         stackView.addArrangedSubview(homeEditorRecommendCV)
     }
     
@@ -80,7 +87,8 @@ final class HomeContentsView: UIView {
         homeTodayPickView.translatesAutoresizingMaskIntoConstraints = false
         newPostsCV.translatesAutoresizingMaskIntoConstraints = false
         weeklyTopPostsCV.translatesAutoresizingMaskIntoConstraints = false
-        homeGridCV.translatesAutoresizingMaskIntoConstraints = false
+//        homeGridCV.translatesAutoresizingMaskIntoConstraints = false
+        preferPostCV.translatesAutoresizingMaskIntoConstraints = false
         homeEditorRecommendCV.translatesAutoresizingMaskIntoConstraints = false
 
         NSLayoutConstraint.activate([
@@ -97,9 +105,10 @@ final class HomeContentsView: UIView {
             homeTodayPickView.centerXAnchor.constraint(equalTo: stackView.centerXAnchor),
             newPostsCV.topAnchor.constraint(equalTo: homeTodayPickView.bottomAnchor, constant: 30),
             weeklyTopPostsCV.topAnchor.constraint(equalTo: newPostsCV.bottomAnchor, constant: 30),
-            homeGridCV.topAnchor.constraint(equalTo: weeklyTopPostsCV.bottomAnchor, constant: 30),
-            homeGridCV.centerXAnchor.constraint(equalTo: stackView.centerXAnchor),
-            homeEditorRecommendCV.topAnchor.constraint(equalTo: homeGridCV.bottomAnchor, constant: 30),
+            preferPostCV.topAnchor.constraint(equalTo: weeklyTopPostsCV.bottomAnchor, constant: 30),
+//            homeGridCV.topAnchor.constraint(equalTo: weeklyTopPostsCV.bottomAnchor, constant: 30),
+//            homeGridCV.centerXAnchor.constraint(equalTo: stackView.centerXAnchor),
+            homeEditorRecommendCV.topAnchor.constraint(equalTo: preferPostCV.bottomAnchor, constant: 30),
             homeEditorRecommendCV.centerXAnchor.constraint(equalTo: stackView.centerXAnchor)
         ])
     }

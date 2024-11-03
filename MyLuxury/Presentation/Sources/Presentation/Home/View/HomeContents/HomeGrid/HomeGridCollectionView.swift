@@ -8,6 +8,9 @@
 import UIKit
 import Domain
 
+// MARK: 현재 아직 레이아웃에 넣지 않은 컬렉션뷰입니다.
+// 추후 디자인에 따라 삽입 혹은 삭제될 수 있습니다.
+
 final class HomeGridCollectionView: UIView {
     private let titleLabel: UILabel = {
         let label = UILabel()
