@@ -8,7 +8,7 @@
 import UIKit
 
 final class HomeHeaderView: UIView {
-    let blurLogoImage: UIImageView = {
+    private let blurLogoImage: UIImageView = {
         let logo = UIImageView()
         logo.image = UIImage(named: "blurLogo")
         return logo
@@ -24,11 +24,11 @@ final class HomeHeaderView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func setUpHierarchy() {
+    private func setUpHierarchy() {
         self.addSubview(blurLogoImage)
     }
     
-    func setUpLayout() {
+    private func setUpLayout() {
         blurLogoImage.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             

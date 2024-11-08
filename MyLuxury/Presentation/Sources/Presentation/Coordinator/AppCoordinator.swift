@@ -36,7 +36,7 @@ public class AppCoordinator: Coordinator, LoginCoordinatorDelegate, TabBarCoordi
         UserDefaults.standard.bool(forKey: "isLogin") ? showMainFlow() : showLoginFlow()
     }
     
-    public func showMainFlow() {
+    private func showMainFlow() {
         print("메인 플로우 실행")
         guard let tabBarCoordinator = self.dependency.tabBarCoordinator as? TabBarCoordinator else { return }
         tabBarCoordinator.delegate = self
@@ -44,7 +44,7 @@ public class AppCoordinator: Coordinator, LoginCoordinatorDelegate, TabBarCoordi
         self.childCoordinators.append(tabBarCoordinator)
     }
     
-    public func showLoginFlow() {
+    private func showLoginFlow() {
         print("로그인 플로우 실행")
         guard let loginCoordinator = self.dependency.loginCoordinator as? LoginCoordinator else { return }
         loginCoordinator.delegate = self

@@ -8,10 +8,9 @@
 import UIKit
 
 final class HomeGridCVC: UICollectionViewCell {
-    
     static let identifier = "HomeGridCVC"
     
-    var contentImage: UIImageView = {
+    private var contentImage: UIImageView = {
         let image = UIImageView()
         /// 이미지를 둥글게 하기 위해 true로 해줘야 함.
         image.clipsToBounds = true
@@ -19,7 +18,7 @@ final class HomeGridCVC: UICollectionViewCell {
         return image
     }()
     
-    var image: String? {
+        var image: String? {
         didSet {
             contentImage.image = UIImage(named: image!)
         }

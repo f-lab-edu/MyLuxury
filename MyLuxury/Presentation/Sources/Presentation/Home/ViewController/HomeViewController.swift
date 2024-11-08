@@ -14,11 +14,11 @@ protocol HomeControllerDelegate: AnyObject {
 }
 
 class HomeViewController: UIViewController {
-    let rootView = HomeMainView()
+    private let rootView = HomeMainView()
     weak var delegate: HomeControllerDelegate?
-    let homeVM: HomeViewModel
-    let input: PassthroughSubject<HomeViewModel.Input, Never> = .init()
-    var cancellabes = Set<AnyCancellable>()
+    private let homeVM: HomeViewModel
+    private let input: PassthroughSubject<HomeViewModel.Input, Never> = .init()
+    private var cancellabes = Set<AnyCancellable>()
     
     init(homeVM: HomeViewModel) {
         print("HomeViewController init")
@@ -54,7 +54,7 @@ class HomeViewController: UIViewController {
         input.send(.viewLoaded)
     }
     
-    func bindData() {
+    private func bindData() {
         let output = homeVM.transform(input: input.eraseToAnyPublisher())
         output
             .receive(on: DispatchQueue.main)

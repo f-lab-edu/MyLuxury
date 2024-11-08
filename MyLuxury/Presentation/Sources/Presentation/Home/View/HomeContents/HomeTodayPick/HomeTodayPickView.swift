@@ -12,7 +12,7 @@ import Combine
 final class HomeTodayPickView: UIView {
     let postTappedSubject = PassthroughSubject<Post, Never>()
     
-    let viewTitle: UILabel = {
+    private let viewTitle: UILabel = {
         let title = UILabel()
         title.text = "오늘의 PICK"
         title.font = UIFont.pretendard(.extrabold, size: 24)
@@ -20,14 +20,14 @@ final class HomeTodayPickView: UIView {
         return title
     }()
     
-    let contentThumbnail: UIImageView = {
+    private let contentThumbnail: UIImageView = {
         let content = UIImageView()
         content.layer.cornerRadius = 10
         content.isUserInteractionEnabled = true
         return content
     }()
     
-    let contentTitle: UILabel = {
+    private let contentTitle: UILabel = {
         let label = UILabel()
         label.font = UIFont.pretendard(.extrabold, size: 22)
         label.textColor = .white
@@ -58,13 +58,13 @@ final class HomeTodayPickView: UIView {
         contentThumbnail.addTopBottomShadow(shadowHeight: 80)
     }
     
-    func setUpHierarchy() {
+    private func setUpHierarchy() {
         self.addSubview(viewTitle)
         self.addSubview(contentThumbnail)
         self.addSubview(contentTitle)
     }
     
-    func setUpLayout() {
+    private func setUpLayout() {
         viewTitle.translatesAutoresizingMaskIntoConstraints = false
         contentThumbnail.translatesAutoresizingMaskIntoConstraints = false
         contentTitle.translatesAutoresizingMaskIntoConstraints = false
@@ -82,7 +82,7 @@ final class HomeTodayPickView: UIView {
         ])
     }
     
-    func setUpGesture() {
+    private func setUpGesture() {
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(postTapped))
         contentThumbnail.addGestureRecognizer(tapGesture)
     }

@@ -9,7 +9,6 @@ import UIKit
 import Domain
 
 final class HomeEditorRecommendCVC: UICollectionViewCell {
-    
     static let identifier = "HomeEditorRecommendCVC"
     
     /// 게시물의 카테고리
@@ -67,23 +66,20 @@ final class HomeEditorRecommendCVC: UICollectionViewCell {
         contentThumbnail.addTopBottomShadow(shadowHeight: homeEditorRecommendCVCLength/2)
     }
     
-    func setUpHierarchy() {
+    private func setUpHierarchy() {
         self.addSubview(contentThumbnail)
         self.addSubview(contentTitle)
         self.addSubview(contentCategory)
     }
     
-    func setUpLayout() {
+    private func setUpLayout() {
         contentThumbnail.translatesAutoresizingMaskIntoConstraints = false
         contentTitle.translatesAutoresizingMaskIntoConstraints = false
-//        contentCategory.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             contentThumbnail.centerXAnchor.constraint(equalTo: self.centerXAnchor),
             contentThumbnail.centerYAnchor.constraint(equalTo: self.centerYAnchor),
             contentThumbnail.widthAnchor.constraint(equalToConstant: homeEditorRecommendCVCLength),
             contentThumbnail.heightAnchor.constraint(equalToConstant: homeEditorRecommendCVCLength),
-//            contentCategory.topAnchor.constraint(equalTo: self.topAnchor, constant: 15),
-//            contentCategory.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 15),
             contentTitle.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -15),
             contentTitle.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 15),
             contentTitle.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: 15)

@@ -8,14 +8,14 @@
 import UIKit
 
 final class HomeHorizontalCVC: UICollectionViewCell {
-    
     static let identifier = "HomeHorizontalCVC"
-    var contentImage: UIImageView = {
+    
+    private var contentImage: UIImageView = {
         let image = UIImageView()
         return image
     }()
     
-    var contentTitle: UILabel = {
+    private var contentTitle: UILabel = {
         let title = UILabel()
         title.numberOfLines = 2
         title.textColor = UIColor.getCustomColor(.textGray)

@@ -9,9 +9,9 @@ import Combine
 import Domain
 
 final class LoginViewModel {
-    let memberUseCase: MemberUseCase
-    let output: PassthroughSubject<Output, Never> = .init()
-    var cancellables = Set<AnyCancellable>()
+    private let memberUseCase: MemberUseCase
+    private let output: PassthroughSubject<Output, Never> = .init()
+    private var cancellables = Set<AnyCancellable>()
     
     init(memberUseCase: MemberUseCase) {
         print("LoginViewModel init")
@@ -32,7 +32,7 @@ final class LoginViewModel {
         return output.eraseToAnyPublisher()
     }
     
-    func login() {
+    private func login() {
         memberUseCase.login().sink { value in
             self.output.send(.loginSucceed(value: value))
         }.store(in: &cancellables)

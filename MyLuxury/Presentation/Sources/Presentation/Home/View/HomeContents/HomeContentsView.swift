@@ -10,13 +10,13 @@ import Combine
 import Domain
 
 final class HomeContentsView: UIView {
-    let scrollView: UIScrollView = {
+    private let scrollView: UIScrollView = {
         let scrollView = UIScrollView()
         scrollView.showsVerticalScrollIndicator = false
         return scrollView
     }()
     
-    let stackView: UIStackView = {
+    private let stackView: UIStackView = {
         let stackView = UIStackView()
         stackView.axis = .vertical
         stackView.distribution = .fill
@@ -48,6 +48,7 @@ final class HomeContentsView: UIView {
         return cv
     }()
     
+    /// 추후 UI가 바뀐다면 주석이 제거될 수 있습니다.
 //    let homeGridCV: HomeGridCollectionView = {
 //        let cv = HomeGridCollectionView()
 //        cv.title = "회원님이 좋아할 만한"
