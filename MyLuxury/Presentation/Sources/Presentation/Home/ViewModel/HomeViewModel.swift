@@ -12,6 +12,7 @@ import Domain
 public class HomeViewModel {
     let postUseCase: PostUseCase
     let output: PassthroughSubject<Output, Never> = .init()
+    let input: PassthroughSubject<Input, Never> = .init()
     var cancellables = Set<AnyCancellable>()
     
     var todayPickPost: Post? = nil

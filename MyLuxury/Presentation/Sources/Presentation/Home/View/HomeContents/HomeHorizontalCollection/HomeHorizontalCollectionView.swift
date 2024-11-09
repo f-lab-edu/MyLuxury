@@ -10,7 +10,7 @@ import Combine
 import Domain
 
 class HomeHorizontalCollectionView: UIView {
-    let postTappedSubject = PassthroughSubject<Post, Never>()
+    var homeVM: HomeViewModel
     
     private let titleLabel: UILabel = {
         let label = UILabel()
@@ -42,12 +42,17 @@ class HomeHorizontalCollectionView: UIView {
             collectionView.reloadData()
         }
     }
-
-    override init(frame: CGRect) {
-        super.init(frame: frame)
+    
+    init(homeVM: HomeViewModel) {
+        self.homeVM = homeVM
+        super.init(frame: .zero)
         setUpHierarchy()
         setUpCollectionView()
         setUpLayout()
+    }
+    
+    override init(frame: CGRect) {
+        fatalError("init(frame:) has not been implemented")
     }
     
     required init?(coder: NSCoder) {
@@ -97,6 +102,6 @@ extension HomeHorizontalCollectionView: UICollectionViewDataSource, UICollection
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let post = posts[indexPath.row]
-        postTappedSubject.send(post)
+        homeVM.input.send(.postTapped(post))
     }
 }

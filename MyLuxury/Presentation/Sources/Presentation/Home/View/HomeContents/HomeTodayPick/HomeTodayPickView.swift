@@ -10,7 +10,7 @@ import Domain
 import Combine
 
 final class HomeTodayPickView: UIView {
-    let postTappedSubject = PassthroughSubject<Post, Never>()
+    var homeVM: HomeViewModel
     
     private let viewTitle: UILabel = {
         let title = UILabel()
@@ -42,11 +42,16 @@ final class HomeTodayPickView: UIView {
         }
     }
     
-    override init(frame: CGRect) {
-        super.init(frame: frame)
+    init(homeVM: HomeViewModel) {
+        self.homeVM = homeVM
+        super.init(frame: .zero)
         setUpHierarchy()
         setUpLayout()
         setUpGesture()
+    }
+    
+    override init(frame: CGRect) {
+        fatalError("init(frame:) has not been implemented")
     }
     
     required init?(coder: NSCoder) {
@@ -89,7 +94,7 @@ final class HomeTodayPickView: UIView {
     
     @objc func postTapped() {
         if let post = post {
-            postTappedSubject.send(post)
+            homeVM.input.send(.postTapped(post))
         }
     }
 }

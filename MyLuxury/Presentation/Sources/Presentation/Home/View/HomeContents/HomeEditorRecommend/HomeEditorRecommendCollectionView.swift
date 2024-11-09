@@ -10,7 +10,7 @@ import Domain
 import Combine
 
 final class HomeEditorRecommendCollectionView: UIView {
-    let postTappedSubject = PassthroughSubject<Post, Never>()
+    var homeVM: HomeViewModel
     
     /// 해당 뷰의 제목
     private let titleLabel: UILabel = {
@@ -47,12 +47,19 @@ final class HomeEditorRecommendCollectionView: UIView {
     
     private var heightConstraint: NSLayoutConstraint?
     
-    override init(frame: CGRect) {
-        super.init(frame: frame)
+    init(homeVM: HomeViewModel) {
+        self.homeVM = homeVM
+        super.init(frame: .zero)
         setUpHierarchy()
         setUpCollectionView()
         setUpLayout()
     }
+    
+    override init(frame: CGRect) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -109,6 +116,6 @@ extension HomeEditorRecommendCollectionView: UICollectionViewDataSource, UIColle
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let post = posts[indexPath.row]
-        self.postTappedSubject.send(post)
+        homeVM.input.send(.postTapped(post))
     }
 }

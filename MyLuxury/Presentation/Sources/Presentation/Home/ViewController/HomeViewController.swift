@@ -14,15 +14,17 @@ protocol HomeControllerDelegate: AnyObject {
 }
 
 class HomeViewController: UIViewController {
-    private let rootView = HomeMainView()
+    private let rootView: HomeMainView
     weak var delegate: HomeControllerDelegate?
     private let homeVM: HomeViewModel
-    private let input: PassthroughSubject<HomeViewModel.Input, Never> = .init()
+    private let input: PassthroughSubject<HomeViewModel.Input, Never>
     private var cancellabes = Set<AnyCancellable>()
     
     init(homeVM: HomeViewModel) {
         print("HomeViewController init")
         self.homeVM = homeVM
+        self.rootView = HomeMainView(homeVM: homeVM)
+        self.input = homeVM.input
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -71,20 +73,5 @@ class HomeViewController: UIViewController {
                     self.delegate?.goToPost(post: post)
                 }
             }.store(in: &cancellabes)
-        
-        let postTappedSubjects = [
-            rootView.contentView.homeTodayPickView.postTappedSubject,
-            rootView.contentView.newPostsCV.postTappedSubject,
-            rootView.contentView.weeklyTopPostsCV.postTappedSubject,
-            rootView.contentView.preferPostCV.postTappedSubject,
-            rootView.contentView.homeEditorRecommendCV.postTappedSubject
-        ]
-        postTappedSubjects.forEach { subject in
-            subject.sink { [weak self] post in
-                guard let self = self else { return }
-                self.input.send(.postTapped(post))
-            }.store(in: &cancellabes)
-        }
     }
 }
-

@@ -10,6 +10,8 @@ import Combine
 import Domain
 
 final class HomeContentsView: UIView {
+    var homeVM: HomeViewModel
+    
     private let scrollView: UIScrollView = {
         let scrollView = UIScrollView()
         scrollView.showsVerticalScrollIndicator = false
@@ -25,25 +27,25 @@ final class HomeContentsView: UIView {
         return stackView
     }()
     
-    let homeTodayPickView: HomeTodayPickView = {
-        let view = HomeTodayPickView()
+    lazy var homeTodayPickView: HomeTodayPickView = {
+        var view = HomeTodayPickView(homeVM: homeVM)
         return view
     }()
     
-    let newPostsCV: HomeHorizontalCollectionView = {
-        let cv = HomeHorizontalCollectionView()
+    lazy var newPostsCV: HomeHorizontalCollectionView = {
+        let cv = HomeHorizontalCollectionView(homeVM: homeVM)
         cv.title = "새로 게시된 지식"
         return cv
     }()
     
-    let weeklyTopPostsCV: HomeHorizontalCollectionView = {
-        let cv = HomeHorizontalCollectionView()
+    lazy var weeklyTopPostsCV: HomeHorizontalCollectionView = {
+        let cv = HomeHorizontalCollectionView(homeVM: homeVM)
         cv.title = "이번 주 TOP10"
         return cv
     }()
     
-    let preferPostCV: HomeHorizontalCollectionView = {
-        let cv = HomeHorizontalCollectionView()
+    lazy var preferPostCV: HomeHorizontalCollectionView = {
+        let cv = HomeHorizontalCollectionView(homeVM: homeVM)
         cv.title = "회원님이 좋아할 만한"
         return cv
     }()
@@ -55,18 +57,23 @@ final class HomeContentsView: UIView {
 //        return cv
 //    }()
     
-    let homeEditorRecommendCV: HomeEditorRecommendCollectionView = {
-        let cv = HomeEditorRecommendCollectionView()
+    lazy var homeEditorRecommendCV: HomeEditorRecommendCollectionView = {
+        let cv = HomeEditorRecommendCollectionView(homeVM: homeVM)
         cv.title = "에디터 추천 지식"
         return cv
     }()
    
-    override init(frame: CGRect) {
-        super.init(frame: frame)
+    init(homeVM: HomeViewModel) {
+        self.homeVM = homeVM
+        super.init(frame: .zero)
         setUpHierarchy()
         setUpLayout()
         scrollView.backgroundColor = .black
         stackView.backgroundColor = .clear
+    }
+    
+    override init(frame: CGRect) {
+        fatalError("init(frame:) has not been implemented")
     }
     
     required init?(coder: NSCoder) {
