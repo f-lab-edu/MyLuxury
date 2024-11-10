@@ -27,42 +27,15 @@ final class HomeContentsView: UIView {
         return stackView
     }()
     
-    lazy var homeTodayPickView: HomeTodayPickView = {
-        var view = HomeTodayPickView(homeVM: homeVM)
-        return view
-    }()
-    
-    lazy var newPostsCV: HomeHorizontalCollectionView = {
-        let cv = HomeHorizontalCollectionView(homeVM: homeVM)
-        cv.title = "새로 게시된 지식"
-        return cv
-    }()
-    
-    lazy var weeklyTopPostsCV: HomeHorizontalCollectionView = {
-        let cv = HomeHorizontalCollectionView(homeVM: homeVM)
-        cv.title = "이번 주 TOP10"
-        return cv
-    }()
-    
-    lazy var preferPostCV: HomeHorizontalCollectionView = {
-        let cv = HomeHorizontalCollectionView(homeVM: homeVM)
-        cv.title = "회원님이 좋아할 만한"
-        return cv
-    }()
-    
-    /// 추후 UI가 바뀐다면 주석이 제거될 수 있습니다.
-//    let homeGridCV: HomeGridCollectionView = {
-//        let cv = HomeGridCollectionView()
-//        cv.title = "회원님이 좋아할 만한"
-//        return cv
-//    }()
-    
-    lazy var homeEditorRecommendCV: HomeEditorRecommendCollectionView = {
-        let cv = HomeEditorRecommendCollectionView(homeVM: homeVM)
-        cv.title = "에디터 추천 지식"
-        return cv
-    }()
-   
+    /// 새로운 섹션을 추가하기 위해서 이곳과 HomeContentsSectionType에 case를 추가해야 합니다. 
+    lazy var contentsSections: [HomeContentsSectionView] = [
+        HomeTodayPickView(homeVM: homeVM, sectionTitle: "오늘의 PICK"),
+        HomeHorizontalCollectionView(homeVM: homeVM, sectionTitle: "새로 게시된 지식"),
+        HomeHorizontalCollectionView(homeVM: homeVM, sectionTitle: "이번 주 TOP10"),
+        HomeHorizontalCollectionView(homeVM: homeVM, sectionTitle: "회원님이 좋아할 만한"),
+        HomeEditorRecommendCollectionView(homeVM: homeVM, sectionTitle: "에디처 추천 지식")
+    ]
+
     init(homeVM: HomeViewModel) {
         self.homeVM = homeVM
         super.init(frame: .zero)
@@ -83,23 +56,14 @@ final class HomeContentsView: UIView {
     private func setUpHierarchy() {
         self.addSubview(scrollView)
         scrollView.addSubview(stackView)
-        stackView.addArrangedSubview(homeTodayPickView)
-        stackView.addArrangedSubview(newPostsCV)
-        stackView.addArrangedSubview(weeklyTopPostsCV)
-//        stackView.addArrangedSubview(homeGridCV)
-        stackView.addArrangedSubview(preferPostCV)
-        stackView.addArrangedSubview(homeEditorRecommendCV)
+        for sectionView in contentsSections {
+            stackView.addArrangedSubview(sectionView as? UIView ?? UIView())
+        }
     }
     
     private func setUpLayout() {
         scrollView.translatesAutoresizingMaskIntoConstraints = false
         stackView.translatesAutoresizingMaskIntoConstraints = false
-        homeTodayPickView.translatesAutoresizingMaskIntoConstraints = false
-        newPostsCV.translatesAutoresizingMaskIntoConstraints = false
-        weeklyTopPostsCV.translatesAutoresizingMaskIntoConstraints = false
-//        homeGridCV.translatesAutoresizingMaskIntoConstraints = false
-        preferPostCV.translatesAutoresizingMaskIntoConstraints = false
-        homeEditorRecommendCV.translatesAutoresizingMaskIntoConstraints = false
 
         NSLayoutConstraint.activate([
             scrollView.topAnchor.constraint(equalTo: self.topAnchor),
@@ -111,15 +75,10 @@ final class HomeContentsView: UIView {
             stackView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
             stackView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
             stackView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
-            homeTodayPickView.topAnchor.constraint(equalTo: stackView.topAnchor),
-            homeTodayPickView.centerXAnchor.constraint(equalTo: stackView.centerXAnchor),
-            newPostsCV.topAnchor.constraint(equalTo: homeTodayPickView.bottomAnchor, constant: 30),
-            weeklyTopPostsCV.topAnchor.constraint(equalTo: newPostsCV.bottomAnchor, constant: 30),
-            preferPostCV.topAnchor.constraint(equalTo: weeklyTopPostsCV.bottomAnchor, constant: 30),
-//            homeGridCV.topAnchor.constraint(equalTo: weeklyTopPostsCV.bottomAnchor, constant: 30),
-//            homeGridCV.centerXAnchor.constraint(equalTo: stackView.centerXAnchor),
-            homeEditorRecommendCV.topAnchor.constraint(equalTo: preferPostCV.bottomAnchor, constant: 30),
-            homeEditorRecommendCV.centerXAnchor.constraint(equalTo: stackView.centerXAnchor)
         ])
+    }
+    
+    func getSectionView(type: HomeContentsSectionType) -> HomeContentsSectionView {
+        return contentsSections[type.rawValue]
     }
 }

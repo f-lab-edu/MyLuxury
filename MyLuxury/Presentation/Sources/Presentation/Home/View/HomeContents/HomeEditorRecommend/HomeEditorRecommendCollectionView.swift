@@ -9,11 +9,13 @@ import UIKit
 import Domain
 import Combine
 
-final class HomeEditorRecommendCollectionView: UIView {
+final class HomeEditorRecommendCollectionView: UIView, HomeContentsSectionView {
+    var sectionTitle: String
+    
     var homeVM: HomeViewModel
     
     /// 해당 뷰의 제목
-    private let titleLabel: UILabel = {
+    private let sectionTitleLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.pretendard(.extrabold, size: 24)
         label.textColor = .white
@@ -30,13 +32,7 @@ final class HomeEditorRecommendCollectionView: UIView {
         collectionView.isScrollEnabled = false
         return collectionView
     }()
-    
-    var title: String? {
-        didSet {
-            titleLabel.text = title
-        }
-    }
-    
+
     var posts: [Post] = [] {
         didSet {
             collectionView.reloadData()
@@ -47,12 +43,14 @@ final class HomeEditorRecommendCollectionView: UIView {
     
     private var heightConstraint: NSLayoutConstraint?
     
-    init(homeVM: HomeViewModel) {
+    init(homeVM: HomeViewModel, sectionTitle: String) {
+        self.sectionTitle = sectionTitle
         self.homeVM = homeVM
         super.init(frame: .zero)
         setUpHierarchy()
         setUpCollectionView()
         setUpLayout()
+        self.sectionTitleLabel.text = sectionTitle
     }
     
     override init(frame: CGRect) {
@@ -66,7 +64,7 @@ final class HomeEditorRecommendCollectionView: UIView {
     }
     
     private func setUpHierarchy() {
-        addSubview(titleLabel)
+        addSubview(sectionTitleLabel)
         addSubview(collectionView)
     }
     
@@ -77,16 +75,16 @@ final class HomeEditorRecommendCollectionView: UIView {
     }
     
     private func setUpLayout() {
-        titleLabel.translatesAutoresizingMaskIntoConstraints = false
+        sectionTitleLabel.translatesAutoresizingMaskIntoConstraints = false
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         /// 높이 초기값 설정
         heightConstraint = collectionView.heightAnchor.constraint(equalToConstant: (homeEditorRecommendCVCLength + 30) * CGFloat(posts.count))
         /// 커스텀 제약 조건 활성화
         heightConstraint?.isActive = true
         NSLayoutConstraint.activate([
-            titleLabel.topAnchor.constraint(equalTo: topAnchor, constant: 10),
-            titleLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 15),
-            collectionView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 10),
+            sectionTitleLabel.topAnchor.constraint(equalTo: topAnchor, constant: 10),
+            sectionTitleLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 15),
+            collectionView.topAnchor.constraint(equalTo: sectionTitleLabel.bottomAnchor, constant: 10),
             collectionView.leadingAnchor.constraint(equalTo: self.leadingAnchor),
             collectionView.trailingAnchor.constraint(equalTo: self.trailingAnchor),
             collectionView.bottomAnchor.constraint(equalTo: self.bottomAnchor),

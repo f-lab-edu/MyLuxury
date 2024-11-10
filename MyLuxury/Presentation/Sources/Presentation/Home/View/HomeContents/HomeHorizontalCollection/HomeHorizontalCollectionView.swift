@@ -9,10 +9,12 @@ import UIKit
 import Combine
 import Domain
 
-class HomeHorizontalCollectionView: UIView {
+class HomeHorizontalCollectionView: UIView, HomeContentsSectionView {
+    var sectionTitle: String
+    
     var homeVM: HomeViewModel
     
-    private let titleLabel: UILabel = {
+    private let sectionTitleLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.pretendard(.extrabold, size: 24)
         label.textColor = .white
@@ -33,7 +35,7 @@ class HomeHorizontalCollectionView: UIView {
     
     var title: String? {
         didSet {
-            titleLabel.text = title
+            sectionTitleLabel.text = title
         }
     }
     
@@ -43,12 +45,14 @@ class HomeHorizontalCollectionView: UIView {
         }
     }
     
-    init(homeVM: HomeViewModel) {
+    init(homeVM: HomeViewModel, sectionTitle: String) {
+        self.sectionTitle = sectionTitle
         self.homeVM = homeVM
         super.init(frame: .zero)
         setUpHierarchy()
         setUpCollectionView()
         setUpLayout()
+        sectionTitleLabel.text = sectionTitle
     }
     
     override init(frame: CGRect) {
@@ -60,7 +64,7 @@ class HomeHorizontalCollectionView: UIView {
     }
     
     private func setUpHierarchy() {
-        addSubview(titleLabel)
+        addSubview(sectionTitleLabel)
         addSubview(collectionView)
     }
 
@@ -71,13 +75,13 @@ class HomeHorizontalCollectionView: UIView {
     }
     
     private func setUpLayout() {
-        titleLabel.translatesAutoresizingMaskIntoConstraints = false
+        sectionTitleLabel.translatesAutoresizingMaskIntoConstraints = false
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         // 레이블 제약 조건
         NSLayoutConstraint.activate([
-            titleLabel.topAnchor.constraint(equalTo: topAnchor, constant: 10),
-            titleLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 15),
-            collectionView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 5),
+            sectionTitleLabel.topAnchor.constraint(equalTo: topAnchor, constant: 10),
+            sectionTitleLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 15),
+            collectionView.topAnchor.constraint(equalTo: sectionTitleLabel.bottomAnchor, constant: 5),
             collectionView.leadingAnchor.constraint(equalTo: leadingAnchor),
             collectionView.trailingAnchor.constraint(equalTo: trailingAnchor),
             collectionView.bottomAnchor.constraint(equalTo: bottomAnchor),

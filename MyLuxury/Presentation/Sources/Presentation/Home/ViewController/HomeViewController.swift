@@ -64,11 +64,11 @@ class HomeViewController: UIViewController {
                 guard let self = self else { return }
                 switch event {
                 case .getHomePostData:
-                    self.rootView.contentView.homeTodayPickView.post = self.homeVM.todayPickPost
-                    self.rootView.contentView.newPostsCV.posts = self.homeVM.newPosts
-                    self.rootView.contentView.weeklyTopPostsCV.posts = self.homeVM.weeklyTopPosts
-                    self.rootView.contentView.preferPostCV.posts = self.homeVM.customizedPosts
-                    self.rootView.contentView.homeEditorRecommendCV.posts = self.homeVM.editorRecommendationPosts
+                    (self.rootView.contentView.getSectionView(type: .todayPick) as? HomeTodayPickView)?.post = self.homeVM.todayPickPost
+                    (self.rootView.contentView.getSectionView(type: .newPosts) as? HomeHorizontalCollectionView)?.posts = self.homeVM.newPosts
+                    (self.rootView.contentView.getSectionView(type: .weeklyTop) as? HomeHorizontalCollectionView)?.posts = self.homeVM.weeklyTopPosts
+                    (self.rootView.contentView.getSectionView(type: .customizedPosts) as? HomeHorizontalCollectionView)?.posts = self.homeVM.customizedPosts
+                    (self.rootView.contentView.getSectionView(type: .editorRecommendation) as? HomeEditorRecommendCollectionView)?.posts = self.homeVM.editorRecommendationPosts
                 case .goToPost(let post):
                     self.delegate?.goToPost(post: post)
                 }

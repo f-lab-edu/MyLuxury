@@ -9,12 +9,13 @@ import UIKit
 import Domain
 import Combine
 
-final class HomeTodayPickView: UIView {
+final class HomeTodayPickView: UIView, HomeContentsSectionView {
+    var sectionTitle: String
+    
     var homeVM: HomeViewModel
     
-    private let viewTitle: UILabel = {
+    private let sectionTitleLabel: UILabel = {
         let title = UILabel()
-        title.text = "오늘의 PICK"
         title.font = UIFont.pretendard(.extrabold, size: 24)
         title.textColor = .white
         return title
@@ -34,7 +35,7 @@ final class HomeTodayPickView: UIView {
         label.numberOfLines = 2
         return label
     }()
-    
+
     var post: Post? {
         didSet {
             contentTitle.text = post?.postTitle
@@ -42,12 +43,14 @@ final class HomeTodayPickView: UIView {
         }
     }
     
-    init(homeVM: HomeViewModel) {
+    init(homeVM: HomeViewModel, sectionTitle: String) {
+        self.sectionTitle = sectionTitle
         self.homeVM = homeVM
         super.init(frame: .zero)
         setUpHierarchy()
         setUpLayout()
         setUpGesture()
+        self.sectionTitleLabel.text = sectionTitle
     }
     
     override init(frame: CGRect) {
@@ -64,19 +67,19 @@ final class HomeTodayPickView: UIView {
     }
     
     private func setUpHierarchy() {
-        self.addSubview(viewTitle)
+        self.addSubview(sectionTitleLabel)
         self.addSubview(contentThumbnail)
         self.addSubview(contentTitle)
     }
     
     private func setUpLayout() {
-        viewTitle.translatesAutoresizingMaskIntoConstraints = false
+        sectionTitleLabel.translatesAutoresizingMaskIntoConstraints = false
         contentThumbnail.translatesAutoresizingMaskIntoConstraints = false
         contentTitle.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            viewTitle.topAnchor.constraint(equalTo: self.topAnchor),
-            viewTitle.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 15),
-            contentThumbnail.topAnchor.constraint(equalTo: viewTitle.bottomAnchor, constant: 10),
+            sectionTitleLabel.topAnchor.constraint(equalTo: self.topAnchor),
+            sectionTitleLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 15),
+            contentThumbnail.topAnchor.constraint(equalTo: sectionTitleLabel.bottomAnchor, constant: 10),
             contentThumbnail.centerXAnchor.constraint(equalTo: self.centerXAnchor),
             contentThumbnail.widthAnchor.constraint(equalToConstant: hometodayPickViewWidth),
             contentThumbnail.heightAnchor.constraint(equalToConstant: hometodayPickViewHeight),
