@@ -25,3 +25,5 @@ import UIKit
 @MainActor let homeGridCVCHeight = homeGridCVCWidth / 1.77
 /// 홈 화면 에디터 추천 컬렉션 뷰 셀 변의 길이
 @MainActor let homeEditorRecommendCVCLength = screenWidth - 30
+/// 게시물 인디케이터 높이
+@MainActor let postIndicatorHeight = screenHeight / 35

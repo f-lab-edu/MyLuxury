@@ -16,7 +16,7 @@ public protocol HomeCoordinatorDependency {
     var postUseCase: PostUseCase { get }
 }
 
-public class HomeCoordinatorImpl: HomeCoordinator, @preconcurrency HomeControllerDelegate {
+public class HomeCoordinatorImpl: HomeCoordinator, @preconcurrency HomeControllerDelegate, @preconcurrency PostViewControllerDelegate {
     
     public var navigationController: UINavigationController
     public var childCoordinators: [Coordinator] = []
@@ -43,8 +43,15 @@ public class HomeCoordinatorImpl: HomeCoordinator, @preconcurrency HomeControlle
     
     @MainActor
     func goToPost(post: Post) {
-        let postVM = PostViewModel(post: post)
+        let postVM = PostViewModel(post: post, postUseCase: self.dependency.postUseCase)
         let postVC = PostViewController(postVM: postVM)
+        postVC.delegate = self
         self.navigationController.pushViewController(postVC, animated: true)
+        self.navigationController.isNavigationBarHidden = true
+    }
+    
+    @MainActor
+    func goToBackScreen() {
+        self.navigationController.popViewController(animated: true)
     }
 }
