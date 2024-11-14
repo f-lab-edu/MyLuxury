@@ -11,7 +11,7 @@ import Combine
 final class HomeMainView: UIView {
     let headerView = HomeHeaderView()
     var contentView: HomeContentsView
-    var homeVM: HomeViewModel
+    private var homeVM: HomeViewModel
     
     /// 원래는 뷰를 생성할 때 우선적으로 init(frame:)이 호출됩니다.
     /// 따라서 커스텀 생성자를 사용하겠다고 호출하는 쪽에서 지정해줘야 합니다.

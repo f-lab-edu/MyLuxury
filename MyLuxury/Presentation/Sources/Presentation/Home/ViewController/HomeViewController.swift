@@ -44,17 +44,18 @@ class HomeViewController: UIViewController {
     /// 두 번째로 호출
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         bindData()
+        input.send(.viewLoaded)
     }
     
     /// 세 번째로 호출
     /// override func viewWillAppear
     
     /// 네 번째로 호출
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        input.send(.viewLoaded)
-    }
+//    override func viewDidAppear(_ animated: Bool) {
+//        super.viewDidAppear(animated)
+//    }
     
     private func bindData() {
         let output = homeVM.transform(input: input.eraseToAnyPublisher())
@@ -64,11 +65,7 @@ class HomeViewController: UIViewController {
                 guard let self = self else { return }
                 switch event {
                 case .getHomePostData:
-                    (self.rootView.contentView.getSectionView(type: .todayPick) as? HomeTodayPickView)?.post = self.homeVM.todayPickPost
-                    (self.rootView.contentView.getSectionView(type: .newPosts) as? HomeHorizontalCollectionView)?.posts = self.homeVM.newPosts
-                    (self.rootView.contentView.getSectionView(type: .weeklyTop) as? HomeHorizontalCollectionView)?.posts = self.homeVM.weeklyTopPosts
-                    (self.rootView.contentView.getSectionView(type: .customizedPosts) as? HomeHorizontalCollectionView)?.posts = self.homeVM.customizedPosts
-                    (self.rootView.contentView.getSectionView(type: .editorRecommendation) as? HomeEditorRecommendCollectionView)?.posts = self.homeVM.editorRecommendationPosts
+                    self.rootView.contentView.homePostData = self.homeVM.homePostData
                 case .goToPost(let post):
                     self.delegate?.goToPost(post: post)
                 }

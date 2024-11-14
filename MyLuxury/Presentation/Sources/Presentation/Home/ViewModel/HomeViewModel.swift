@@ -10,16 +10,11 @@ import Combine
 import Domain
 
 public class HomeViewModel {
-    let postUseCase: PostUseCase
+    private let postUseCase: PostUseCase
     let output: PassthroughSubject<Output, Never> = .init()
     let input: PassthroughSubject<Input, Never> = .init()
-    var cancellables = Set<AnyCancellable>()
-    
-    var todayPickPost: Post? = nil
-    var newPosts: [Post] = []
-    var weeklyTopPosts: [Post] = []
-    var customizedPosts: [Post] = []
-    var editorRecommendationPosts: [Post] = []
+    private var cancellables = Set<AnyCancellable>()
+    var homePostData: HomePostData? = nil
     
     init(postUseCase: PostUseCase) {
         print("HomeViewModel init")
@@ -49,11 +44,7 @@ public class HomeViewModel {
         postUseCase.getHomeViewData()
             .sink { [weak self] homeData in
                 guard let self = self else { return }
-                self.todayPickPost = homeData.todayPickPostData
-                self.newPosts = homeData.newPostData
-                self.weeklyTopPosts = homeData.weeklyTopPostData
-                self.customizedPosts = homeData.customizedPostData
-                self.editorRecommendationPosts = homeData.editorRecommendationPostData
+                self.homePostData = homeData
                 self.output.send(.getHomePostData)
             }.store(in: &cancellables)
     }

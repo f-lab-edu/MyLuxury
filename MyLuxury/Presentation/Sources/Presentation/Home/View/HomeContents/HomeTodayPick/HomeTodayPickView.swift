@@ -10,9 +10,15 @@ import Domain
 import Combine
 
 final class HomeTodayPickView: UIView, HomeContentsSectionView {
+    typealias PostData = Post
     var sectionTitle: String
-    
-    var homeVM: HomeViewModel
+    var postData: Post {
+        didSet {
+            contentTitle.text = postData.postTitle
+            contentThumbnail.image = UIImage(named: postData.postThumbnailImage)
+        }
+    }
+    private var homeVM: HomeViewModel
     
     private let sectionTitleLabel: UILabel = {
         let title = UILabel()
@@ -35,22 +41,16 @@ final class HomeTodayPickView: UIView, HomeContentsSectionView {
         label.numberOfLines = 2
         return label
     }()
-
-    var post: Post? {
-        didSet {
-            contentTitle.text = post?.postTitle
-            contentThumbnail.image = UIImage(named: post?.postThumbnailImage ?? "")
-        }
-    }
     
-    init(homeVM: HomeViewModel, sectionTitle: String) {
+    init(homeVM: HomeViewModel, sectionTitle: String, postData: Post) {
         self.sectionTitle = sectionTitle
         self.homeVM = homeVM
+        self.postData = postData
         super.init(frame: .zero)
+        setUpUI()
         setUpHierarchy()
         setUpLayout()
         setUpGesture()
-        self.sectionTitleLabel.text = sectionTitle
     }
     
     override init(frame: CGRect) {
@@ -64,6 +64,12 @@ final class HomeTodayPickView: UIView, HomeContentsSectionView {
     override func layoutSubviews() {
         super.layoutSubviews()
         contentThumbnail.addTopBottomShadow(shadowHeight: 80)
+    }
+    
+    private func setUpUI() {
+        self.sectionTitleLabel.text = sectionTitle
+        self.contentTitle.text = postData.postTitle
+        self.contentThumbnail.image = UIImage(named: postData.postThumbnailImage)
     }
     
     private func setUpHierarchy() {
@@ -96,8 +102,6 @@ final class HomeTodayPickView: UIView, HomeContentsSectionView {
     }
     
     @objc func postTapped() {
-        if let post = post {
-            homeVM.input.send(.postTapped(post))
-        }
+        homeVM.input.send(.postTapped(postData))
     }
 }

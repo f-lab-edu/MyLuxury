@@ -11,7 +11,13 @@ import Domain
 // MARK: 현재 아직 레이아웃에 넣지 않은 컬렉션뷰입니다.
 // 추후 디자인에 따라 삽입 혹은 삭제될 수 있습니다.
 
-final class HomeGridCollectionView: UIView {
+final class HomeGridCollectionView: UIView, HomeContentsSectionView {
+    typealias PostData = [Post]
+    var sectionTitle: String
+    var postData: [Post]
+    
+    private var homeVM: HomeViewModel
+    
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.pretendard(.extrabold, size: 24)
@@ -31,27 +37,27 @@ final class HomeGridCollectionView: UIView {
         return collectionView
     }()
     
-    var title: String? {
-        didSet {
-            titleLabel.text = title
-        }
-    }
-    
-    var posts: [Post] = [] {
-        didSet {
-            collectionView.reloadData()
-        }
-    }
-    
-    override init(frame: CGRect) {
-        super.init(frame: frame)
+    init(homeVM: HomeViewModel, sectionTitle: String, postData: [Post]) {
+        self.sectionTitle = sectionTitle
+        self.homeVM = homeVM
+        self.postData = postData
+        super.init(frame: .zero)
+        setUpUI()
         setUpHierarchy()
         setUpCollectionView()
         setUpLayout()
     }
     
+    override init(frame: CGRect) {
+        fatalError("init(frame:) has not been implemented")
+    }
+    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    private func setUpUI() {
+        titleLabel.text = sectionTitle
     }
     
     private func setUpHierarchy() {
@@ -83,13 +89,18 @@ final class HomeGridCollectionView: UIView {
 extension HomeGridCollectionView: UICollectionViewDataSource, UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         /// 항상 4개로 고정
-        return posts.count
+        return postData.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let post = self.posts[indexPath.row]
+        let post = self.postData[indexPath.row]
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "HomeGridCVC", for: indexPath) as! HomeGridCVC
         cell.image = post.postThumbnailImage
         return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let post = postData[indexPath.row]
+        homeVM.input.send(.postTapped(post))
     }
 }

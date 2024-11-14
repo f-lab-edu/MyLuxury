@@ -10,7 +10,7 @@ import Combine
 import Domain
 
 final class HomeContentsView: UIView {
-    var homeVM: HomeViewModel
+    private var homeVM: HomeViewModel
     
     private let scrollView: UIScrollView = {
         let scrollView = UIScrollView()
@@ -27,14 +27,29 @@ final class HomeContentsView: UIView {
         return stackView
     }()
     
-    /// 새로운 섹션을 추가하기 위해서 이곳과 HomeContentsSectionType에 case를 추가해야 합니다. 
-    lazy var contentsSections: [HomeContentsSectionView] = [
-        HomeTodayPickView(homeVM: homeVM, sectionTitle: "오늘의 PICK"),
-        HomeHorizontalCollectionView(homeVM: homeVM, sectionTitle: "새로 게시된 지식"),
-        HomeHorizontalCollectionView(homeVM: homeVM, sectionTitle: "이번 주 TOP10"),
-        HomeHorizontalCollectionView(homeVM: homeVM, sectionTitle: "회원님이 좋아할 만한"),
-        HomeEditorRecommendCollectionView(homeVM: homeVM, sectionTitle: "에디처 추천 지식")
-    ]
+    var homePostData: HomePostData? {
+        didSet {
+            updateContentsSections()
+        }
+    }
+
+    private var contentsSections: [any HomeContentsSectionView] = []
+    
+    /// 섹션 추가는 이 곳에서 하시면 됩니다.
+    private func updateContentsSections() {
+        contentsSections = [
+            HomeTodayPickView(homeVM: homeVM, sectionTitle: "오늘의 PICK", postData: homePostData?.todayPickPostData ?? Post(post_id: "1", postUIType: .normal, postCategory: .art, postTitle: "테스트", postThumbnailImage: "blackScreen")),
+            HomeHorizontalCollectionView(homeVM: homeVM, sectionTitle: "새로 게시된 지식", postData: homePostData?.newPostData ?? []),
+            HomeHorizontalCollectionView(homeVM: homeVM, sectionTitle: "이번 주 TOP10", postData: homePostData?.weeklyTopPostData ?? []),
+            HomeHorizontalCollectionView(homeVM: homeVM, sectionTitle: "회원님이 좋아할 만한", postData: homePostData?.customizedPostData ?? []),
+            HomeGridCollectionView(homeVM: homeVM, sectionTitle: "추가 그리드 섹션", postData: homePostData?.gridData ?? []),
+            HomeEditorRecommendCollectionView(homeVM: homeVM, sectionTitle: "에디터 추천 지식", postData: homePostData?.editorRecommendationPostData ?? [])
+        ]
+
+        for section in contentsSections {
+            stackView.addArrangedSubview(section)
+        }
+    }
 
     init(homeVM: HomeViewModel) {
         self.homeVM = homeVM
@@ -56,9 +71,6 @@ final class HomeContentsView: UIView {
     private func setUpHierarchy() {
         self.addSubview(scrollView)
         scrollView.addSubview(stackView)
-        for sectionView in contentsSections {
-            stackView.addArrangedSubview(sectionView as? UIView ?? UIView())
-        }
     }
     
     private func setUpLayout() {
@@ -76,9 +88,5 @@ final class HomeContentsView: UIView {
             stackView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
             stackView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
         ])
-    }
-    
-    func getSectionView(type: HomeContentsSectionType) -> HomeContentsSectionView {
-        return contentsSections[type.rawValue]
     }
 }

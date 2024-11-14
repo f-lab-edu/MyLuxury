@@ -60,5 +60,6 @@ public typealias HomePostData = (
     newPostData: [Post],
     weeklyTopPostData: [Post],
     customizedPostData: [Post],
+    gridData: [Post],
     editorRecommendationPostData: [Post]
 )

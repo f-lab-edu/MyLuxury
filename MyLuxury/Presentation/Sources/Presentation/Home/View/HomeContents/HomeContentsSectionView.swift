@@ -8,6 +8,8 @@
 import UIKit
 
 @MainActor
-protocol HomeContentsSectionView {
+protocol HomeContentsSectionView: UIView {
+    associatedtype PostData
     var sectionTitle: String { get set }
+    var postData: PostData { get set }
 }

@@ -10,9 +10,14 @@ import Domain
 import Combine
 
 final class HomeEditorRecommendCollectionView: UIView, HomeContentsSectionView {
+    typealias PostData = [Post]
     var sectionTitle: String
-    
-    var homeVM: HomeViewModel
+    var postData: [Post] {
+        didSet {
+            updateCollectionViewHeight()
+        }
+    }
+    private var homeVM: HomeViewModel
     
     /// 해당 뷰의 제목
     private let sectionTitleLabel: UILabel = {
@@ -32,32 +37,23 @@ final class HomeEditorRecommendCollectionView: UIView, HomeContentsSectionView {
         collectionView.isScrollEnabled = false
         return collectionView
     }()
-
-    var posts: [Post] = [] {
-        didSet {
-            collectionView.reloadData()
-            /// post가 바뀔 때마다 높이도 동적으로 변경
-            updateCollectionViewHeight()
-        }
-    }
     
     private var heightConstraint: NSLayoutConstraint?
     
-    init(homeVM: HomeViewModel, sectionTitle: String) {
+    init(homeVM: HomeViewModel, sectionTitle: String, postData: [Post]) {
         self.sectionTitle = sectionTitle
         self.homeVM = homeVM
+        self.postData = postData
         super.init(frame: .zero)
+        setUpUI()
         setUpHierarchy()
         setUpCollectionView()
         setUpLayout()
-        self.sectionTitleLabel.text = sectionTitle
     }
     
     override init(frame: CGRect) {
         fatalError("init(coder:) has not been implemented")
     }
-    
-    
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -66,6 +62,10 @@ final class HomeEditorRecommendCollectionView: UIView, HomeContentsSectionView {
     private func setUpHierarchy() {
         addSubview(sectionTitleLabel)
         addSubview(collectionView)
+    }
+    
+    private func setUpUI() {
+        self.sectionTitleLabel.text = sectionTitle
     }
     
     private func setUpCollectionView() {
@@ -78,7 +78,7 @@ final class HomeEditorRecommendCollectionView: UIView, HomeContentsSectionView {
         sectionTitleLabel.translatesAutoresizingMaskIntoConstraints = false
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         /// 높이 초기값 설정
-        heightConstraint = collectionView.heightAnchor.constraint(equalToConstant: (homeEditorRecommendCVCLength + 30) * CGFloat(posts.count))
+        heightConstraint = collectionView.heightAnchor.constraint(equalToConstant: (homeEditorRecommendCVCLength + 30) * CGFloat(postData.count))
         /// 커스텀 제약 조건 활성화
         heightConstraint?.isActive = true
         NSLayoutConstraint.activate([
@@ -93,18 +93,18 @@ final class HomeEditorRecommendCollectionView: UIView, HomeContentsSectionView {
     
     /// collectionView의 동적 높이를 설정하기 위한 메소드
     private func updateCollectionViewHeight() {
-        heightConstraint?.constant = (homeEditorRecommendCVCLength + 30) * CGFloat(posts.count)
+        heightConstraint?.constant = (homeEditorRecommendCVCLength + 30) * CGFloat(postData.count)
     }
 }
 
 extension HomeEditorRecommendCollectionView: UICollectionViewDataSource, UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        posts.count
+        postData.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let post = self.posts[indexPath.row]
+        let post = self.postData[indexPath.row]
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "HomeEditorRecommendCVC", for: indexPath) as! HomeEditorRecommendCVC
         cell.category = post.postCategory
         cell.title = post.postTitle
@@ -113,7 +113,7 @@ extension HomeEditorRecommendCollectionView: UICollectionViewDataSource, UIColle
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let post = posts[indexPath.row]
+        let post = postData[indexPath.row]
         homeVM.input.send(.postTapped(post))
     }
 }
