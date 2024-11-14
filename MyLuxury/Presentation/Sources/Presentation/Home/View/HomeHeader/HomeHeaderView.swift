@@ -8,9 +8,9 @@
 import UIKit
 
 final class HomeHeaderView: UIView {
-    private let blurLogoImage: UIImageView = {
+    private let appLogoImageView: UIImageView = {
         let logo = UIImageView()
-        logo.image = UIImage(named: "blurLogo")
+        logo.image = UIImage(named: "appLogo")
         return logo
     }()
     
@@ -25,17 +25,17 @@ final class HomeHeaderView: UIView {
     }
     
     private func setUpHierarchy() {
-        self.addSubview(blurLogoImage)
+        self.addSubview(appLogoImageView)
     }
     
     private func setUpLayout() {
-        blurLogoImage.translatesAutoresizingMaskIntoConstraints = false
+        appLogoImageView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             
             self.widthAnchor.constraint(equalToConstant: screenWidth),
             self.heightAnchor.constraint(equalToConstant:  navigationBarHeight),
-            blurLogoImage.centerYAnchor.constraint(equalTo: self.centerYAnchor),
-            blurLogoImage.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 15)
+            appLogoImageView.centerYAnchor.constraint(equalTo: self.centerYAnchor),
+            appLogoImageView.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 15)
         ])
     }
 }
