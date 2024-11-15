@@ -13,7 +13,7 @@ protocol LoginViewControllerDelegate: AnyObject {
 }
 
 class LoginViewController: UIViewController {
-    var loginBtn: UIButton = {
+    private var loginBtn: UIButton = {
       
         let loginBtn = UIButton()
         loginBtn.setTitle("로그인", for: .normal)
@@ -23,9 +23,9 @@ class LoginViewController: UIViewController {
     }()
     
     weak var delegate: LoginViewControllerDelegate?
-    let loginVM: LoginViewModel
-    let input: PassthroughSubject<LoginViewModel.Input, Never> = .init()
-    var cancellables = Set<AnyCancellable>()
+    private let loginVM: LoginViewModel
+    private let input: PassthroughSubject<LoginViewModel.Input, Never> = .init()
+    private var cancellables = Set<AnyCancellable>()
     
     init(loginVM: LoginViewModel) {
         print("LoginViewController init")
@@ -55,7 +55,7 @@ class LoginViewController: UIViewController {
         bind()
     }
     
-    func bind() {
+    private func bind() {
         let output = loginVM.transform(input: input.eraseToAnyPublisher())
         output
             .receive(on: DispatchQueue.main)

@@ -8,9 +8,6 @@
 
 .DS_Store
 
-# Ignore Xcode asset catalogs
-*.xcassets
-
 ## User settings
 xcuserdata/
 

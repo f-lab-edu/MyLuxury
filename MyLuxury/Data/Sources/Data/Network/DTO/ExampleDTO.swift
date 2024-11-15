@@ -7,12 +7,12 @@
 
 import Domain
 
-struct ExampleRespDTO: Codable {
-    let value: String
-}
-
-extension ExampleRespDTO {
-    func toExampleEntity() -> ExampleEntity {
-        return ExampleEntity(value: value)
-    }
-}
+//struct ExampleRespDTO: Codable {
+//    let value: String
+//}
+//
+//extension ExampleRespDTO {
+//    func toExampleEntity() -> ExampleEntity {
+//        return ExampleEntity(value: value)
+//    }
+//}
