@@ -114,6 +114,6 @@ extension HomeEditorRecommendCollectionView: UICollectionViewDataSource, UIColle
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let post = postData[indexPath.row]
-        homeVM.input.send(.postTapped(post))
+        homeVM.sendInputEvent(input: .postTapped(post))
     }
 }
