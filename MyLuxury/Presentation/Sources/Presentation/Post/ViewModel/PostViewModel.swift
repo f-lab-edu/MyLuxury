@@ -11,8 +11,8 @@ import Combine
 
 class PostViewModel {
     let postUseCase: PostUseCase
-    let output: PassthroughSubject<Output, Never> = .init()
-    let input: PassthroughSubject<Input, Never> = .init()
+    private let output: PassthroughSubject<Output, Never> = .init()
+    private let input: PassthroughSubject<Input, Never> = .init()
     var cancellables = Set<AnyCancellable>()
     
     let postId: String
@@ -28,7 +28,8 @@ class PostViewModel {
         print("PostViewModel deinit")
     }
     
-    func transform(input: AnyPublisher<Input, Never>) -> AnyPublisher<Output, Never> {
+    func transform() -> AnyPublisher<Output, Never> {
+        let input = input.eraseToAnyPublisher()
         input.sink { [weak self] event in
             guard let self = self else { return }
             switch event {
@@ -39,6 +40,15 @@ class PostViewModel {
             }
         }.store(in: &cancellables)
         return output.eraseToAnyPublisher()
+    }
+    
+    func sendInputEvent(input: Input) {
+        switch input {
+        case .goBackBtnTapped:
+            self.input.send(.goBackBtnTapped)
+        case .viewLoaded:
+            self.input.send(.viewLoaded)
+        }
     }
 
     func getPostOneData(postId: String) {
