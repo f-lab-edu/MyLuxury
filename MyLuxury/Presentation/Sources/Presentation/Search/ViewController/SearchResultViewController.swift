@@ -17,14 +17,12 @@ class SearchResultViewController: UIViewController {
     private let rootView: SearchResultView
     private let searchVM: SearchViewModel
     weak var delegate: SearchResultViewControllerDelegate?
-    private let input: PassthroughSubject<SearchViewModel.Input, Never>
     private var cancellables = Set<AnyCancellable>()
     
     init(searchVM: SearchViewModel) {
         print("SearchResultViewController init")
         self.searchVM = searchVM
         self.rootView = SearchResultView(searchVM: searchVM)
-        self.input = searchVM.input
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -50,7 +48,9 @@ class SearchResultViewController: UIViewController {
     }
     
     private func bindData() {
-        let output = searchVM.output
+        /// 두 개의 VC가 하나의 VM을 동시에 사용하고 있으므로
+        /// 이중으로 구독 등록을 하지 않기 위해서 이곳에서는 searchVM.transform()을 실행하지 않습니다.
+        let output = searchVM.getOutputInstance()
         output
             .receive(on: DispatchQueue.main)
             .sink { [weak self] event in

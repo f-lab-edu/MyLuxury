@@ -100,8 +100,7 @@ final class SearchGridView: UIView {
     }
     
     @objc private func searchBarTapped() {
-        // 이건 한 번만 호출되는 중
-        searchVM.input.send(.searchBarTapped)
+        searchVM.sendInputEvent(input: .searchBarTapped)
     }
 }
 
@@ -121,7 +120,7 @@ extension SearchGridView: UICollectionViewDataSource, UICollectionViewDelegateFl
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let post = posts[indexPath.row]
-        searchVM.input.send(.postTapped(post))
+        searchVM.sendInputEvent(input: .postTapped(post))
     }
     
     /// 각 셀의 크기를 동적으로 지정

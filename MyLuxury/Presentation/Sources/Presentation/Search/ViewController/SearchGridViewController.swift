@@ -18,14 +18,12 @@ class SearchGridViewController: UIViewController {
     private let rootView: SearchGridView
     private let searchVM: SearchViewModel
     weak var delegate: SearchGridViewControllerDelegate?
-    private let input: PassthroughSubject<SearchViewModel.Input, Never>
     private var cancellables = Set<AnyCancellable>()
     
     init(searchVM: SearchViewModel) {
         print("SearchGridViewController init")
         self.searchVM = searchVM
         self.rootView = SearchGridView(searchVM: searchVM)
-        self.input = searchVM.input
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -48,11 +46,11 @@ class SearchGridViewController: UIViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        searchVM.input.send(.searchGridViewLoaded)
+        searchVM.sendInputEvent(input: .searchGridViewLoaded)
     }
     
     private func bindData() {
-        let output = searchVM.transform(input: input.eraseToAnyPublisher())
+        let output = searchVM.transform()
         output
             .receive(on: DispatchQueue.main)
             .sink { [weak self] event in
