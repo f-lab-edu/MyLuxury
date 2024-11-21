@@ -106,7 +106,7 @@ final class PostView: UIView {
     
     @objc
     private func goToBackScreen() {
-        self.postVM.input.send(.goBackBtnTapped)
+        self.postVM.sendInputEvent(input: .goBackBtnTapped)
     }
 }
 

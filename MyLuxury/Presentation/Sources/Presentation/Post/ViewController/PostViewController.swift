@@ -17,7 +17,6 @@ final class PostViewController: UIViewController {
     private let rootView: PostView
     weak var delegate: PostViewControllerDelegate?
     private let postVM: PostViewModel
-    private let input: PassthroughSubject<PostViewModel.Input, Never>
     private var cancellable = Set<AnyCancellable>()
     
     
@@ -25,7 +24,6 @@ final class PostViewController: UIViewController {
         print("PostViewController init")
         self.postVM = postVM
         self.rootView = PostView(postVM: self.postVM)
-        self.input = postVM.input
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -58,11 +56,12 @@ final class PostViewController: UIViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        input.send(.viewLoaded)
+//        input.send(.viewLoaded)
+        postVM.sendInputEvent(input: .viewLoaded)
     }
     
     private func bindData() {
-        let output = postVM.transform(input: input.eraseToAnyPublisher())
+        let output = postVM.transform()
         output
             .receive(on: DispatchQueue.main)
             .sink { [weak self] event in

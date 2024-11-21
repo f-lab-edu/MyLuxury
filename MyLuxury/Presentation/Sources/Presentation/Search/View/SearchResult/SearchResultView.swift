@@ -95,7 +95,7 @@ final class SearchResultView: UIView, UITextFieldDelegate {
     
     @objc
     private func cancelTextTapped() {
-        searchVM.input.send(.searchBarCancelTapped)
+        searchVM.sendInputEvent(input: .searchBarCancelTapped)
     }
     
     @objc

@@ -11,8 +11,8 @@ import Domain
 
 public class SearchViewModel {
     let postUseCase: PostUseCase
-    let output: PassthroughSubject<Output, Never> = .init()
-    let input: PassthroughSubject<Input, Never> = .init()
+    private let output: PassthroughSubject<Output, Never> = .init()
+    private let input: PassthroughSubject<Input, Never> = .init()
     var cancellables = Set<AnyCancellable>()
     
     var searchGridPosts: [Post] = []
@@ -26,7 +26,8 @@ public class SearchViewModel {
         print("SearchViewModel deinit")
     }
     
-    func transform(input: AnyPublisher<Input, Never>) -> AnyPublisher<Output, Never> {
+    func transform() -> AnyPublisher<Output, Never> {
+        let input = input.eraseToAnyPublisher()
         input.sink { [weak self] event in
             guard let self = self else { return }
             switch event {
@@ -41,6 +42,26 @@ public class SearchViewModel {
             }
         }.store(in: &cancellables)
         return output.eraseToAnyPublisher()
+    }
+    
+    func sendInputEvent(input: Input) {
+        switch input {
+        case .searchBarTapped:
+            self.input.send(.searchBarTapped)
+        case .searchBarCancelTapped:
+            self.input.send(.searchBarCancelTapped)
+        case .searchGridViewLoaded:
+            self.input.send(.searchGridViewLoaded)
+        case .postTapped(let post):
+            self.input.send(.postTapped(post))
+        }
+    }
+    
+    /// 단순히 output 인스턴스만을 반환하는 메소드이지만
+    /// 외부에서는 직접 프로퍼티에 접근하는 것이 아닌 특정 메소드를 통해서만 접근할 수 있도록
+    /// 제약을 거는 개념의 메소드입니다.
+    func getOutputInstance() -> PassthroughSubject<Output, Never>  {
+        return self.output
     }
     
     private func getSearchGridPosts() {
