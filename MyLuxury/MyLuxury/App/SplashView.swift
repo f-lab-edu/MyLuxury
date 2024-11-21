@@ -16,15 +16,7 @@ final class SplashView: UIView {
         imageView.image = UIImage(named: "appLogoBlack")
         return imageView
     }()
-    
-    private let appSubtitleLabel: UILabel = {
-        let label = UILabel()
-        label.font = UIFont.pretendard(.black, size: 24)
-        label.textColor = .white
-        label.text = "상식과 지식 사이"
-        return label
-    }()
-    
+
     init(window: UIWindow, completion: @escaping () -> Void) {
         print("SplashView init")
         self.sceneDelegateWindow = window
@@ -32,7 +24,6 @@ final class SplashView: UIView {
         super.init(frame: .zero)
         self.frame = window.bounds
         self.backgroundColor = .white
-        self.appSubtitleLabel.isHidden = true
         setUpHierarchy()
         setUpLayout()
         setUpUI()
@@ -48,19 +39,16 @@ final class SplashView: UIView {
     
     private func setUpHierarchy() {
         self.addSubview(inputLogoImageView)
-        self.addSubview(appSubtitleLabel)
+//        self.addSubview(appSubtitleLabel)
     }
     
     private func setUpLayout() {
         inputLogoImageView.translatesAutoresizingMaskIntoConstraints = false
-        appSubtitleLabel.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             inputLogoImageView.centerXAnchor.constraint(equalTo: self.centerXAnchor),
-            inputLogoImageView.bottomAnchor.constraint(equalTo: self.centerYAnchor),
+            inputLogoImageView.centerYAnchor.constraint(equalTo: self.centerYAnchor),
             inputLogoImageView.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width - 140),
             inputLogoImageView.heightAnchor.constraint(equalToConstant: (UIScreen.main.bounds.width - 140)/4),
-            appSubtitleLabel.leadingAnchor.constraint(equalTo: inputLogoImageView.leadingAnchor),
-            appSubtitleLabel.topAnchor.constraint(equalTo: self.centerYAnchor)
         ])
     }
     
@@ -69,7 +57,6 @@ final class SplashView: UIView {
             UIView.animate(withDuration: 0.75) {
                 self.backgroundColor = .black
                 self.inputLogoImageView.image = UIImage(named: "appLogo")
-                self.appSubtitleLabel.isHidden = false
             }
         }
         /// 시간이 지나고 window에서 splashview를 제거

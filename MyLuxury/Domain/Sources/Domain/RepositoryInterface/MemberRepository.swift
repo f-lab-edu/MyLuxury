@@ -8,6 +8,6 @@
 import Combine
 
 public protocol MemberRepository {
-    /// 임시 로그인 메소드
-    func login() -> AnyPublisher<Bool, Never>
+    func appleLogin() -> AnyPublisher<String, Never>
+    func logout() -> Bool
 }
