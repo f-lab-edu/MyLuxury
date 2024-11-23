@@ -17,14 +17,12 @@ class HomeViewController: UIViewController {
     private let rootView: HomeMainView
     weak var delegate: HomeControllerDelegate?
     private let homeVM: HomeViewModel
-    private let input: PassthroughSubject<HomeViewModel.Input, Never>
     private var cancellabes = Set<AnyCancellable>()
     
     init(homeVM: HomeViewModel) {
         
         self.homeVM = homeVM
         self.rootView = HomeMainView(homeVM: homeVM)
-        self.input = homeVM.input
         super.init(nibName: nil, bundle: nil)
         print("HomeViewController init, 메모리 주소: \(Unmanaged.passUnretained(self).toOpaque())")
     }
@@ -48,7 +46,7 @@ class HomeViewController: UIViewController {
         super.viewDidLoad()
         
         bindData()
-        input.send(.viewLoaded)
+        homeVM.sendInputEvent(input: .viewLoaded)
     }
     
     /// 세 번째로 호출
@@ -60,7 +58,7 @@ class HomeViewController: UIViewController {
 //    }
     
     private func bindData() {
-        let output = homeVM.transform(input: input.eraseToAnyPublisher())
+        let output = homeVM.transform()
         output
             .receive(on: DispatchQueue.main)
             .sink { [weak self] event in

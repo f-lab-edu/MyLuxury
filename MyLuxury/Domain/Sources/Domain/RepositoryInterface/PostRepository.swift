@@ -10,4 +10,6 @@ import Combine
 
 public protocol PostRepository {
     func getHomeViewData() -> AnyPublisher<HomePostData, Never>
+    func getPostOneData(postId: String) -> AnyPublisher<Post, Never>
+    func getSearchGridPostData() -> AnyPublisher<[Post], Never>
 }

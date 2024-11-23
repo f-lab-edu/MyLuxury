@@ -102,6 +102,6 @@ final class HomeTodayPickView: UIView, HomeContentsSectionView {
     }
     
     @objc func postTapped() {
-        homeVM.input.send(.postTapped(postData))
+        homeVM.sendInputEvent(input: .postTapped(postData))
     }
 }
