@@ -8,7 +8,6 @@
 import UIKit
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
-
     var window: UIWindow?
     var appComponent: AppComponent?
 
@@ -19,15 +18,14 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         print("SceneDelegate init")
         guard let windowScene = (scene as? UIWindowScene) else { return }
         window = UIWindow(windowScene: windowScene)
-        UserDefaults.standard.set(false, forKey: "isLogin")
-
-        let navigationController = UINavigationController()
-        navigationController.navigationBar.isHidden = true
-        self.window?.rootViewController = navigationController
-        
-        self.appComponent = AppComponent(navigationController: navigationController)
-        self.appComponent?.appCoordinator.start()
-        
+        let splashView = SplashView(window: window!) {
+            let navigationController = UINavigationController()
+            navigationController.navigationBar.isHidden = true
+            self.window?.rootViewController = navigationController
+            self.appComponent = AppComponent(navigationController: navigationController)
+            self.appComponent?.appCoordinator.start()
+        }
+        self.window?.addSubview(splashView)
         self.window?.makeKeyAndVisible()
     }
 

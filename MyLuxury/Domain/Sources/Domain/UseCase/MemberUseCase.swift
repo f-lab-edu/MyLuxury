@@ -9,7 +9,8 @@ import Combine
 
 public protocol MemberUseCase {
     var memberRepository: MemberRepository { get }
-    func login() -> AnyPublisher<Bool, Never>
+    func appleLogin() -> AnyPublisher<String, Never>
+    func logout() -> Bool
 }
 
 public class MemberUseCaseImpl: MemberUseCase {
@@ -25,9 +26,11 @@ public class MemberUseCaseImpl: MemberUseCase {
         print("MemberUseCase deinit")
     }
 
-    /// 임시 로그인 메소드
-    public func login() -> AnyPublisher<Bool, Never> {
-        
-        return memberRepository.login()
+    public func appleLogin() -> AnyPublisher<String, Never> {
+        return memberRepository.appleLogin()
+    }
+    
+    public func logout() -> Bool {
+        return memberRepository.logout()
     }
 }

@@ -7,30 +7,24 @@
 
 import UIKit
 import Combine
+import AuthenticationServices
 
 protocol LoginViewControllerDelegate: AnyObject {
     func login()
 }
 
 class LoginViewController: UIViewController {
-    private var loginBtn: UIButton = {
-      
-        let loginBtn = UIButton()
-        loginBtn.setTitle("로그인", for: .normal)
-        loginBtn.tintColor = .blue
-        loginBtn.addTarget(self, action: #selector(loginBtnDidTap), for: .touchUpInside)
-        return loginBtn
-    }()
-    
+    private let rootView: LoginView
+        
     weak var delegate: LoginViewControllerDelegate?
     private let loginVM: LoginViewModel
-    private let input: PassthroughSubject<LoginViewModel.Input, Never> = .init()
     private var cancellables = Set<AnyCancellable>()
     
     init(loginVM: LoginViewModel) {
-        print("LoginViewController init")
         self.loginVM = loginVM
+        self.rootView = LoginView(loginVM: loginVM)
         super.init(nibName: nil, bundle: nil)
+        print("LoginViewController init")
     }
     
     required init?(coder: NSCoder) {
@@ -41,37 +35,40 @@ class LoginViewController: UIViewController {
         print("LoginViewController deinit")
     }
     
-    override func viewDidLoad() {
-        
-        view.addSubview(loginBtn)
-        loginBtn.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            loginBtn.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            loginBtn.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            loginBtn.widthAnchor.constraint(equalToConstant: 200),
-            loginBtn.heightAnchor.constraint(equalToConstant: 120)
-        ])
-        
-        bind()
+    override func loadView() {
+        self.view = rootView
     }
     
-    private func bind() {
-        let output = loginVM.transform(input: input.eraseToAnyPublisher())
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        bindData()
+    }
+    
+    private func bindData() {
+        let output = loginVM.transform()
         output
             .receive(on: DispatchQueue.main)
             .sink { [weak self] event in
+                guard let self = self else { return }
                 switch event {
-                case .loginSucceed(let value):
-                    if value {
-                        self!.delegate?.login()
-                    }
+                case .loginSucceed:
+                    self.delegate?.login()
+                case .loginFailed(let message):
+                    self.showLoginFailedAlert(message: message)
                 }
             }
             .store(in: &cancellables)
     }
     
-    @objc
-    func loginBtnDidTap() {
-        input.send(.loginBtnTap)
+    private func showLoginFailedAlert(message: String) {
+        let alert = UIAlertController(title: "로그인 실패 알림", message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "확인", style: .default, handler: nil))
+        self.present(alert, animated: true, completion: nil)
+    }
+}
+
+extension LoginViewController: ASAuthorizationControllerPresentationContextProviding {
+    func presentationAnchor(for controller: ASAuthorizationController) -> ASPresentationAnchor {
+        return view.window!
     }
 }

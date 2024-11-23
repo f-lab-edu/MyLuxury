@@ -20,10 +20,11 @@ class HomeViewController: UIViewController {
     private var cancellabes = Set<AnyCancellable>()
     
     init(homeVM: HomeViewModel) {
-        print("HomeViewController init")
+        
         self.homeVM = homeVM
         self.rootView = HomeMainView(homeVM: homeVM)
         super.init(nibName: nil, bundle: nil)
+        print("HomeViewController init, 메모리 주소: \(Unmanaged.passUnretained(self).toOpaque())")
     }
     
     required init?(coder: NSCoder) {
@@ -31,7 +32,8 @@ class HomeViewController: UIViewController {
     }
     
     deinit {
-        print("HomeViewController deinit")
+//        print("HomeViewController deinit")
+        print("HomeViewController deinit, 메모리 주소: \(Unmanaged.passUnretained(self).toOpaque())")
     }
     
     /// 첫 번째로 호출
