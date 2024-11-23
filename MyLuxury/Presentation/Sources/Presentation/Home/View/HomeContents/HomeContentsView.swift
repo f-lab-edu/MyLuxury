@@ -37,14 +37,21 @@ final class HomeContentsView: UIView {
     
     /// 섹션 추가는 이 곳에서 하시면 됩니다.
     private func updateContentsSections() {
-        contentsSections = [
-            HomeTodayPickView(homeVM: homeVM, sectionTitle: "오늘의 PICK", postData: homePostData?.todayPickPostData ?? Post(post_id: "1", postUIType: .normal, postCategory: .art, postTitle: "테스트", postThumbnailImage: "blackScreen")),
-            HomeHorizontalCollectionView(homeVM: homeVM, sectionTitle: "새로 게시된 지식", postData: homePostData?.newPostData ?? []),
-            HomeHorizontalCollectionView(homeVM: homeVM, sectionTitle: "이번 주 TOP10", postData: homePostData?.weeklyTopPostData ?? []),
-            HomeHorizontalCollectionView(homeVM: homeVM, sectionTitle: "회원님이 좋아할 만한", postData: homePostData?.customizedPostData ?? []),
-            HomeGridCollectionView(homeVM: homeVM, sectionTitle: "추가 그리드 섹션", postData: homePostData?.gridData ?? []),
-            HomeEditorRecommendCollectionView(homeVM: homeVM, sectionTitle: "에디터 추천 지식", postData: homePostData?.editorRecommendationPostData ?? [])
-        ]
+        if let data = homePostData?.todayPickPostData {
+            contentsSections.append(HomeTodayPickView(homeVM: homeVM, sectionTitle: "오늘의 PICK", postData: data))
+        }
+        if let data = homePostData?.newPostData {
+            contentsSections.append(HomeHorizontalCollectionView(homeVM: homeVM, sectionTitle: "새로 게시된 지식", postData: data))
+        }
+        if let data = homePostData?.weeklyTopPostData {
+            contentsSections.append(HomeHorizontalCollectionView(homeVM: homeVM, sectionTitle: "이번 주 TOP10", postData: data))
+        }
+        if let data = homePostData?.customizedPostData {
+            contentsSections.append(HomeHorizontalCollectionView(homeVM: homeVM, sectionTitle: "회원님이 좋아할 만한", postData: data))
+        }
+        if let data = homePostData?.editorRecommendationPostData {
+            contentsSections.append(HomeEditorRecommendCollectionView(homeVM: homeVM, sectionTitle: "에디터 추천 지식", postData: data))
+        }
 
         for section in contentsSections {
             stackView.addArrangedSubview(section)

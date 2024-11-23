@@ -11,6 +11,8 @@ public protocol PostUseCase {
     var postRepository: PostRepository { get }
     
     func getHomeViewData() -> AnyPublisher<HomePostData, Never>
+    func getPostOneData(postId: String) -> AnyPublisher<Post, Never>
+    func getSearchGridPostsData() -> AnyPublisher<[Post], Never>
 }
 
 public class PostUseCaseImpl: PostUseCase {
@@ -27,8 +29,18 @@ public class PostUseCaseImpl: PostUseCase {
         print("PostUseCase deinit")
     }
     
+    /// 홈 화면 데이터 조회
     public func getHomeViewData() -> AnyPublisher<HomePostData, Never> {
-
         return postRepository.getHomeViewData().eraseToAnyPublisher()
+    }
+    
+    /// 개별 게시물 조회
+    public func getPostOneData(postId: String) -> AnyPublisher<Post, Never> {
+        return postRepository.getPostOneData(postId: postId)
+    }
+    
+    /// 검색 화면 그리드 게시물 조회
+    public func getSearchGridPostsData() -> AnyPublisher<[Post], Never> {
+        return postRepository.getSearchGridPostData()
     }
 }

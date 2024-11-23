@@ -11,8 +11,8 @@ import Domain
 
 public class HomeViewModel {
     private let postUseCase: PostUseCase
-    let output: PassthroughSubject<Output, Never> = .init()
-    let input: PassthroughSubject<Input, Never> = .init()
+    private let output: PassthroughSubject<Output, Never> = .init()
+    private let input: PassthroughSubject<Input, Never> = .init()
     private var cancellables = Set<AnyCancellable>()
     var homePostData: HomePostData? = nil
     
@@ -25,7 +25,8 @@ public class HomeViewModel {
         print("HomeViewModel deinit")
     }
     
-    func transform(input: AnyPublisher<Input, Never>) -> AnyPublisher<Output, Never> {
+    func transform() -> AnyPublisher<Output, Never> {
+        let input = input.eraseToAnyPublisher()
         input.sink { [weak self] event in
             guard let self = self else { return }
             switch event {
@@ -34,10 +35,21 @@ public class HomeViewModel {
             case .viewReload:
                 self.getHomeViewData()
             case .postTapped(let post):
-                self.goToPost(post: post)
+                self.output.send(.goToPost(post))
             }
         }.store(in: &cancellables)
         return output.eraseToAnyPublisher()
+    }
+    
+    func sendInputEvent(input: Input) {
+        switch input {
+        case .viewLoaded:
+            self.input.send(.viewLoaded)
+        case .viewReload:
+            self.input.send(.viewReload)
+        case .postTapped(let post):
+            self.input.send(.postTapped(post))
+        }
     }
     
     func getHomeViewData() {
@@ -47,10 +59,6 @@ public class HomeViewModel {
                 self.homePostData = homeData
                 self.output.send(.getHomePostData)
             }.store(in: &cancellables)
-    }
-    
-    func goToPost(post: Post) {
-        self.output.send(.goToPost(post))
     }
 }
 

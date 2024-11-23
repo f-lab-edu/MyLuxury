@@ -20,10 +20,14 @@ public struct Post {
     public let postThumbnailImage: String
     /// 게시물 이미지들
     public var postImages: [String]?
+    /// 게시물 이미지 출처
+    public var postImageSources: [String]?
     /// 게시물 내용
     public var postContents: [String]?
     /// 게시물 작성자
     public var postEditor: String?
+    /// 게시물 작성자 프로필 사진
+    public var postEditorProfileImage: String?
     /// 게시물 조회수
     public var postView: Int?
     /// 게시물 작성일
@@ -39,20 +43,21 @@ public struct Post {
         self.postThumbnailImage = postThumbnailImage
     }
     
-    public init(post_id: String, postUIType: PostUIType, postCategory: KnowledgeCategory, postTitle: String, postThumbnailImage: String, postImages: [String]? = nil, postContents: [String]? = nil, postEditor: String? = nil, postView: Int? = nil, postCreatedAt: Date? = nil, postUpdatedAt: Date? = nil) {
+    public init(post_id: String, postUIType: PostUIType, postCategory: KnowledgeCategory, postTitle: String, postThumbnailImage: String, postImages: [String]? = nil, postImageSources: [String]? = nil, postContents: [String]? = nil, postEditor: String? = nil, postEditorProfileImage: String?, postView: Int? = nil, postCreatedAt: Date? = nil, postUpdatedAt: Date? = nil) {
         self.post_id = post_id
         self.postUIType = postUIType
         self.postCategory = postCategory
         self.postTitle = postTitle
         self.postThumbnailImage = postThumbnailImage
         self.postImages = postImages
+        self.postImageSources = postImageSources
         self.postContents = postContents
+        self.postEditorProfileImage = postEditorProfileImage
         self.postEditor = postEditor
         self.postView = postView
         self.postCreatedAt = postCreatedAt
         self.postUpdatedAt = postUpdatedAt
-    }
-}
+    }}
 
 /// 홈 메인 화면 데이터 모음을 정의한 typealias
 public typealias HomePostData = (
