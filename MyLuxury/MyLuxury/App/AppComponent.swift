@@ -10,7 +10,7 @@ import Data
 import Domain
 import Presentation
 
-typealias CoordinatorDependency = AppCoordinatorDependency & LoginCoordinatorDependency & TabBarCoordinatorDependency & HomeCoordinatorDependency & SearchCoordinatorDependency & LibraryCoordinatorDependency
+typealias CoordinatorDependency = AppCoordinatorDependency & LoginCoordinatorDependency & TabBarCoordinatorDependency & HomeCoordinatorDependency & SearchCoordinatorDependency & LibraryCoordinatorDependency & PostCoordinatorDependency
 
 public class AppComponent: CoordinatorDependency {
     var navigationController: UINavigationController
@@ -24,6 +24,7 @@ public class AppComponent: CoordinatorDependency {
     public lazy var homeCoordinator: Coordinator = HomeCoordinatorImpl(navigationController: self.navigationController, dependency: self)
     public lazy var searchCoordinator: Coordinator = SearchCoordinatorImpl(navigationController: self.navigationController, dependency: self)
     public lazy var libraryCoordinator: Coordinator = LibraryCoordinatorImpl(navigationController: self.navigationController, dependency: self)
+    public lazy var postCoordinator: Coordinator = PostCoordinatorImpl(navigationController: self.navigationController, dependency: self)
     
     /// 다른 인스턴스로 실행하고 싶다면 이 생성자에서 해당하는 인스턴스로 바꿔주시면 됩니다.
     public init(navigationController: UINavigationController) {

@@ -13,7 +13,7 @@ protocol PostViewControllerDelegate: AnyObject {
     func goToBackScreen()
 }
 
-final class PostViewController: UIViewController {
+public final class PostViewController: UIViewController {
     private let rootView: PostView
     weak var delegate: PostViewControllerDelegate?
     private let postVM: PostViewModel
@@ -35,28 +35,27 @@ final class PostViewController: UIViewController {
         print("PostViewController deinit")
     }
     
-    override func viewWillAppear(_ animated: Bool) {
+    public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         tabBarController?.tabBar.isHidden = true
     }
     
-    override func loadView() {
+    public override func loadView() {
         self.view = rootView
     }
     
-    override func viewDidLoad() {
+    public override func viewDidLoad() {
         super.viewDidLoad()
         bindData()
     }
     
-    override func viewWillDisappear(_ animated: Bool) {
+    public override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         tabBarController?.tabBar.isHidden = false
     }
     
-    override func viewDidAppear(_ animated: Bool) {
+    public override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-//        input.send(.viewLoaded)
         postVM.sendInputEvent(input: .viewLoaded)
     }
     

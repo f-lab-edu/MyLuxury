@@ -14,6 +14,7 @@ public protocol SearchCoordinator: Coordinator {
 
 public protocol SearchCoordinatorDependency {
     var postUseCase: PostUseCase { get }
+    var postCoordinator: Coordinator { get }
 }
 
 public class SearchCoordinatorImpl: SearchCoordinator, @preconcurrency SearchGridViewControllerDelegate, @preconcurrency SearchResultViewControllerDelegate, @preconcurrency PostViewControllerDelegate {
@@ -59,11 +60,10 @@ public class SearchCoordinatorImpl: SearchCoordinator, @preconcurrency SearchGri
     
     @MainActor
     func goToPostView(post: Post) {
-        let postVM = PostViewModel(post: post, postUseCase: self.dependency.postUseCase)
-        let postVC = PostViewController(postVM: postVM)
+        let postCoordinator = dependency.postCoordinator as! PostCoordinatorImpl
+        let postVC = postCoordinator.start(post: post)
         postVC.delegate = self
         self.navigationController.pushViewController(postVC, animated: true)
-        self.navigationController.isNavigationBarHidden = true
     }
     
     @MainActor
