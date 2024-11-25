@@ -9,7 +9,7 @@ import UIKit
 import Domain
 
 public protocol PostCoordinator: Coordinator {
-    
+    func start(post: Post) -> PostViewController
 }
 
 public protocol PostCoordinatorDependency {
@@ -17,23 +17,20 @@ public protocol PostCoordinatorDependency {
 }
 
 public class PostCoordinatorImpl: PostCoordinator {
-    public var navigationController: UINavigationController
-    public var childCoordinators: [Coordinator] = []
-    public var dependency: PostCoordinatorDependency
+    private var dependency: PostCoordinatorDependency
     
-    public init(navigationController: UINavigationController, dependency: PostCoordinatorDependency) {
+    public init(dependency: PostCoordinatorDependency) {
         print("PostCoordinatorImpl init")
-        self.navigationController = navigationController
         self.dependency = dependency
     }
     
-    public func start() {
-        
+    public func start() -> UIViewController {
+        fatalError("PostCoordinator에서 start()를 start(post:)로 대신하여 사용합니다.")
     }
     
     public func start(post: Post) -> PostViewController {
-        let postVm = PostViewModel(post: post, postUseCase: self.dependency.postUseCase)
-        let postVC = PostViewController(postVM: postVm)
+        let postVM = PostViewModel(post: post, postUseCase: self.dependency.postUseCase)
+        let postVC = PostViewController(postVM: postVM)
         return postVC
     }
 }

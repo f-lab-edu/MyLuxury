@@ -7,44 +7,49 @@
 
 import UIKit
 import Domain
+import Combine
 
 public protocol LibraryCoordinator: Coordinator {
-    var navigationController: UINavigationController { get set }
     var delegate: LibraryCoordinatorDelegate? { get set }
 }
 
-@MainActor
 public protocol LibraryCoordinatorDelegate: AnyObject {
     func logout()
 }
 
+@MainActor
 public protocol LibraryCoordinatorDependency {
     var memberUseCase: MemberUseCase { get }
 }
 
 public class LibraryCoordinatorImpl: LibraryCoordinator, @preconcurrency LibraryControllerDelegate {
-    public var navigationController: UINavigationController
-    public var childCoordinators: [Coordinator] = []
-    public let dependency: LibraryCoordinatorDependency
     public weak var delegate: LibraryCoordinatorDelegate?
+    private let dependency: LibraryCoordinatorDependency
+    private var navigationController = UINavigationController()
+    private var cancellables = Set<AnyCancellable>()
     
-    public init(navigationController: UINavigationController, dependency: LibraryCoordinatorDependency) {
+    public init(dependency: LibraryCoordinatorDependency) {
         print("LibraryCoordinatorImpl init")
-        self.navigationController = navigationController
         self.dependency = dependency
+        bindNotification()
     }
     
-    deinit {
-        print("LibraryCoordinatorImpl deinit")
+    private func bindNotification() {
+        NotificationCenter.default.publisher(for: .didLogout)
+            .sink { [weak self] _ in
+                guard let self = self else { return }
+                self.navigationController.viewControllers = []
+            }.store(in: &cancellables)
     }
     
-    public func start() {
+    public func start() -> UIViewController {
         let libraryVM = LibraryViewModel(memberUseCase: self.dependency.memberUseCase)
         let libraryVC = LibraryViewController(libraryVM: libraryVM)
         libraryVC.delegate = self
         self.navigationController = UINavigationController(rootViewController: libraryVC)
-        self.navigationController.isNavigationBarHidden = true
+        self.navigationController.navigationBar.isHidden = true
         libraryVC.tabBarItem = UITabBarItem(title: nil, image: UIImage(systemName: TabBarItem.library.image)?.withTintColor(.gray, renderingMode: .alwaysOriginal), selectedImage: UIImage(systemName: TabBarItem.library.image)?.withTintColor(.white, renderingMode: .alwaysOriginal))
+        return navigationController
     }
     
     @MainActor

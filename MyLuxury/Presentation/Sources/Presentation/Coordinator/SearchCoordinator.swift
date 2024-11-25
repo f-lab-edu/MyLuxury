@@ -7,9 +7,10 @@
 
 import UIKit
 import Domain
+import Combine
 
 public protocol SearchCoordinator: Coordinator {
-    var navigationController: UINavigationController { get set }
+    
 }
 
 public protocol SearchCoordinatorDependency {
@@ -17,38 +18,41 @@ public protocol SearchCoordinatorDependency {
     var postCoordinator: Coordinator { get }
 }
 
-public class SearchCoordinatorImpl: SearchCoordinator, @preconcurrency SearchGridViewControllerDelegate, @preconcurrency SearchResultViewControllerDelegate, @preconcurrency PostViewControllerDelegate {
+public class SearchCoordinatorImpl: SearchCoordinator, @preconcurrency SearchGridViewControllerDelegate, @preconcurrency SearchResultViewControllerDelegate,
+                                    @preconcurrency PostViewControllerDelegate {
+    private let dependency: SearchCoordinatorDependency
+    private var navigationController = UINavigationController()
+    private var cancellables = Set<AnyCancellable>()
     
-    public var navigationController: UINavigationController
-    public var childCoordinators: [Coordinator] = []
-    public let dependency: SearchCoordinatorDependency
-    
-    public init(navigationController: UINavigationController, dependency: SearchCoordinatorDependency) {
+    public init(dependency: SearchCoordinatorDependency) {
         print("SearchCoordinatorImpl init")
-        self.navigationController = navigationController
         self.dependency = dependency
+        bindNotification()
     }
     
-    deinit {
-        print("SearchCoordinatorImpl deinit")
+    private func bindNotification() {
+        NotificationCenter.default.publisher(for: .didLogout)
+            .sink { [weak self] _ in
+                guard let self = self else { return }
+                self.navigationController.viewControllers = []
+            }.store(in: &cancellables)
     }
     
-    public func start() {
+    public func start() -> UIViewController {
         let searchVM = SearchViewModel(postUseCase: self.dependency.postUseCase)
         let searchGridVC = SearchGridViewController(searchVM: searchVM)
         searchGridVC.delegate = self
         self.navigationController = UINavigationController(rootViewController: searchGridVC)
-        self.navigationController.isNavigationBarHidden = true
+        self.navigationController.navigationBar.isHidden = true
         searchGridVC.tabBarItem = UITabBarItem(title: nil, image: UIImage(systemName: TabBarItem.search.image)?.withTintColor(.gray, renderingMode: .alwaysOriginal), selectedImage: UIImage(systemName: TabBarItem.search.image)?.withTintColor(.white, renderingMode: .alwaysOriginal))
+        return navigationController
     }
     
     @MainActor
     func goToSearchResultView(searchVM: SearchViewModel) {
         let searchResultVC = SearchResultViewController(searchVM: searchVM)
         searchResultVC.delegate = self
-        /// 자연스럽게 이동하도록 설정
         searchResultVC.modalTransitionStyle = UIModalTransitionStyle.crossDissolve
-        /// 탭바를 유지하기 위해서 .overCurrentContext로 설정
         searchResultVC.modalPresentationStyle = .overCurrentContext
         self.navigationController.present(searchResultVC, animated: true)
     }
@@ -60,7 +64,7 @@ public class SearchCoordinatorImpl: SearchCoordinator, @preconcurrency SearchGri
     
     @MainActor
     func goToPostView(post: Post) {
-        let postCoordinator = dependency.postCoordinator as! PostCoordinatorImpl
+        guard let postCoordinator = dependency.postCoordinator as? PostCoordinator else { return }
         let postVC = postCoordinator.start(post: post)
         postVC.delegate = self
         self.navigationController.pushViewController(postVC, animated: true)

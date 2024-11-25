@@ -13,26 +13,25 @@ import Presentation
 typealias CoordinatorDependency = AppCoordinatorDependency & LoginCoordinatorDependency & TabBarCoordinatorDependency & HomeCoordinatorDependency & SearchCoordinatorDependency & LibraryCoordinatorDependency & PostCoordinatorDependency
 
 public class AppComponent: CoordinatorDependency {
-    var navigationController: UINavigationController
+    var window: UIWindow
     public let memberRepository: MemberRepository
     public let postRepository: PostRepository
     public let memberUseCase: MemberUseCase
     public let postUseCase: PostUseCase
-    public lazy var loginCoordinator: Coordinator = LoginCoordinatorImpl(navigationController: navigationController, dependency: self)
-    public lazy var tabBarCoordinator: Coordinator = TabBarCoordinatorImpl(navigationController: navigationController, dependency: self)
-    public lazy var appCoordinator: Coordinator = AppCoordinator(navigationController: self.navigationController, dependency: self)
-    public lazy var homeCoordinator: Coordinator = HomeCoordinatorImpl(navigationController: self.navigationController, dependency: self)
-    public lazy var searchCoordinator: Coordinator = SearchCoordinatorImpl(navigationController: self.navigationController, dependency: self)
-    public lazy var libraryCoordinator: Coordinator = LibraryCoordinatorImpl(navigationController: self.navigationController, dependency: self)
-    public lazy var postCoordinator: Coordinator = PostCoordinatorImpl(navigationController: self.navigationController, dependency: self)
+    public lazy var loginCoordinator: Coordinator = LoginCoordinatorImpl(dependency: self)
+    public lazy var tabBarCoordinator: Coordinator = TabBarCoordinatorImpl(dependency: self)
+    public lazy var appCoordinator: Coordinator = AppCoordinator(dependency: self, window: window)
+    public lazy var homeCoordinator: Coordinator = HomeCoordinatorImpl(dependency: self)
+    public lazy var searchCoordinator: Coordinator = SearchCoordinatorImpl(dependency: self)
+    public lazy var libraryCoordinator: Coordinator = LibraryCoordinatorImpl(dependency: self)
+    public lazy var postCoordinator: Coordinator = PostCoordinatorImpl(dependency: self)
     
-    /// 다른 인스턴스로 실행하고 싶다면 이 생성자에서 해당하는 인스턴스로 바꿔주시면 됩니다.
-    public init(navigationController: UINavigationController) {
+    public init(window: UIWindow) {
         print("AppComponent init")
-        self.navigationController = navigationController
+        self.window = window
         self.memberRepository = MemberRepositoryImpl()
-        self.postRepository = PostRepositoryMockImpl()
-        self.memberUseCase = MemberUseCaseImpl(memberRepository: self.memberRepository)
-        self.postUseCase = PostUseCaseImpl(postRepository: self.postRepository)
+        self.postRepository = PostRepositoryImpl()
+        self.memberUseCase = MemberUseCaseImpl(memberRepository: memberRepository)
+        self.postUseCase = PostUseCaseImpl(postRepository: postRepository)
     }
 }

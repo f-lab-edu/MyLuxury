@@ -9,12 +9,12 @@ import UIKit
 import AuthenticationServices
 import FirebaseAuth
 
+/// 코디네이터는 앱 컴포넌트에서 생성하는 것이기 때문에
+/// 앱의 생명주기 내에서 사라지지 않음.
+
 @MainActor
 public protocol Coordinator: AnyObject {
-    var navigationController: UINavigationController { get set }
-    var childCoordinators: [Coordinator] { get set }
-    
-    func start()
+    func start() -> UIViewController
 }
 
 @MainActor
@@ -24,53 +24,44 @@ public protocol AppCoordinatorDependency {
 }
 
 public class AppCoordinator: Coordinator, LoginCoordinatorDelegate, TabBarCoordinatorDelegate {
-    public var navigationController: UINavigationController
-    public var childCoordinators: [Coordinator] = []
+    public var window: UIWindow
     public let dependency: AppCoordinatorDependency
     
-    public init(navigationController: UINavigationController, dependency: AppCoordinatorDependency) {
+    public init(dependency: AppCoordinatorDependency, window: UIWindow) {
         print("AppCoordinator init")
-        self.navigationController = navigationController
         self.dependency = dependency
+        self.window = window
     }
     
-    public func start() {
-        /// Firebase는 기본적으로 사용자의 인증 상태를 유지
-        /// 앱이 새로 설치되었거나 인증 토큰이 만료되면 currentUser가 nil이 되면서 로그인 플로우로 진행
-        /// 사용자가 Auth.auth().signOut()을 호출할 경우 로그아웃 상태가 되므로 currentUser가 nil이 됩니다.
-        /// 새로운 사용자가 로그인하면, currentUser는 새롭게 로그인한 사용자의 정보를 들고 있습니다.
-        if let user = Auth.auth().currentUser {
-            /// 사용자가 로그인 상태라면 메인 화면으로 이동
-            showMainFlow()
+    public func start() -> UIViewController {
+        if let _ = Auth.auth().currentUser {
+            return showMainFlow()
         } else {
-            /// 사용자가 로그아웃 상태라면
-            showLoginFlow()
+            return showLoginFlow()
         }
     }
     
-    private func showMainFlow() {
+    private func showMainFlow() -> UIViewController {
         print("메인 플로우 실행")
-        guard let tabBarCoordinator = self.dependency.tabBarCoordinator as? TabBarCoordinator else { return }
+        let tabBarCoordinator = self.dependency.tabBarCoordinator as! TabBarCoordinator
         tabBarCoordinator.delegate = self
-        tabBarCoordinator.start()
-        self.childCoordinators.append(tabBarCoordinator)
+        return tabBarCoordinator.start()
     }
     
-    private func showLoginFlow() {
+    private func showLoginFlow() -> UIViewController {
         print("로그인 플로우 실행")
-        guard let loginCoordinator = self.dependency.loginCoordinator as? LoginCoordinator else { return }
+        let loginCoordinator = self.dependency.loginCoordinator as! LoginCoordinator
         loginCoordinator.delegate = self
-        loginCoordinator.start()
-        self.childCoordinators.append(loginCoordinator)
-    }
-
-    func didLogin(_ coordinator: LoginCoordinator) {
-        self.childCoordinators = self.childCoordinators.filter { $0 !== coordinator }
-        self.showMainFlow()
+        return loginCoordinator.start()
     }
     
-    func didLogout(_ coordinator: TabBarCoordinator) {
-        self.childCoordinators = self.childCoordinators.filter { $0 !== coordinator }
-        self.showLoginFlow()
+    func didLogin() {
+        self.window.rootViewController = showMainFlow()
+    }
+    
+    func didLogout() {
+        self.window.rootViewController = showLoginFlow()
     }
 }
+
+

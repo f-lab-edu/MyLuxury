@@ -13,7 +13,7 @@ protocol LibraryControllerDelegate: AnyObject {
 }
 
 class LibraryViewController: UIViewController {
-    let libraryVM: LibraryViewModel
+    private let libraryVM: LibraryViewModel
     weak var delegate: LibraryControllerDelegate?
     private let rootView: LibraryView
     private var cancellables = Set<AnyCancellable>()

@@ -15,7 +15,7 @@ protocol LoginCoordinator: Coordinator {
 
 @MainActor
 protocol LoginCoordinatorDelegate: AnyObject {
-    func didLogin(_ coordinator: LoginCoordinator)
+    func didLogin()
 }
 
 @MainActor
@@ -24,30 +24,23 @@ public protocol LoginCoordinatorDependency {
 }
 
 public class LoginCoordinatorImpl: LoginCoordinator, @preconcurrency LoginViewControllerDelegate {
-    public var navigationController: UINavigationController
-    public var childCoordinators: [Coordinator] = []
-    public let dependency: LoginCoordinatorDependency
     weak var delegate: LoginCoordinatorDelegate?
+    private let dependency: LoginCoordinatorDependency
     
-    public init(navigationController: UINavigationController, dependency: LoginCoordinatorDependency) {
+    public init(dependency: LoginCoordinatorDependency) {
         print("LoginCoordinator init")
-        self.navigationController = navigationController
         self.dependency = dependency
     }
     
-    deinit {
-        print("LoginCoordinator deinit")
-    }
-    
-    public func start() {
+    public func start() -> UIViewController {
         let loginVM = LoginViewModel(memberUseCase: self.dependency.memberUseCase)
         let loginVC = LoginViewController(loginVM: loginVM)
         loginVC.delegate = self
-        self.navigationController.viewControllers = [loginVC]
+        return loginVC
     }
     
     @MainActor
     func login() {
-        self.delegate?.didLogin(self)
+        self.delegate?.didLogin()
     }
 }

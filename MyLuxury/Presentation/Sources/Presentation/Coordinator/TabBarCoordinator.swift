@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Combine
 
 @MainActor
 protocol TabBarCoordinator: Coordinator {
@@ -14,7 +15,7 @@ protocol TabBarCoordinator: Coordinator {
 
 @MainActor
 protocol TabBarCoordinatorDelegate: AnyObject {
-    func didLogout(_ coordinator: TabBarCoordinator)
+    func didLogout()
 }
 
 @MainActor
@@ -24,46 +25,33 @@ public protocol TabBarCoordinatorDependency {
     var libraryCoordinator: Coordinator { get }
 }
 
-/// 메인 플로우의 코디네이터
-public class TabBarCoordinatorImpl: TabBarCoordinator, LibraryCoordinatorDelegate {
-    public var navigationController: UINavigationController
-    public var childCoordinators: [Coordinator] = []
-    var tabBarController: UITabBarController
+public class TabBarCoordinatorImpl: TabBarCoordinator, @preconcurrency LibraryCoordinatorDelegate {
     weak var delegate: TabBarCoordinatorDelegate?
-    var dependency: TabBarCoordinatorDependency
+    private var dependency: TabBarCoordinatorDependency
     
-    public init(navigationController: UINavigationController, dependency: TabBarCoordinatorDependency) {
-        self.navigationController = navigationController
+    public init(dependency: TabBarCoordinatorDependency) {
+        print("TabBarCoordinatorImpl init")
         self.dependency = dependency
-        self.tabBarController = UITabBarController()
+    }
+    
+    public func start() -> UIViewController {
+        var tabBarController = UITabBarController()
         tabBarController.tabBar.tintColor = .white
-    }
-    
-    deinit {
-        print("TabBarCoordinatorImpl deinit")
-    }
-    
-    public func start() {
-        guard let homeCoordinator = dependency.homeCoordinator as? HomeCoordinator else { return }
-        guard let searchCoordinator = dependency.searchCoordinator as? SearchCoordinator else { return }
-        guard let libraryCoordinator = dependency.libraryCoordinator as? LibraryCoordinator else { return }
+        let homeCoordinator = self.dependency.homeCoordinator as! HomeCoordinator
+        let searchCoordinator = self.dependency.searchCoordinator as! SearchCoordinator
+        let libraryCoordinator = self.dependency.libraryCoordinator as! LibraryCoordinator
         libraryCoordinator.delegate = self
-        homeCoordinator.start()
-        searchCoordinator.start()
-        libraryCoordinator.start()
-        self.tabBarController.viewControllers = [
-            homeCoordinator.navigationController,
-            searchCoordinator.navigationController,
-            libraryCoordinator.navigationController
+        tabBarController.viewControllers = [
+            homeCoordinator.start(),
+            searchCoordinator.start(),
+            libraryCoordinator.start()
         ]
-        navigationController.viewControllers = [self.tabBarController]
+        return tabBarController
     }
-    
+ 
+    @MainActor
     public func logout() {
-        /// 기존 뷰 계층 초기화
-        self.navigationController.viewControllers = []
-        /// 기존에 있던 Home, Search, Library 관련 인스턴스에 대한 참조를 끊음.
-        tabBarController.viewControllers = nil
-        self.delegate?.didLogout(self)
+        NotificationCenter.default.post(name: .didLogout, object: nil)
+        self.delegate?.didLogout()
     }
 }
