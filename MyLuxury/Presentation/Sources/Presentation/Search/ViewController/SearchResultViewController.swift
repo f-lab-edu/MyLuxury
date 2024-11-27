@@ -11,6 +11,7 @@ import Combine
 
 protocol SearchResultViewControllerDelegate: AnyObject {
     func goBackToResultGridView()
+    func goToPostView(post: Post)
 }
 
 class SearchResultViewController: UIViewController {
@@ -45,6 +46,12 @@ class SearchResultViewController: UIViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        searchVM.sendInputEvent(input: .searchResultViewLoaded)
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        searchVM.sendInputEvent(input: .searchResultViewDisappeared)
     }
     
     private func bindData() {
@@ -58,6 +65,12 @@ class SearchResultViewController: UIViewController {
                 switch event {
                 case .goBackToSearchResultView:
                     self.delegate?.goBackToResultGridView()
+                case .getRecentSearchPosts:
+                    self.rootView.recentSearchPosts = self.searchVM.recentSearchPosts
+                case .goToPostViewFromSearch(let post):
+                    self.delegate?.goToPostView(post: post)
+                case .removeRecentSearchPost(let index):
+                    self.rootView.recentSearchPosts.remove(at: index)
                 default:
                     break
                 }

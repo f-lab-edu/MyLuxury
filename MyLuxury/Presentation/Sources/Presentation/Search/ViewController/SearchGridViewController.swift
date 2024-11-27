@@ -60,7 +60,7 @@ class SearchGridViewController: UIViewController {
                     self.delegate?.goToSearchResultView(searchVM: self.searchVM)
                 case .getSearchGridPosts:
                     self.rootView.posts = self.searchVM.searchGridPosts
-                case .goToPostView(let post):
+                case .goToPostViewFromGrid(let post):
                     self.delegate?.goToPostView(post: post)
                 default:
                     break

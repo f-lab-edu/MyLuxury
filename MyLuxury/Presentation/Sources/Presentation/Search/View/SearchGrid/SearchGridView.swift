@@ -120,7 +120,7 @@ extension SearchGridView: UICollectionViewDataSource, UICollectionViewDelegateFl
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let post = posts[indexPath.row]
-        searchVM.sendInputEvent(input: .postTapped(post))
+        searchVM.sendInputEvent(input: .postTappedFromGrid(post))
     }
     
     /// 각 셀의 크기를 동적으로 지정

@@ -27,3 +27,7 @@ import UIKit
 @MainActor let homeEditorRecommendCVCLength = screenWidth - 30
 /// 게시물 인디케이터 높이
 @MainActor let postIndicatorHeight = screenHeight / 35
+/// 최근 검색 및 검색 결과 컬렉션뷰셀 높이
+@MainActor let searchPostResultCVCHeight = screenWidth / 6
+/// 최근 검색 및 검색 결과 컬렉션뷰셀 내 썸네일 이미지 변의 길이
+@MainActor let searchPostResultCVCThumnbnailImageViewLength = screenHeight / 17.5
