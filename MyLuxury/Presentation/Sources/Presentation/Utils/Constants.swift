@@ -31,3 +31,5 @@ import UIKit
 @MainActor let searchPostResultCVCHeight = screenWidth / 6
 /// 최근 검색 및 검색 결과 컬렉션뷰셀 내 썸네일 이미지 변의 길이
 @MainActor let searchPostResultCVCThumnbnailImageViewLength = screenHeight / 17.5
+/// 라이브러리탭 컬렉션뷰셀 높이
+@MainActor let libraryCVCHeight = screenHeight / 19.5
