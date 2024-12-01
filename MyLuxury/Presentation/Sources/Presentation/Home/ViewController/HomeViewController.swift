@@ -9,13 +9,8 @@ import UIKit
 import Combine
 import Domain
 
-protocol HomeControllerDelegate: AnyObject {
-    func goToPost(post: Post)
-}
-
 class HomeViewController: UIViewController {
     private let rootView: HomeMainView
-    weak var delegate: HomeControllerDelegate?
     private let homeVM: HomeViewModel
     private var cancellabes = Set<AnyCancellable>()
     
@@ -65,7 +60,7 @@ class HomeViewController: UIViewController {
                 case .getHomePostData:
                     self.rootView.contentView.homePostData = self.homeVM.homePostData
                 case .goToPost(let post):
-                    self.delegate?.goToPost(post: post)
+                    self.homeVM.delegate?.goToPost(post: post)
                 }
             }.store(in: &cancellabes)
     }

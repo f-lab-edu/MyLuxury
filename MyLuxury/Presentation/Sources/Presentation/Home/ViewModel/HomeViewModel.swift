@@ -9,12 +9,17 @@ import Foundation
 import Combine
 import Domain
 
+protocol HomeViewModelDelegate: AnyObject {
+    func goToPost(post: Post)
+}
+
 public class HomeViewModel {
     private let postUseCase: PostUseCase
     private let output: PassthroughSubject<Output, Never> = .init()
     private let input: PassthroughSubject<Input, Never> = .init()
     private var cancellables = Set<AnyCancellable>()
     var homePostData: HomePostData? = nil
+    weak var delegate: HomeViewModelDelegate?
     
     init(postUseCase: PostUseCase) {
         print("HomeViewModel init")

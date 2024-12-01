@@ -9,11 +9,16 @@ import UIKit
 import Combine
 import Domain
 
+protocol LibraryViewModelDelegate: AnyObject {
+    func goToLoginPage()
+}
+
 public class LibraryViewModel {
     private let memberUseCase: MemberUseCase
     private let output: PassthroughSubject<Output, Never> = .init()
     private let input: PassthroughSubject<Input, Never> = .init()
     private var cancellables = Set<AnyCancellable>()
+    weak var delegate: LibraryViewModelDelegate?
     
     init(memberUseCase: MemberUseCase) {
         print("LibraryViewModel init")

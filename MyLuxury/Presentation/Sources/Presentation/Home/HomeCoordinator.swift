@@ -19,7 +19,7 @@ public protocol HomeCoordinatorDependency {
     var postCoordinator: Coordinator { get }
 }
 
-public class HomeCoordinatorImpl: HomeCoordinator, @preconcurrency HomeControllerDelegate, @preconcurrency PostViewControllerDelegate {
+public class HomeCoordinatorImpl: HomeCoordinator, @preconcurrency HomeViewModelDelegate, @preconcurrency PostCoordinatorDelegate {
     private let dependency: HomeCoordinatorDependency
     private var navigationController = UINavigationController()
     private var cancellables = Set<AnyCancellable>()
@@ -41,7 +41,7 @@ public class HomeCoordinatorImpl: HomeCoordinator, @preconcurrency HomeControlle
     public func start() -> UIViewController {
         let homeVM = HomeViewModel(postUseCase: self.dependency.postUseCase)
         let homeVC = HomeViewController(homeVM: homeVM)
-        homeVC.delegate = self
+        homeVM.delegate = self
         self.navigationController = UINavigationController(rootViewController: homeVC)
         navigationController.navigationBar.isHidden = true
         homeVC.tabBarItem = UITabBarItem(title: nil, image: UIImage(systemName: TabBarItem.home.image)?.withTintColor(.gray, renderingMode: .alwaysOriginal), selectedImage: UIImage(systemName: TabBarItem.home.image)?.withTintColor(.white, renderingMode: .alwaysOriginal))
@@ -51,13 +51,13 @@ public class HomeCoordinatorImpl: HomeCoordinator, @preconcurrency HomeControlle
     @MainActor
     func goToPost(post: Post) {
         guard var postCoordinator = dependency.postCoordinator as? PostCoordinator else { return }
+        postCoordinator.delegate = self
         let postVC = postCoordinator.start(post: post)
-        postVC.delegate = self
         self.navigationController.pushViewController(postVC, animated: true)
     }
     
     @MainActor
-    func goToBackScreen() {
+    public func goToBackScreen() {
         self.navigationController.popViewController(animated: true)
     }
 }

@@ -9,13 +9,8 @@ import UIKit
 import Combine
 import Domain
 
-protocol PostViewControllerDelegate: AnyObject {
-    func goToBackScreen()
-}
-
 public final class PostViewController: UIViewController {
     private let rootView: PostView
-    weak var delegate: PostViewControllerDelegate?
     private let postVM: PostViewModel
     private var cancellable = Set<AnyCancellable>()
     
@@ -67,7 +62,7 @@ public final class PostViewController: UIViewController {
                 guard let self = self else { return }
                 switch event {
                 case .goToBackScreen:
-                    self.delegate?.goToBackScreen()
+                    self.postVM.delegate?.goToBackScreen()
                 case .getPostOneData:
                     self.rootView.post = self.postVM.post
                 }

@@ -63,5 +63,3 @@ public class AppCoordinator: Coordinator, LoginCoordinatorDelegate, TabBarCoordi
         self.window.rootViewController = showLoginFlow()
     }
 }
-
-
