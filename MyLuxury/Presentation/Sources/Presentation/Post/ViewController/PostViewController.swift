@@ -9,7 +9,7 @@ import UIKit
 import Combine
 import Domain
 
-public final class PostViewController: UIViewController {
+final class PostViewController: UIViewController {
     private let rootView: PostView
     private let postVM: PostViewModel
     private var cancellable = Set<AnyCancellable>()

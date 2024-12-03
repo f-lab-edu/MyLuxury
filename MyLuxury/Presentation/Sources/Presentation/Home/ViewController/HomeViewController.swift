@@ -9,7 +9,7 @@ import UIKit
 import Combine
 import Domain
 
-class HomeViewController: UIViewController {
+final class HomeViewController: UIViewController {
     private let rootView: HomeMainView
     private let homeVM: HomeViewModel
     private var cancellabes = Set<AnyCancellable>()

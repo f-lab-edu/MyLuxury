@@ -9,7 +9,7 @@ import UIKit
 import Combine
 import Domain
 
-class SearchGridViewController: UIViewController {
+final class SearchGridViewController: UIViewController {
     private let rootView: SearchGridView
     private let searchVM: SearchViewModel
     private var cancellables = Set<AnyCancellable>()

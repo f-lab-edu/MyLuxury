@@ -13,7 +13,7 @@ protocol HomeViewModelDelegate: AnyObject {
     func goToPost(post: Post)
 }
 
-public class HomeViewModel {
+class HomeViewModel {
     private let postUseCase: PostUseCase
     private let output: PassthroughSubject<Output, Never> = .init()
     private let input: PassthroughSubject<Input, Never> = .init()

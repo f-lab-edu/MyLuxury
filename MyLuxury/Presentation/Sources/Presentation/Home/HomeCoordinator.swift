@@ -10,19 +10,21 @@ import Domain
 import Combine
 
 public protocol HomeCoordinator: Coordinator {
-    
+    func start() -> UIViewController
 }
 
 public protocol HomeCoordinatorDependency {
     ///  홈 화면 구성에서 홈 게시물 데이터 전체 조회 API가 필요하기 때문에 postUseCase를 알고 있어야 하는 구조입니다.
     var postUseCase: PostUseCase { get }
-    var postCoordinator: Coordinator { get }
+    var postCoordinator: PostCoordinator { get }
 }
 
 public class HomeCoordinatorImpl: HomeCoordinator, @preconcurrency HomeViewModelDelegate, @preconcurrency PostCoordinatorDelegate {
     private let dependency: HomeCoordinatorDependency
     private var navigationController = UINavigationController()
     private var cancellables = Set<AnyCancellable>()
+    var childCoordinators: [Coordinator] = []
+    
     public init(dependency: HomeCoordinatorDependency) {
         print("HomeCoordidnatorImpl init")
         self.dependency = dependency
@@ -50,7 +52,8 @@ public class HomeCoordinatorImpl: HomeCoordinator, @preconcurrency HomeViewModel
     
     @MainActor
     func goToPost(post: Post) {
-        guard var postCoordinator = dependency.postCoordinator as? PostCoordinator else { return }
+        let postCoordinator = self.dependency.postCoordinator
+        childCoordinators.append(postCoordinator)
         postCoordinator.delegate = self
         let postVC = postCoordinator.start(post: post)
         self.navigationController.pushViewController(postVC, animated: true)
@@ -58,6 +61,7 @@ public class HomeCoordinatorImpl: HomeCoordinator, @preconcurrency HomeViewModel
     
     @MainActor
     public func goToBackScreen() {
+        self.childCoordinators = self.childCoordinators.filter { !($0 is PostCoordinator) }
         self.navigationController.popViewController(animated: true)
     }
 }

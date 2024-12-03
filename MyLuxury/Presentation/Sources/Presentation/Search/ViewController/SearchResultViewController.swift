@@ -9,7 +9,7 @@ import UIKit
 import Domain
 import Combine
 
-class SearchResultViewController: UIViewController {
+final class SearchResultViewController: UIViewController {
     private let rootView: SearchResultView
     private let searchVM: SearchViewModel
     private var cancellables = Set<AnyCancellable>()

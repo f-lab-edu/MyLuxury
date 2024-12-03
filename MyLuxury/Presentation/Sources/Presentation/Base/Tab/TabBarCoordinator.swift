@@ -9,25 +9,27 @@ import UIKit
 import Combine
 
 @MainActor
-protocol TabBarCoordinator: Coordinator {
+public protocol TabBarCoordinator: Coordinator {
     var delegate: TabBarCoordinatorDelegate? { get set }
+    func start() -> UIViewController
 }
 
 @MainActor
-protocol TabBarCoordinatorDelegate: AnyObject {
-    func didLogout()
+public protocol TabBarCoordinatorDelegate: AnyObject {
+    func didLogout(_ coordinator: TabBarCoordinator)
 }
 
 @MainActor
 public protocol TabBarCoordinatorDependency {
-    var homeCoordinator: Coordinator { get }
-    var searchCoordinator: Coordinator { get }
-    var libraryCoordinator: Coordinator { get }
+    var homeCoordinator: HomeCoordinator { get }
+    var searchCoordinator: SearchCoordinator { get }
+    var libraryCoordinator: LibraryCoordinator { get }
 }
 
 public class TabBarCoordinatorImpl: TabBarCoordinator, @preconcurrency LibraryCoordinatorDelegate {
-    weak var delegate: TabBarCoordinatorDelegate?
+    public weak var delegate: TabBarCoordinatorDelegate?
     private var dependency: TabBarCoordinatorDependency
+    var childCoordinators: [Coordinator] = []
     
     public init(dependency: TabBarCoordinatorDependency) {
         print("TabBarCoordinatorImpl init")
@@ -35,11 +37,14 @@ public class TabBarCoordinatorImpl: TabBarCoordinator, @preconcurrency LibraryCo
     }
     
     public func start() -> UIViewController {
-        var tabBarController = UITabBarController()
+        let tabBarController = UITabBarController()
         tabBarController.tabBar.tintColor = .white
-        let homeCoordinator = self.dependency.homeCoordinator as! HomeCoordinator
-        let searchCoordinator = self.dependency.searchCoordinator as! SearchCoordinator
-        let libraryCoordinator = self.dependency.libraryCoordinator as! LibraryCoordinator
+        let homeCoordinator = self.dependency.homeCoordinator
+        let searchCoordinator = self.dependency.searchCoordinator
+        let libraryCoordinator = self.dependency.libraryCoordinator
+        childCoordinators.append(homeCoordinator)
+        childCoordinators.append(searchCoordinator)
+        childCoordinators.append(libraryCoordinator)
         libraryCoordinator.delegate = self
         tabBarController.viewControllers = [
             homeCoordinator.start(),
@@ -52,6 +57,7 @@ public class TabBarCoordinatorImpl: TabBarCoordinator, @preconcurrency LibraryCo
     @MainActor
     public func logout() {
         NotificationCenter.default.post(name: .didLogout, object: nil)
-        self.delegate?.didLogout()
+        self.childCoordinators.removeAll()
+        self.delegate?.didLogout(self)
     }
 }

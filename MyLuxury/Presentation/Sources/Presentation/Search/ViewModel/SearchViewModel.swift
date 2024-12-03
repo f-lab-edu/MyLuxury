@@ -15,7 +15,7 @@ protocol SearchViewModelDelegate: AnyObject {
     func goBackToResultGridView()
 }
 
-public class SearchViewModel {
+class SearchViewModel {
     let postUseCase: PostUseCase
     private let output: PassthroughSubject<Output, Never> = .init()
     private let input: PassthroughSubject<Input, Never> = .init()

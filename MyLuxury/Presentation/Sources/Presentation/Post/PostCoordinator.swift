@@ -13,7 +13,7 @@ public protocol PostCoordinatorDelegate: AnyObject {
 }
 
 public protocol PostCoordinator: Coordinator {
-    func start(post: Post) -> PostViewController
+    func start(post: Post) -> UIViewController
     var delegate: PostCoordinatorDelegate? { get set }
 }
 
@@ -29,12 +29,8 @@ public class PostCoordinatorImpl: PostCoordinator, @preconcurrency PostViewModel
         print("PostCoordinatorImpl init")
         self.dependency = dependency
     }
-    
-    public func start() -> UIViewController {
-        fatalError("PostCoordinator에서 start()를 start(post:)로 대신하여 사용합니다.")
-    }
-    
-    public func start(post: Post) -> PostViewController {
+
+    public func start(post: Post) -> UIViewController {
         let postVM = PostViewModel(post: post, postUseCase: self.dependency.postUseCase)
         postVM.delegate = self
         let postVC = PostViewController(postVM: postVM)

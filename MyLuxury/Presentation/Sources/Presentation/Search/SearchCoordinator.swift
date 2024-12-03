@@ -10,18 +10,19 @@ import Domain
 import Combine
 
 public protocol SearchCoordinator: Coordinator {
-    
+    func start() -> UIViewController
 }
 
 public protocol SearchCoordinatorDependency {
     var postUseCase: PostUseCase { get }
-    var postCoordinator: Coordinator { get }
+    var postCoordinator: PostCoordinator { get }
 }
 
 public class SearchCoordinatorImpl: SearchCoordinator, @preconcurrency SearchViewModelDelegate, @preconcurrency PostCoordinatorDelegate {
     private let dependency: SearchCoordinatorDependency
     private var navigationController = UINavigationController()
     private var cancellables = Set<AnyCancellable>()
+    var childCoordinators: [Coordinator] = []
     
     public init(dependency: SearchCoordinatorDependency) {
         print("SearchCoordinatorImpl init")
@@ -63,14 +64,16 @@ public class SearchCoordinatorImpl: SearchCoordinator, @preconcurrency SearchVie
     
     @MainActor
     func goToPostView(post: Post) {
-        guard let postCoordinator = dependency.postCoordinator as? PostCoordinator else { return }
+        let postCoordinator = self.dependency.postCoordinator
         postCoordinator.delegate = self
+        childCoordinators.append(postCoordinator)
         let postVC = postCoordinator.start(post: post)
         self.navigationController.pushViewController(postVC, animated: true)
     }
     
     @MainActor
     public func goToBackScreen() {
+        self.childCoordinators = self.childCoordinators.filter { !($0 is PostCoordinator) }
         self.navigationController.popViewController(animated: true)
     }
 }

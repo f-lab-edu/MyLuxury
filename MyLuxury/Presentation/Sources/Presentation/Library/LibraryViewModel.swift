@@ -13,7 +13,7 @@ protocol LibraryViewModelDelegate: AnyObject {
     func goToLoginPage()
 }
 
-public class LibraryViewModel {
+class LibraryViewModel {
     private let memberUseCase: MemberUseCase
     private let output: PassthroughSubject<Output, Never> = .init()
     private let input: PassthroughSubject<Input, Never> = .init()

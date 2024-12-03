@@ -8,7 +8,7 @@
 import UIKit
 import Combine
 
-class LibraryViewController: UIViewController {
+final class LibraryViewController: UIViewController {
     private let libraryVM: LibraryViewModel
     private let rootView: LibraryView
     private var cancellables = Set<AnyCancellable>()

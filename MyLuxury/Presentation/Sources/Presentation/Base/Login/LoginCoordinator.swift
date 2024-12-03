@@ -9,13 +9,14 @@ import UIKit
 import Domain
 
 @MainActor
-protocol LoginCoordinator: Coordinator {
+public protocol LoginCoordinator: Coordinator {
     var delegate: LoginCoordinatorDelegate? { get set }
+    func start() -> UIViewController
 }
 
 @MainActor
-protocol LoginCoordinatorDelegate: AnyObject {
-    func didLogin()
+public protocol LoginCoordinatorDelegate: AnyObject {
+    func didLogin(_ coordinator: LoginCoordinator)
 }
 
 @MainActor
@@ -24,7 +25,7 @@ public protocol LoginCoordinatorDependency {
 }
 
 public class LoginCoordinatorImpl: LoginCoordinator, @preconcurrency LoginViewControllerDelegate {
-    weak var delegate: LoginCoordinatorDelegate?
+    public weak var delegate: LoginCoordinatorDelegate?
     private let dependency: LoginCoordinatorDependency
     
     public init(dependency: LoginCoordinatorDependency) {
@@ -41,6 +42,6 @@ public class LoginCoordinatorImpl: LoginCoordinator, @preconcurrency LoginViewCo
     
     @MainActor
     func login() {
-        self.delegate?.didLogin()
+        self.delegate?.didLogin(self)
     }
 }

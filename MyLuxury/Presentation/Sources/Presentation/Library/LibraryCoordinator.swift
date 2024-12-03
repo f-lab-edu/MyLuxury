@@ -11,6 +11,7 @@ import Combine
 
 public protocol LibraryCoordinator: Coordinator {
     var delegate: LibraryCoordinatorDelegate? { get set }
+    func start() -> UIViewController
 }
 
 public protocol LibraryCoordinatorDelegate: AnyObject {
