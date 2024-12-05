@@ -13,7 +13,7 @@ protocol LoginViewControllerDelegate: AnyObject {
     func login()
 }
 
-class LoginViewController: UIViewController {
+public class LoginViewController: UIViewController {
     private let rootView: LoginView
         
     weak var delegate: LoginViewControllerDelegate?
@@ -35,11 +35,11 @@ class LoginViewController: UIViewController {
         print("LoginViewController deinit")
     }
     
-    override func loadView() {
+    public override func loadView() {
         self.view = rootView
     }
     
-    override func viewDidLoad() {
+    public override func viewDidLoad() {
         super.viewDidLoad()
         bindData()
     }
@@ -68,7 +68,7 @@ class LoginViewController: UIViewController {
 }
 
 extension LoginViewController: ASAuthorizationControllerPresentationContextProviding {
-    func presentationAnchor(for controller: ASAuthorizationController) -> ASPresentationAnchor {
+    public func presentationAnchor(for controller: ASAuthorizationController) -> ASPresentationAnchor {
         return view.window!
     }
 }

@@ -9,11 +9,18 @@ import UIKit
 import Combine
 import Domain
 
-public class SearchViewModel {
+protocol SearchViewModelDelegate: AnyObject {
+    func goToSearchResultView(searchVM: SearchViewModel)
+    func goToPostView(post: Post)
+    func goBackToResultGridView()
+}
+
+class SearchViewModel {
     let postUseCase: PostUseCase
     private let output: PassthroughSubject<Output, Never> = .init()
     private let input: PassthroughSubject<Input, Never> = .init()
     var cancellables = Set<AnyCancellable>()
+    weak var delegate: SearchViewModelDelegate?
     
     var searchGridPosts: [Post] = []
     

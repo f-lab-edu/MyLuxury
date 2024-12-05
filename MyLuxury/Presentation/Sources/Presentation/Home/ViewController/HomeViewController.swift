@@ -9,22 +9,16 @@ import UIKit
 import Combine
 import Domain
 
-protocol HomeControllerDelegate: AnyObject {
-    func goToPost(post: Post)
-}
-
-class HomeViewController: UIViewController {
+final class HomeViewController: UIViewController {
     private let rootView: HomeMainView
-    weak var delegate: HomeControllerDelegate?
     private let homeVM: HomeViewModel
     private var cancellabes = Set<AnyCancellable>()
     
     init(homeVM: HomeViewModel) {
-        
+        print("HomeViewController init")
         self.homeVM = homeVM
         self.rootView = HomeMainView(homeVM: homeVM)
         super.init(nibName: nil, bundle: nil)
-        print("HomeViewController init, 메모리 주소: \(Unmanaged.passUnretained(self).toOpaque())")
     }
     
     required init?(coder: NSCoder) {
@@ -32,8 +26,7 @@ class HomeViewController: UIViewController {
     }
     
     deinit {
-//        print("HomeViewController deinit")
-        print("HomeViewController deinit, 메모리 주소: \(Unmanaged.passUnretained(self).toOpaque())")
+        print("HomeViewController deinit")
     }
     
     /// 첫 번째로 호출
@@ -67,7 +60,7 @@ class HomeViewController: UIViewController {
                 case .getHomePostData:
                     self.rootView.contentView.homePostData = self.homeVM.homePostData
                 case .goToPost(let post):
-                    self.delegate?.goToPost(post: post)
+                    self.homeVM.delegate?.goToPost(post: post)
                 }
             }.store(in: &cancellabes)
     }

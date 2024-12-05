@@ -19,11 +19,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         window = UIWindow(windowScene: windowScene)
         let splashView = SplashView(window: window!) {
-            let navigationController = UINavigationController()
-            navigationController.navigationBar.isHidden = true
-            self.window?.rootViewController = navigationController
-            self.appComponent = AppComponent(navigationController: navigationController)
-            self.appComponent?.appCoordinator.start()
+            self.appComponent = AppComponent(window: self.window!)
+            self.window?.rootViewController = self.appComponent?.appCoordinator.start()
         }
         self.window?.addSubview(splashView)
         self.window?.makeKeyAndVisible()

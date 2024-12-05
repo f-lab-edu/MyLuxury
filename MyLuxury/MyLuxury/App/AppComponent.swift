@@ -10,28 +10,58 @@ import Data
 import Domain
 import Presentation
 
-typealias CoordinatorDependency = AppCoordinatorDependency & LoginCoordinatorDependency & TabBarCoordinatorDependency & HomeCoordinatorDependency & SearchCoordinatorDependency & LibraryCoordinatorDependency
+typealias CoordinatorDependency = AppCoordinatorDependency & LoginCoordinatorDependency & TabBarCoordinatorDependency & HomeCoordinatorDependency & SearchCoordinatorDependency & LibraryCoordinatorDependency & PostCoordinatorDependency
 
 public class AppComponent: CoordinatorDependency {
-    var navigationController: UINavigationController
+    var window: UIWindow
     public let memberRepository: MemberRepository
     public let postRepository: PostRepository
     public let memberUseCase: MemberUseCase
     public let postUseCase: PostUseCase
-    public lazy var loginCoordinator: Coordinator = LoginCoordinatorImpl(navigationController: navigationController, dependency: self)
-    public lazy var tabBarCoordinator: Coordinator = TabBarCoordinatorImpl(navigationController: navigationController, dependency: self)
-    public lazy var appCoordinator: Coordinator = AppCoordinator(navigationController: self.navigationController, dependency: self)
-    public lazy var homeCoordinator: Coordinator = HomeCoordinatorImpl(navigationController: self.navigationController, dependency: self)
-    public lazy var searchCoordinator: Coordinator = SearchCoordinatorImpl(navigationController: self.navigationController, dependency: self)
-    public lazy var libraryCoordinator: Coordinator = LibraryCoordinatorImpl(navigationController: self.navigationController, dependency: self)
+    public lazy var appCoordinator: AppCoordinator = AppCoordinatorImpl(dependency: self, window: window)
     
-    /// 다른 인스턴스로 실행하고 싶다면 이 생성자에서 해당하는 인스턴스로 바꿔주시면 됩니다.
-    public init(navigationController: UINavigationController) {
+    public var loginCoordinator: LoginCoordinator {
+        get {
+            return LoginCoordinatorImpl(dependency: self)
+        }
+    }
+    
+    public var tabBarCoordinator: TabBarCoordinator {
+        get {
+            return TabBarCoordinatorImpl(dependency: self)
+        }
+    }
+    
+    public var homeCoordinator: HomeCoordinator {
+        get {
+            return HomeCoordinatorImpl(dependency: self)
+        }
+    }
+    
+    public var searchCoordinator: SearchCoordinator {
+        get {
+            return SearchCoordinatorImpl(dependency: self)
+        }
+    }
+    
+    public var libraryCoordinator: LibraryCoordinator {
+        get {
+            return LibraryCoordinatorImpl(dependency: self)
+        }
+    }
+    
+    public var postCoordinator: PostCoordinator {
+        get {
+            return PostCoordinatorImpl(dependency: self)
+        }
+    }
+    
+    public init(window: UIWindow) {
         print("AppComponent init")
-        self.navigationController = navigationController
+        self.window = window
         self.memberRepository = MemberRepositoryImpl()
-        self.postRepository = PostRepositoryMockImpl()
-        self.memberUseCase = MemberUseCaseImpl(memberRepository: self.memberRepository)
-        self.postUseCase = PostUseCaseImpl(postRepository: self.postRepository)
+        self.postRepository = PostRepositoryImpl()
+        self.memberUseCase = MemberUseCaseImpl(memberRepository: memberRepository)
+        self.postUseCase = PostUseCaseImpl(postRepository: postRepository)
     }
 }
