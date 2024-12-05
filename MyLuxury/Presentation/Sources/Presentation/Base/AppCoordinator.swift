@@ -13,19 +13,23 @@ import FirebaseAuth
 /// 앱의 생명주기 내에서 사라지지 않음.
 
 @MainActor
-public protocol Coordinator: AnyObject {
-    func start() -> UIViewController
-}
+public protocol Coordinator: AnyObject { }
 
 @MainActor
 public protocol AppCoordinatorDependency {
-    var loginCoordinator: Coordinator { get }
-    var tabBarCoordinator: Coordinator { get }
+    var loginCoordinator: LoginCoordinator { get }
+    var tabBarCoordinator: TabBarCoordinator { get }
 }
 
-public class AppCoordinator: Coordinator, LoginCoordinatorDelegate, TabBarCoordinatorDelegate {
+public protocol AppCoordinator: Coordinator {
+    var window: UIWindow { get set }
+    func start() -> UIViewController
+}
+
+public class AppCoordinatorImpl: AppCoordinator, LoginCoordinatorDelegate, TabBarCoordinatorDelegate {
     public var window: UIWindow
     public let dependency: AppCoordinatorDependency
+    public var childCoordinators: [Coordinator] = []
     
     public init(dependency: AppCoordinatorDependency, window: UIWindow) {
         print("AppCoordinator init")
@@ -43,25 +47,27 @@ public class AppCoordinator: Coordinator, LoginCoordinatorDelegate, TabBarCoordi
     
     private func showMainFlow() -> UIViewController {
         print("메인 플로우 실행")
-        let tabBarCoordinator = self.dependency.tabBarCoordinator as! TabBarCoordinator
+        let tabBarCoordinator = self.dependency.tabBarCoordinator
         tabBarCoordinator.delegate = self
+        self.childCoordinators.append(tabBarCoordinator)
         return tabBarCoordinator.start()
     }
     
     private func showLoginFlow() -> UIViewController {
         print("로그인 플로우 실행")
-        let loginCoordinator = self.dependency.loginCoordinator as! LoginCoordinator
+        let loginCoordinator = self.dependency.loginCoordinator
         loginCoordinator.delegate = self
+        self.childCoordinators.append(loginCoordinator)
         return loginCoordinator.start()
     }
     
-    func didLogin() {
+    public func didLogin(_ coordinator: LoginCoordinator) {
+        self.childCoordinators = self.childCoordinators.filter { $0 !== coordinator }
         self.window.rootViewController = showMainFlow()
     }
     
-    func didLogout() {
+    public func didLogout(_ coordinator: TabBarCoordinator) {
+        self.childCoordinators = self.childCoordinators.filter { $0 !== coordinator }
         self.window.rootViewController = showLoginFlow()
     }
 }
-
-

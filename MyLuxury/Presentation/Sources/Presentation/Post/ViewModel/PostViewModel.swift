@@ -9,11 +9,16 @@ import UIKit
 import Domain
 import Combine
 
+protocol PostViewModelDelegate: AnyObject {
+    func goToBackScreen()
+}
+
 class PostViewModel {
     let postUseCase: PostUseCase
     private let output: PassthroughSubject<Output, Never> = .init()
     private let input: PassthroughSubject<Input, Never> = .init()
     var cancellables = Set<AnyCancellable>()
+    weak var delegate: PostViewModelDelegate?
     
     let postId: String
     var post: Post? = nil

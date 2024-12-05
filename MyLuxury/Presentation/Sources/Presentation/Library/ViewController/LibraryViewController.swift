@@ -8,13 +8,8 @@
 import UIKit
 import Combine
 
-protocol LibraryControllerDelegate: AnyObject {
-    func goToLoginPage()
-}
-
-class LibraryViewController: UIViewController {
+final class LibraryViewController: UIViewController {
     private let libraryVM: LibraryViewModel
-    weak var delegate: LibraryControllerDelegate?
     private let rootView: LibraryView
     private var cancellables = Set<AnyCancellable>()
     
@@ -50,7 +45,7 @@ class LibraryViewController: UIViewController {
                 guard let self = self else { return }
                 switch event {
                 case .logoutSuccess:
-                    self.delegate?.goToLoginPage()
+                    self.libraryVM.delegate?.goToLoginPage()
                 case .logoutFailed(let message):
                     self.showLogoutFailedAlert(message: message)
                 }

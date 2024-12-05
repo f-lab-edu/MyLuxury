@@ -9,15 +9,9 @@ import UIKit
 import Domain
 import Combine
 
-protocol SearchResultViewControllerDelegate: AnyObject {
-    func goBackToResultGridView()
-    func goToPostView(post: Post)
-}
-
 class SearchResultViewController: UIViewController {
     private let rootView: SearchResultView
     private let searchVM: SearchViewModel
-    weak var delegate: SearchResultViewControllerDelegate?
     private var cancellables = Set<AnyCancellable>()
     
     init(searchVM: SearchViewModel) {
@@ -64,11 +58,11 @@ class SearchResultViewController: UIViewController {
                 guard let self = self else { return }
                 switch event {
                 case .goBackToSearchResultView:
-                    self.delegate?.goBackToResultGridView()
+                    self.searchVM.delegate?.goBackToResultGridView()
                 case .getRecentSearchPosts:
                     self.rootView.recentSearchPosts = self.searchVM.recentSearchPosts
                 case .goToPostViewFromSearch(let post):
-                    self.delegate?.goToPostView(post: post)
+                    self.searchVM.delegate?.goToPostView(post: post)
                 case .removeRecentSearchPost(let index):
                     self.rootView.recentSearchPosts.remove(at: index)
                 default:

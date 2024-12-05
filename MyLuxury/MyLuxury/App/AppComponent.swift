@@ -18,13 +18,43 @@ public class AppComponent: CoordinatorDependency {
     public let postRepository: PostRepository
     public let memberUseCase: MemberUseCase
     public let postUseCase: PostUseCase
-    public lazy var loginCoordinator: Coordinator = LoginCoordinatorImpl(dependency: self)
-    public lazy var tabBarCoordinator: Coordinator = TabBarCoordinatorImpl(dependency: self)
-    public lazy var appCoordinator: Coordinator = AppCoordinator(dependency: self, window: window)
-    public lazy var homeCoordinator: Coordinator = HomeCoordinatorImpl(dependency: self)
-    public lazy var searchCoordinator: Coordinator = SearchCoordinatorImpl(dependency: self)
-    public lazy var libraryCoordinator: Coordinator = LibraryCoordinatorImpl(dependency: self)
-    public lazy var postCoordinator: Coordinator = PostCoordinatorImpl(dependency: self)
+    public lazy var appCoordinator: AppCoordinator = AppCoordinatorImpl(dependency: self, window: window)
+    
+    public var loginCoordinator: LoginCoordinator {
+        get {
+            return LoginCoordinatorImpl(dependency: self)
+        }
+    }
+    
+    public var tabBarCoordinator: TabBarCoordinator {
+        get {
+            return TabBarCoordinatorImpl(dependency: self)
+        }
+    }
+    
+    public var homeCoordinator: HomeCoordinator {
+        get {
+            return HomeCoordinatorImpl(dependency: self)
+        }
+    }
+    
+    public var searchCoordinator: SearchCoordinator {
+        get {
+            return SearchCoordinatorImpl(dependency: self)
+        }
+    }
+    
+    public var libraryCoordinator: LibraryCoordinator {
+        get {
+            return LibraryCoordinatorImpl(dependency: self)
+        }
+    }
+    
+    public var postCoordinator: PostCoordinator {
+        get {
+            return PostCoordinatorImpl(dependency: self)
+        }
+    }
     
     public init(window: UIWindow) {
         print("AppComponent init")

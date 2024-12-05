@@ -10,19 +10,19 @@ import Domain
 import Combine
 
 public protocol SearchCoordinator: Coordinator {
-    
+    func start() -> UIViewController
 }
 
 public protocol SearchCoordinatorDependency {
     var postUseCase: PostUseCase { get }
-    var postCoordinator: Coordinator { get }
+    var postCoordinator: PostCoordinator { get }
 }
 
-public class SearchCoordinatorImpl: SearchCoordinator, @preconcurrency SearchGridViewControllerDelegate, @preconcurrency SearchResultViewControllerDelegate,
-                                    @preconcurrency PostViewControllerDelegate {
+public class SearchCoordinatorImpl: SearchCoordinator, @preconcurrency SearchViewModelDelegate, @preconcurrency PostCoordinatorDelegate {
     private let dependency: SearchCoordinatorDependency
     private var navigationController = UINavigationController()
     private var cancellables = Set<AnyCancellable>()
+    var childCoordinators: [Coordinator] = []
     
     public init(dependency: SearchCoordinatorDependency) {
         print("SearchCoordinatorImpl init")
@@ -40,8 +40,8 @@ public class SearchCoordinatorImpl: SearchCoordinator, @preconcurrency SearchGri
     
     public func start() -> UIViewController {
         let searchVM = SearchViewModel(postUseCase: self.dependency.postUseCase)
+        searchVM.delegate = self
         let searchGridVC = SearchGridViewController(searchVM: searchVM)
-        searchGridVC.delegate = self
         self.navigationController = UINavigationController(rootViewController: searchGridVC)
         self.navigationController.navigationBar.isHidden = true
         searchGridVC.tabBarItem = UITabBarItem(title: nil, image: UIImage(systemName: TabBarItem.search.image)?.withTintColor(.gray, renderingMode: .alwaysOriginal), selectedImage: UIImage(systemName: TabBarItem.search.image)?.withTintColor(.white, renderingMode: .alwaysOriginal))
@@ -50,8 +50,8 @@ public class SearchCoordinatorImpl: SearchCoordinator, @preconcurrency SearchGri
     
     @MainActor
     func goToSearchResultView(searchVM: SearchViewModel) {
+        /// searchGridVC와 sesarchResultVC는 같은 뷰모델을 공유
         let searchResultVC = SearchResultViewController(searchVM: searchVM)
-        searchResultVC.delegate = self
         self.navigationController.pushViewController(searchResultVC, animated: true)
     }
     
@@ -62,14 +62,16 @@ public class SearchCoordinatorImpl: SearchCoordinator, @preconcurrency SearchGri
     
     @MainActor
     func goToPostView(post: Post) {
-        guard let postCoordinator = dependency.postCoordinator as? PostCoordinator else { return }
+        let postCoordinator = self.dependency.postCoordinator
+        postCoordinator.delegate = self
+        childCoordinators.append(postCoordinator)
         let postVC = postCoordinator.start(post: post)
-        postVC.delegate = self
         self.navigationController.pushViewController(postVC, animated: true)
     }
     
     @MainActor
-    func goToBackScreen() {
+    public func goToBackScreen() {
+        self.childCoordinators = self.childCoordinators.filter { !($0 is PostCoordinator) }
         self.navigationController.popViewController(animated: true)
     }
 }

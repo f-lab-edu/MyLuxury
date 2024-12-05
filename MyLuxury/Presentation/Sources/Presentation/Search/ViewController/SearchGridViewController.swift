@@ -9,15 +9,9 @@ import UIKit
 import Combine
 import Domain
 
-protocol SearchGridViewControllerDelegate: AnyObject {
-    func goToSearchResultView(searchVM: SearchViewModel)
-    func goToPostView(post: Post)
-}
-
-class SearchGridViewController: UIViewController {
+final class SearchGridViewController: UIViewController {
     private let rootView: SearchGridView
     private let searchVM: SearchViewModel
-    weak var delegate: SearchGridViewControllerDelegate?
     private var cancellables = Set<AnyCancellable>()
     
     init(searchVM: SearchViewModel) {
@@ -57,11 +51,13 @@ class SearchGridViewController: UIViewController {
                 guard let self = self else { return }
                 switch event {
                 case .goToSearchResultView:
-                    self.delegate?.goToSearchResultView(searchVM: self.searchVM)
+                    self.searchVM.delegate?.goToSearchResultView(searchVM: searchVM)
                 case .getSearchGridPosts:
                     self.rootView.posts = self.searchVM.searchGridPosts
                 case .goToPostViewFromGrid(let post):
-                    self.delegate?.goToPostView(post: post)
+                    self.searchVM.delegate?.goToPostView(post: post)
+//                case .goToPostView(let post):
+//                    self.searchVM.delegate?.goToPostView(post: post)
                 default:
                     break
                 }

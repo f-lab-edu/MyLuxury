@@ -11,6 +11,7 @@ import Combine
 
 public protocol LibraryCoordinator: Coordinator {
     var delegate: LibraryCoordinatorDelegate? { get set }
+    func start() -> UIViewController
 }
 
 public protocol LibraryCoordinatorDelegate: AnyObject {
@@ -22,7 +23,7 @@ public protocol LibraryCoordinatorDependency {
     var memberUseCase: MemberUseCase { get }
 }
 
-public class LibraryCoordinatorImpl: LibraryCoordinator, @preconcurrency LibraryControllerDelegate {
+public class LibraryCoordinatorImpl: LibraryCoordinator, @preconcurrency LibraryViewModelDelegate {
     public weak var delegate: LibraryCoordinatorDelegate?
     private let dependency: LibraryCoordinatorDependency
     private var navigationController = UINavigationController()
@@ -45,7 +46,7 @@ public class LibraryCoordinatorImpl: LibraryCoordinator, @preconcurrency Library
     public func start() -> UIViewController {
         let libraryVM = LibraryViewModel(memberUseCase: self.dependency.memberUseCase)
         let libraryVC = LibraryViewController(libraryVM: libraryVM)
-        libraryVC.delegate = self
+        libraryVM.delegate = self
         self.navigationController = UINavigationController(rootViewController: libraryVC)
         self.navigationController.navigationBar.isHidden = true
         libraryVC.tabBarItem = UITabBarItem(title: nil, image: UIImage(systemName: TabBarItem.library.image)?.withTintColor(.gray, renderingMode: .alwaysOriginal), selectedImage: UIImage(systemName: TabBarItem.library.image)?.withTintColor(.white, renderingMode: .alwaysOriginal))
