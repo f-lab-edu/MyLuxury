@@ -9,7 +9,7 @@ import UIKit
 import Domain
 import Combine
 
-final class SearchResultViewController: UIViewController {
+class SearchResultViewController: UIViewController {
     private let rootView: SearchResultView
     private let searchVM: SearchViewModel
     private var cancellables = Set<AnyCancellable>()
@@ -40,6 +40,12 @@ final class SearchResultViewController: UIViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        searchVM.sendInputEvent(input: .searchResultViewLoaded)
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        searchVM.sendInputEvent(input: .searchResultViewDisappeared)
     }
     
     private func bindData() {
@@ -53,6 +59,12 @@ final class SearchResultViewController: UIViewController {
                 switch event {
                 case .goBackToSearchResultView:
                     self.searchVM.delegate?.goBackToResultGridView()
+                case .getRecentSearchPosts:
+                    self.rootView.recentSearchPosts = self.searchVM.recentSearchPosts
+                case .goToPostViewFromSearch(let post):
+                    self.searchVM.delegate?.goToPostView(post: post)
+                case .removeRecentSearchPost(let index):
+                    self.rootView.recentSearchPosts.remove(at: index)
                 default:
                     break
                 }

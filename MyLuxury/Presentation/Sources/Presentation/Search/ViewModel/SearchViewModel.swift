@@ -23,6 +23,7 @@ class SearchViewModel {
     weak var delegate: SearchViewModelDelegate?
     
     var searchGridPosts: [Post] = []
+    var recentSearchPosts: [Post] = []
     
     init(postUseCase: PostUseCase) {
         print("SearchViewModel init")
@@ -44,8 +45,16 @@ class SearchViewModel {
                 self.output.send(.goBackToSearchResultView)
             case .searchGridViewLoaded:
                 getSearchGridPosts()
-            case .postTapped(let post):
-                self.output.send(.goToPostView(post))
+            case .postTappedFromGrid(let post):
+                self.output.send(.goToPostViewFromGrid(post))
+            case .postTappedFromRecentSearch(let post):
+                self.output.send(.goToPostViewFromSearch(post))
+            case .searchResultViewLoaded:
+                getRecentSearchPosts()
+            case .deleteRecentSearchPostBtnTapped(let index):
+                self.output.send(.removeRecentSearchPost(index))
+            case .searchResultViewDisappeared:
+                saveRecentSearchPosts()
             }
         }.store(in: &cancellables)
         return output.eraseToAnyPublisher()
@@ -59,8 +68,16 @@ class SearchViewModel {
             self.input.send(.searchBarCancelTapped)
         case .searchGridViewLoaded:
             self.input.send(.searchGridViewLoaded)
-        case .postTapped(let post):
-            self.input.send(.postTapped(post))
+        case .postTappedFromGrid(let post):
+            self.input.send(.postTappedFromGrid(post))
+        case .postTappedFromRecentSearch(let post):
+            self.input.send(.postTappedFromRecentSearch(post))
+        case .searchResultViewLoaded:
+            self.input.send(.searchResultViewLoaded)
+        case .deleteRecentSearchPostBtnTapped(let index):
+            self.input.send(.deleteRecentSearchPostBtnTapped(index))
+        case .searchResultViewDisappeared:
+            self.input.send(.searchResultViewDisappeared)
         }
     }
     
@@ -79,6 +96,20 @@ class SearchViewModel {
                 self.output.send(.getSearchGridPosts)
             }.store(in: &cancellables)
     }
+    
+    private func getRecentSearchPosts() {
+        postUseCase.getRecentSearchPostData()
+            .sink { [weak self] recentSearchPostData in
+                guard let self = self else { return }
+                self.recentSearchPosts = recentSearchPostData
+                self.output.send(.getRecentSearchPosts)
+            }.store(in: &cancellables)
+    }
+    
+    private func saveRecentSearchPosts() {
+        print("최근 검색 기록 저장 api 호출중")
+        // self.output.send(.saveRecentSearchPosts)
+    }
 }
 
 extension SearchViewModel {
@@ -86,12 +117,20 @@ extension SearchViewModel {
         case searchBarTapped
         case searchBarCancelTapped
         case searchGridViewLoaded
-        case postTapped(Post)
+        case postTappedFromGrid(Post)
+        case searchResultViewLoaded
+        case postTappedFromRecentSearch(Post)
+        case deleteRecentSearchPostBtnTapped(Int)
+        case searchResultViewDisappeared
     }
     enum Output {
         case goToSearchResultView
         case goBackToSearchResultView
         case getSearchGridPosts
-        case goToPostView(Post)
+        case goToPostViewFromGrid(Post)
+        case getRecentSearchPosts
+        case goToPostViewFromSearch(Post)
+        case removeRecentSearchPost(Int)
+        case saveRecentSearchPosts
     }
 }

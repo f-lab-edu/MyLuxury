@@ -52,14 +52,12 @@ public class SearchCoordinatorImpl: SearchCoordinator, @preconcurrency SearchVie
     func goToSearchResultView(searchVM: SearchViewModel) {
         /// searchGridVC와 sesarchResultVC는 같은 뷰모델을 공유
         let searchResultVC = SearchResultViewController(searchVM: searchVM)
-        searchResultVC.modalTransitionStyle = UIModalTransitionStyle.crossDissolve
-        searchResultVC.modalPresentationStyle = .overCurrentContext
-        self.navigationController.present(searchResultVC, animated: true)
+        self.navigationController.pushViewController(searchResultVC, animated: true)
     }
     
     @MainActor
     func goBackToResultGridView() {
-        self.navigationController.dismiss(animated: true)
+        self.navigationController.popViewController(animated: true)
     }
     
     @MainActor
