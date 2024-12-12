@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct Post {
+public struct Post: @unchecked Sendable {
     /// 게시물 식별 아이디
     public let post_id: String
     /// 게시물 UI 타입. 추후 종류가 추가될 예정
@@ -57,7 +57,18 @@ public struct Post {
         self.postView = postView
         self.postCreatedAt = postCreatedAt
         self.postUpdatedAt = postUpdatedAt
-    }}
+    }
+}
+
+extension Post: Hashable {
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(post_id)
+    }
+    
+    public static func ==(lhs: Post, rhs: Post) -> Bool {
+        return lhs.post_id == rhs.post_id
+    }
+}
 
 /// 홈 메인 화면 데이터 모음을 정의한 typealias
 public typealias HomePostData = (

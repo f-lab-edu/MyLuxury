@@ -37,7 +37,6 @@ final class HomeViewController: UIViewController {
     /// 두 번째로 호출
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         bindData()
         homeVM.sendInputEvent(input: .viewLoaded)
     }
@@ -58,7 +57,7 @@ final class HomeViewController: UIViewController {
                 guard let self = self else { return }
                 switch event {
                 case .getHomePostData:
-                    self.rootView.contentView.homePostData = self.homeVM.homePostData
+                    self.rootView.contentView.applyInitialSnapshot()
                 case .goToPost(let post):
                     self.homeVM.delegate?.goToPost(post: post)
                 }
