@@ -70,12 +70,35 @@ extension Post: Hashable {
     }
 }
 
-/// 홈 메인 화면 데이터 모음을 정의한 typealias
-public typealias HomePostData = (
-    todayPickPostData: Post,
-    newPostData: [Post],
-    weeklyTopPostData: [Post],
-    customizedPostData: [Post],
-    gridData: [Post],
-    editorRecommendationPostData: [Post]
-)
+public enum HomeSection: String, CaseIterable, @unchecked Sendable {
+    case todayPick = "오늘의 Pick"
+    case new = "새로 게시된 지식"
+    case weeklyTop = "이번 주 TOP10"
+    case customized = "회원님이 좋아할만한"
+    case editorRecommendation = "에디터 추천 지식"
+}
+
+public struct HomePostData {
+    public var sectionIndex: [HomeSection]?
+    public var todayPickPostData: Post?
+    public var newPostData: [Post]?
+    public var weeklyTopPostData: [Post]?
+    public var customizedPostData: [Post]?
+    public var editorRecommendationPostData: [Post]?
+    
+    public init(
+        sectionIndex: [HomeSection]? = nil,
+        todayPickPostData: Post? = nil,
+        newPostData: [Post]? = nil,
+        weeklyTopPostData: [Post]? = nil,
+        customizedPostData: [Post]? = nil,
+        editorRecommendationPostData: [Post]? = nil
+    ) {
+        self.sectionIndex = sectionIndex
+        self.todayPickPostData = todayPickPostData
+        self.newPostData = newPostData
+        self.weeklyTopPostData = weeklyTopPostData
+        self.customizedPostData = customizedPostData
+        self.editorRecommendationPostData = editorRecommendationPostData
+    }
+}

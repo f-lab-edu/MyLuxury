@@ -15,7 +15,7 @@ public class PostRepositoryMockImpl: PostRepository {
     }
     
     public func getHomeViewData() -> AnyPublisher<HomePostData, Never> {
-        let homePostData: HomePostData = (
+        let homePostData: HomePostData = HomePostData(
             todayPickPostData: Post(post_id: "1", postUIType: .normal, postCategory: .art, postTitle: "흑백 사진은 언제 처음 사용되었을까???", postThumbnailImage: "testImage1"),
             newPostData: [
                 Post(post_id: "2", postUIType: .normal, postCategory: .art, postTitle: "그때 그 시절, 무엇을 하며 놀았을까요??", postThumbnailImage: "testImage2"),
@@ -48,12 +48,6 @@ public class PostRepositoryMockImpl: PostRepository {
                 Post(post_id: "25", postUIType: .normal, postCategory: .art, postTitle: "흑백 사진은 언제 처음 사용되었을까?", postThumbnailImage: "testImage3"),
                 Post(post_id: "26", postUIType: .normal, postCategory: .art, postTitle: "흑백 사진은 언제 처음 사용되었을까?", postThumbnailImage: "testImage3"),
             ],
-            gridData: [
-                Post(post_id: "2", postUIType: .normal, postCategory: .art, postTitle: "그때 그 시절, 무엇을 하며 놀았을까요??", postThumbnailImage: "testImage2"),
-                Post(post_id: "2", postUIType: .normal, postCategory: .art, postTitle: "그때 그 시절, 무엇을 하며 놀았을까요??", postThumbnailImage: "testImage2"),
-                Post(post_id: "2", postUIType: .normal, postCategory: .art, postTitle: "그때 그 시절, 무엇을 하며 놀았을까요??", postThumbnailImage: "testImage2"),
-                Post(post_id: "2", postUIType: .normal, postCategory: .art, postTitle: "그때 그 시절, 무엇을 하며 놀았을까요??", postThumbnailImage: "testImage2"),
-            ],
             editorRecommendationPostData: [
                 Post(post_id: "27", postUIType: .normal, postCategory: .art, postTitle: "흑백 사진은 언제 처음 사용되었을까?", postThumbnailImage: "testImage5"),
                 Post(post_id: "28", postUIType: .normal, postCategory: .art, postTitle: "흑백 사진은 언제 처음 사용되었을까?", postThumbnailImage: "testImage4"),
@@ -61,6 +55,53 @@ public class PostRepositoryMockImpl: PostRepository {
                 Post(post_id: "30", postUIType: .normal, postCategory: .art, postTitle: "흑백 사진은 언제 처음 사용되었을까?", postThumbnailImage: "testImage8")
             ]
         )
+        
+//        let homePostData: HomePostData = (
+//            todayPickPostData: Post(post_id: "1", postUIType: .normal, postCategory: .art, postTitle: "흑백 사진은 언제 처음 사용되었을까???", postThumbnailImage: "testImage1"),
+//            newPostData: [
+//                Post(post_id: "2", postUIType: .normal, postCategory: .art, postTitle: "그때 그 시절, 무엇을 하며 놀았을까요??", postThumbnailImage: "testImage2"),
+//                Post(post_id: "3", postUIType: .normal, postCategory: .art, postTitle: "그때 그 시절, 무엇을 하며 놀았을까요??", postThumbnailImage: "testImage2"),
+//                Post(post_id: "4", postUIType: .normal, postCategory: .art, postTitle: "그때 그 시절, 무엇을 하며 놀았을까요??", postThumbnailImage: "testImage2"),
+//                Post(post_id: "5", postUIType: .normal, postCategory: .art, postTitle: "그때 그 시절, 무엇을 하며 놀았을까요??", postThumbnailImage: "testImage2"),
+//                Post(post_id: "6", postUIType: .normal, postCategory: .art, postTitle: "그때 그 시절, 무엇을 하며 놀았을까요??", postThumbnailImage: "testImage2"),
+//                Post(post_id: "7", postUIType: .normal, postCategory: .art, postTitle: "그때 그 시절, 무엇을 하며 놀았을까요??", postThumbnailImage: "testImage2"),
+//                Post(post_id: "8", postUIType: .normal, postCategory: .art, postTitle: "그때 그 시절, 무엇을 하며 놀았을까요??", postThumbnailImage: "testImage2"),
+//                Post(post_id: "9", postUIType: .normal, postCategory: .art, postTitle: "그때 그 시절, 무엇을 하며 놀았을까요??", postThumbnailImage: "testImage2"),
+//                Post(post_id: "10", postUIType: .normal, postCategory: .art, postTitle: "그때 그 시절, 무엇을 하며 놀았을까요??", postThumbnailImage: "testImage2"),
+//                Post(post_id: "11", postUIType: .normal, postCategory: .art, postTitle: "그때 그 시절, 무엇을 하며 놀았을까요??", postThumbnailImage: "testImage2"),
+//                Post(post_id: "12", postUIType: .normal, postCategory: .art, postTitle: "그때 그 시절, 무엇을 하며 놀았을까요??", postThumbnailImage: "testImage2"),
+//            ],
+//            weeklyTopPostData: [
+//                Post(post_id: "13", postUIType: .normal, postCategory: .art, postTitle: "그래서 이 아저씨가 누군데?", postThumbnailImage: "testImage7"),
+//                Post(post_id: "14", postUIType: .normal, postCategory: .art, postTitle: "그래서 이 아저씨가 누군데?", postThumbnailImage: "testImage7"),
+//                Post(post_id: "15", postUIType: .normal, postCategory: .art, postTitle: "그래서 이 아저씨가 누군데?", postThumbnailImage: "testImage7"),
+//                Post(post_id: "16", postUIType: .normal, postCategory: .art, postTitle: "그래서 이 아저씨가 누군데?", postThumbnailImage: "testImage7"),
+//                Post(post_id: "17", postUIType: .normal, postCategory: .art, postTitle: "그래서 이 아저씨가 누군데?", postThumbnailImage: "testImage7"),
+//                Post(post_id: "18", postUIType: .normal, postCategory: .art, postTitle: "그래서 이 아저씨가 누군데?", postThumbnailImage: "testImage7"),
+//                Post(post_id: "19", postUIType: .normal, postCategory: .art, postTitle: "그래서 이 아저씨가 누군데?", postThumbnailImage: "testImage7"),
+//                Post(post_id: "20", postUIType: .normal, postCategory: .art, postTitle: "그래서 이 아저씨가 누군데?", postThumbnailImage: "testImage7"),
+//                Post(post_id: "21", postUIType: .normal, postCategory: .art, postTitle: "그래서 이 아저씨가 누군데?", postThumbnailImage: "testImage7"),
+//                Post(post_id: "22", postUIType: .normal, postCategory: .art, postTitle: "그래서 이 아저씨가 누군데?", postThumbnailImage: "testImage7")
+//            ],
+//            customizedPostData: [
+//                Post(post_id: "23", postUIType: .normal, postCategory: .art, postTitle: "흑백 사진은 언제 처음 사용되었을까?", postThumbnailImage: "testImage3"),
+//                Post(post_id: "24", postUIType: .normal, postCategory: .art, postTitle: "흑백 사진은 언제 처음 사용되었을까?", postThumbnailImage: "testImage3"),
+//                Post(post_id: "25", postUIType: .normal, postCategory: .art, postTitle: "흑백 사진은 언제 처음 사용되었을까?", postThumbnailImage: "testImage3"),
+//                Post(post_id: "26", postUIType: .normal, postCategory: .art, postTitle: "흑백 사진은 언제 처음 사용되었을까?", postThumbnailImage: "testImage3"),
+//            ],
+//            gridData: [
+//                Post(post_id: "2", postUIType: .normal, postCategory: .art, postTitle: "그때 그 시절, 무엇을 하며 놀았을까요??", postThumbnailImage: "testImage2"),
+//                Post(post_id: "2", postUIType: .normal, postCategory: .art, postTitle: "그때 그 시절, 무엇을 하며 놀았을까요??", postThumbnailImage: "testImage2"),
+//                Post(post_id: "2", postUIType: .normal, postCategory: .art, postTitle: "그때 그 시절, 무엇을 하며 놀았을까요??", postThumbnailImage: "testImage2"),
+//                Post(post_id: "2", postUIType: .normal, postCategory: .art, postTitle: "그때 그 시절, 무엇을 하며 놀았을까요??", postThumbnailImage: "testImage2"),
+//            ],
+//            editorRecommendationPostData: [
+//                Post(post_id: "27", postUIType: .normal, postCategory: .art, postTitle: "흑백 사진은 언제 처음 사용되었을까?", postThumbnailImage: "testImage5"),
+//                Post(post_id: "28", postUIType: .normal, postCategory: .art, postTitle: "흑백 사진은 언제 처음 사용되었을까?", postThumbnailImage: "testImage4"),
+//                Post(post_id: "29", postUIType: .normal, postCategory: .art, postTitle: "흑백 사진은 언제 처음 사용되었을까?", postThumbnailImage: "testImage6"),
+//                Post(post_id: "30", postUIType: .normal, postCategory: .art, postTitle: "흑백 사진은 언제 처음 사용되었을까?", postThumbnailImage: "testImage8")
+//            ]
+//        )
         return Just(homePostData).eraseToAnyPublisher()
     }
     

@@ -9,14 +9,6 @@ import UIKit
 import Combine
 import Domain
 
-enum HomeSection: String, CaseIterable {
-    case todayPick = "오늘의 Pick"
-    case new = "새로 게시된 지식"
-    case weeklyTop = "이번 주 TOP10"
-    case customized = "회원님이 좋아할만한"
-    case editorRecommendation = "에디터 추천 지식"
-}
-
 final class HomeContentsView: UIView {
     private var homeVM: HomeViewModel
     
@@ -26,23 +18,28 @@ final class HomeContentsView: UIView {
         return collectionView
     }()
     
-    private lazy var dataSource: UICollectionViewDiffableDataSource = {
-        var dataSource = UICollectionViewDiffableDataSource<HomeSection, Post>(collectionView: collectionView) { collectionView, indexPath, post in
-            switch indexPath.section {
-            case 0:
+    private lazy var dataSource: UICollectionViewDiffableDataSource<HomeSection, Post> = {
+        var dataSource = UICollectionViewDiffableDataSource<HomeSection, Post>(collectionView: collectionView) {
+            // post는 제네릭 타입으로 주어진 Post의 인스턴스를 의미
+            collectionView, indexPath, post in
+            /// 섹션의 순서를 가져온 배열. 섹션의 순서는 사용자마자 다를 수 있음.
+            let sectionIndex = self.homeVM.homePostData?.sectionIndex ?? HomeSection.allCases
+            let section = sectionIndex[indexPath.section]
+            switch section {
+            case .todayPick:
                 let cell = collectionView.dequeueReusableCell(withReuseIdentifier: HomeTodayPickCVC.identifier, for: indexPath) as! HomeTodayPickCVC
                 cell.postThumbnailImage = post.postThumbnailImage
                 cell.postTitle = post.postTitle
                 return cell
-            case 1, 2, 3:
-                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: HomeHorizontalCVC.identifier, for: indexPath) as! HomeHorizontalCVC
-                cell.image = post.postThumbnailImage
-                cell.title = post.postTitle
-                return cell
-            default:
+            case .editorRecommendation:
                 let cell = collectionView.dequeueReusableCell(withReuseIdentifier: HomeEditorRecommendCVC.identifier, for: indexPath) as! HomeEditorRecommendCVC
                 cell.category = post.postCategory
                 cell.thumbnailImage = post.postThumbnailImage
+                cell.title = post.postTitle
+                return cell
+            default:
+                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: HomeHorizontalCVC.identifier, for: indexPath) as! HomeHorizontalCVC
+                cell.image = post.postThumbnailImage
                 cell.title = post.postTitle
                 return cell
             }
@@ -53,12 +50,14 @@ final class HomeContentsView: UIView {
             let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind,
                                                                              withReuseIdentifier: HomeContentsSectionHeaderView.identifier,
                                                                              for: indexPath) as! HomeContentsSectionHeaderView
-            switch indexPath.section {
-            case 0: headerView.sectionTitle = HomeSection.todayPick.rawValue
-            case 1: headerView.sectionTitle = HomeSection.new.rawValue
-            case 2: headerView.sectionTitle = HomeSection.weeklyTop.rawValue
-            case 3: headerView.sectionTitle = HomeSection.customized.rawValue
-            default: headerView.sectionTitle = HomeSection.editorRecommendation.rawValue
+            let sectionIndex = self.homeVM.homePostData?.sectionIndex ?? HomeSection.allCases
+            let section = sectionIndex[indexPath.section]
+            switch section {
+            case .todayPick: headerView.sectionTitle = HomeSection.todayPick.rawValue
+            case .new: headerView.sectionTitle = HomeSection.new.rawValue
+            case .weeklyTop: headerView.sectionTitle = HomeSection.weeklyTop.rawValue
+            case .customized: headerView.sectionTitle = HomeSection.customized.rawValue
+            case .editorRecommendation: headerView.sectionTitle = HomeSection.editorRecommendation.rawValue
             }
             return headerView
         }
@@ -91,8 +90,11 @@ final class HomeContentsView: UIView {
     }
     
     func applyInitialSnapshot() {
+        // 섹션 순서
+        let sectionIndex = self.homeVM.homePostData?.sectionIndex
         var snapshot = NSDiffableDataSourceSnapshot<HomeSection, Post>()
-        snapshot.appendSections([.todayPick, .new, .weeklyTop, .customized, .editorRecommendation])
+//        snapshot.appendSections([.todayPick, .new, .weeklyTop, .customized, .editorRecommendation])
+        snapshot.appendSections(sectionIndex ?? [.todayPick, .new, .weeklyTop, .customized, .editorRecommendation])
         if let todayPickPostData = homeVM.homePostData?.todayPickPostData {
             snapshot.appendItems([todayPickPostData], toSection: .todayPick)
         }
@@ -119,13 +121,15 @@ final class HomeContentsView: UIView {
     
     private func createLayout() -> UICollectionViewCompositionalLayout {
         return UICollectionViewCompositionalLayout { sectionIndex, _ in
-            switch sectionIndex {
-            case 0:
+            let index = self.homeVM.homePostData?.sectionIndex ?? HomeSection.allCases
+            let section = index[sectionIndex]
+            switch section {
+            case .todayPick:
                 return self.createOneItemSection()
-            case 1, 2, 3:
-                return self.createHorizontalSection()
-            default:
+            case .editorRecommendation:
                 return self.createVerticalSection()
+            default:
+                return self.createHorizontalSection()
             }
         }
     }
