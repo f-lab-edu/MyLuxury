@@ -7,6 +7,11 @@
 
 import UIKit
 
+//struct HomeTodayPickPostData {
+//    var postThumbnailImage: String
+//    var postTitle: String
+//}
+
 final class HomeTodayPickCVC: UICollectionViewCell {
     static let identifier = "HomeTodayPickCVC"
     
@@ -25,15 +30,21 @@ final class HomeTodayPickCVC: UICollectionViewCell {
         return label
     }()
     
-    var postThumbnailImage: String? {
+//    var postThumbnailImage: String? {
+//        didSet {
+//            self.postThumbnailImageView.image = UIImage(named: postThumbnailImage ?? "blackScreen")
+//        }
+//    }
+//    
+//    var postTitle: String? {
+//        didSet {
+//            self.postTitleLabel.text = postTitle
+//        }
+//    }
+    var homePostViewData: HomePostViewData? {
         didSet {
-            self.postThumbnailImageView.image = UIImage(named: postThumbnailImage ?? "blackScreen")
-        }
-    }
-    
-    var postTitle: String? {
-        didSet {
-            self.postTitleLabel.text = postTitle
+            self.postThumbnailImageView.image = UIImage(named: homePostViewData?.postThumbnailImage ?? "blackScreen")
+            self.postTitleLabel.text = homePostViewData?.postTitle
         }
     }
     

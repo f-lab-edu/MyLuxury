@@ -23,14 +23,21 @@ final class HomeHorizontalCVC: UICollectionViewCell {
         return title
     }()
     
-    var image: String? {
+//    var image: String? {
+//        didSet {
+//            contentImage.image = UIImage(named: image!)
+//        }
+//    }
+//    var title: String? {
+//        didSet {
+//            contentTitle.text = title
+//        }
+//    }
+    
+    var homePostViewData: HomePostViewData? {
         didSet {
-            contentImage.image = UIImage(named: image!)
-        }
-    }
-    var title: String? {
-        didSet {
-            contentTitle.text = title
+            self.contentImage.image = UIImage(named: homePostViewData?.postThumbnailImage ?? "blackScreen")
+            self.contentTitle.text = homePostViewData?.postTitle
         }
     }
     

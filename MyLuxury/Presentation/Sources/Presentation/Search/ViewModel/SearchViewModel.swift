@@ -11,7 +11,7 @@ import Domain
 
 protocol SearchViewModelDelegate: AnyObject {
     func goToSearchResultView(searchVM: SearchViewModel)
-    func goToPostView(post: Post)
+    func goToPostView(postId: String)
     func goBackToResultGridView()
 }
 
@@ -117,9 +117,9 @@ extension SearchViewModel {
         case searchBarTapped
         case searchBarCancelTapped
         case searchGridViewLoaded
-        case postTappedFromGrid(Post)
+        case postTappedFromGrid(String)
         case searchResultViewLoaded
-        case postTappedFromRecentSearch(Post)
+        case postTappedFromRecentSearch(String)
         case deleteRecentSearchPostBtnTapped(Int)
         case searchResultViewDisappeared
     }
@@ -127,9 +127,9 @@ extension SearchViewModel {
         case goToSearchResultView
         case goBackToSearchResultView
         case getSearchGridPosts
-        case goToPostViewFromGrid(Post)
+        case goToPostViewFromGrid(String)
         case getRecentSearchPosts
-        case goToPostViewFromSearch(Post)
+        case goToPostViewFromSearch(String)
         case removeRecentSearchPost(Int)
         case saveRecentSearchPosts
     }

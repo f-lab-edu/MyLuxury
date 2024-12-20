@@ -34,21 +34,30 @@ final class HomeEditorRecommendCVC: UICollectionViewCell {
         return image
     }()
     
-    var category: KnowledgeCategory? {
+//    var category: KnowledgeCategory? {
+//        didSet {
+//            contentCategory.text = category?.name
+//        }
+//    }
+//    var title: String? {
+//        didSet {
+//            contentTitle.text = title
+//        }
+//    }
+//    var thumbnailImage: String? {
+//        didSet {
+//            contentThumbnail.image = UIImage(named: thumbnailImage!)
+//        }
+//    }
+    
+    var homePostViewData: HomePostViewData? {
         didSet {
-            contentCategory.text = category?.name
+            self.contentThumbnail.image = UIImage(named: homePostViewData?.postThumbnailImage ?? "blackScreen")
+            self.contentTitle.text = homePostViewData?.postTitle
+            self.contentCategory.text = homePostViewData?.postCategory?.name
         }
     }
-    var title: String? {
-        didSet {
-            contentTitle.text = title
-        }
-    }
-    var thumbnailImage: String? {
-        didSet {
-            contentThumbnail.image = UIImage(named: thumbnailImage!)
-        }
-    }
+    
     
     override init(frame: CGRect) {
         super.init(frame: frame)

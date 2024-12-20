@@ -59,7 +59,7 @@ final class HomeViewController: UIViewController {
                 case .getHomePostData:
                     self.rootView.contentView.applyInitialSnapshot()
                 case .goToPost(let post):
-                    self.homeVM.delegate?.goToPost(post: post)
+                    self.homeVM.delegate?.goToPost(postId: post)
                 }
             }.store(in: &cancellabes)
     }

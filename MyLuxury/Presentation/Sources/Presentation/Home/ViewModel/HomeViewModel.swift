@@ -10,7 +10,7 @@ import Combine
 import Domain
 
 protocol HomeViewModelDelegate: AnyObject {
-    func goToPost(post: Post)
+    func goToPost(postId: String)
 }
 
 class HomeViewModel {
@@ -18,7 +18,7 @@ class HomeViewModel {
     private let output: PassthroughSubject<Output, Never> = .init()
     private let input: PassthroughSubject<Input, Never> = .init()
     private var cancellables = Set<AnyCancellable>()
-    var homePostData: HomePostData? = nil
+    var homePostData: HomePostViewDataGroup? = nil
     weak var delegate: HomeViewModelDelegate?
     
     init(postUseCase: PostUseCase) {
@@ -61,9 +61,40 @@ class HomeViewModel {
         postUseCase.getHomeViewData()
             .sink { [weak self] homeData in
                 guard let self = self else { return }
-                self.homePostData = homeData
+                self.homePostData = convertHomePostViewDataGroup(homeData: homeData)
                 self.output.send(.getHomePostData)
             }.store(in: &cancellables)
+    }
+    
+    func convertHomePostViewDataGroup(homeData: HomePostData) -> HomePostViewDataGroup {
+        
+        func convertPostArray(posts: [Post]?) -> [HomePostViewData]? {
+            posts?.map { post in
+                HomePostViewData(
+                    post_id: post.post_id,
+                    postTitle: post.postTitle,
+                    postThumbnailImage: post.postThumbnailImage,
+                    postCategory: post.postCategory)
+            }
+        }
+        
+        var dataGroup = HomePostViewDataGroup()
+        dataGroup.sectionIndex = homeData.sectionIndex
+        
+        if let post = homeData.todayPickPostData {
+            dataGroup.todayPickPostData = HomePostViewData(
+                post_id: post.post_id,
+                postTitle: post.postTitle,
+                postThumbnailImage: post.postThumbnailImage,
+                postCategory: post.postCategory)
+        }
+
+        dataGroup.newPostData = convertPostArray(posts: homeData.newPostData)
+        dataGroup.weeklyTopPostData = convertPostArray(posts: homeData.weeklyTopPostData)
+        dataGroup.customizedPostData = convertPostArray(posts: homeData.customizedPostData)
+        dataGroup.editorRecommendationPostData = convertPostArray(posts: homeData.editorRecommendationPostData)
+        
+        return dataGroup
     }
 }
 
@@ -71,10 +102,36 @@ extension HomeViewModel {
     enum Input {
         case viewLoaded
         case viewReload
-        case postTapped(Post)
+        case postTapped(String)
     }
     enum Output {
         case getHomePostData
-        case goToPost(Post)
+        case goToPost(String)
+    }
+}
+
+struct HomePostViewDataGroup {
+    var sectionIndex: [HomeSection]?
+    var todayPickPostData: HomePostViewData?
+    var newPostData: [HomePostViewData]?
+    var weeklyTopPostData: [HomePostViewData]?
+    var customizedPostData: [HomePostViewData]?
+    var editorRecommendationPostData: [HomePostViewData]?
+}
+
+struct HomePostViewData: Hashable, @unchecked Sendable {
+    let post_id: String
+    let postTitle: String
+    let postThumbnailImage: String
+    let postCategory: KnowledgeCategory?
+}
+
+extension HomePostViewData {
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(post_id)
+    }
+    
+    public static func ==(lhs: HomePostViewData, rhs: HomePostViewData) -> Bool {
+        return lhs.post_id == rhs.post_id
     }
 }

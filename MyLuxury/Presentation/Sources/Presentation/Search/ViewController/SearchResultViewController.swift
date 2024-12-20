@@ -62,7 +62,7 @@ class SearchResultViewController: UIViewController {
                 case .getRecentSearchPosts:
                     self.rootView.recentSearchPosts = self.searchVM.recentSearchPosts
                 case .goToPostViewFromSearch(let post):
-                    self.searchVM.delegate?.goToPostView(post: post)
+                    self.searchVM.delegate?.goToPostView(postId: post)
                 case .removeRecentSearchPost(let index):
                     self.rootView.recentSearchPosts.remove(at: index)
                 default:

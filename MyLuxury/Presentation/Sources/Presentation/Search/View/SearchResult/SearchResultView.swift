@@ -207,7 +207,7 @@ extension SearchResultView: UICollectionViewDataSource, UICollectionViewDelegate
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if isRecentSearch {
             let post = recentSearchPosts[indexPath.row]
-            searchVM.sendInputEvent(input: .postTappedFromRecentSearch(post))
+            searchVM.sendInputEvent(input: .postTappedFromRecentSearch(post.post_id))
         } else {
 
         }

@@ -23,10 +23,10 @@ class PostViewModel {
     let postId: String
     var post: Post? = nil
     
-    init(post: Post, postUseCase: PostUseCase) {
+    init(postId: String, postUseCase: PostUseCase) {
         print("PostViewModel init")
         self.postUseCase = postUseCase
-        self.postId = post.post_id
+        self.postId = postId
     }
     
     deinit {
