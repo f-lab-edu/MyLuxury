@@ -24,16 +24,11 @@ final class SearchGridCVC: UICollectionViewCell {
         label.textColor = .white
         return label
     }()
-     
-    var postImage: String? {
-        didSet {
-            postImageView.image = UIImage(named: postImage ?? "blackScreen")
-        }
-    }
     
-    var postTitle: String? {
+    var searchGridPost: SearchGridPostTemplate? {
         didSet {
-            postTitleLabel.text = postTitle
+            self.postImageView.image = UIImage(named: searchGridPost?.postThumbnailImage ?? "blackScreen")
+            self.postTitleLabel.text = searchGridPost?.postTitle
         }
     }
     

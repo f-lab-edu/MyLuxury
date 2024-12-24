@@ -18,8 +18,8 @@ final class HomeContentsView: UIView {
         return collectionView
     }()
     
-    private lazy var dataSource: UICollectionViewDiffableDataSource<HomeSection, HomePostViewData> = {
-        var dataSource = UICollectionViewDiffableDataSource<HomeSection, HomePostViewData>(collectionView: collectionView) {
+    private lazy var dataSource: UICollectionViewDiffableDataSource<HomeSection, HomePostViewTemplate> = {
+        var dataSource = UICollectionViewDiffableDataSource<HomeSection, HomePostViewTemplate>(collectionView: collectionView) {
             // post는 제네릭 타입으로 주어진 Post의 인스턴스를 의미
             collectionView, indexPath, post in
             /// 섹션의 순서를 가져온 배열. 섹션의 순서는 사용자마자 다를 수 있음.
@@ -88,7 +88,7 @@ final class HomeContentsView: UIView {
     func applyInitialSnapshot() {
         // 섹션 순서
         let sectionIndex = self.homeVM.homePostData?.sectionIndex
-        var snapshot = NSDiffableDataSourceSnapshot<HomeSection, HomePostViewData>()
+        var snapshot = NSDiffableDataSourceSnapshot<HomeSection, HomePostViewTemplate>()
         snapshot.appendSections(sectionIndex ?? [.todayPick, .new, .weeklyTop, .customized, .editorRecommendation])
         if let todayPickPostData = homeVM.homePostData?.todayPickPostData {
             snapshot.appendItems([todayPickPostData], toSection: .todayPick)
@@ -188,7 +188,7 @@ final class HomeContentsView: UIView {
 extension HomeContentsView: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if let post = dataSource.itemIdentifier(for: indexPath) {
-            homeVM.sendInputEvent(input: .postTapped(post.post_id))
+            homeVM.sendInputEvent(input: .postTapped(post.postId))
         }
     }
 }

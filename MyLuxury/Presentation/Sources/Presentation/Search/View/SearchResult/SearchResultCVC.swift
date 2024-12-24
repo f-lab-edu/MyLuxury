@@ -38,23 +38,14 @@ final class SearchResultCVC: UICollectionViewCell {
         return btn
     }()
     
-    var thumbnailImage: String? {
+    var searchResultPost: RecentSearchPostTemplate? {
         didSet {
-            postThumbnailImageView.image = UIImage(named: thumbnailImage ?? "blackScreen")
+            self.postThumbnailImageView.image = UIImage(named: searchResultPost?.postThumbnailImage ?? "blackScreen")
+            self.postTitleLabel.text = searchResultPost?.postTitle
+            self.postCategoryLabel.text = searchResultPost?.postCategory?.name
         }
     }
     
-    var postTitle: String? {
-        didSet {
-            postTitleLabel.text = postTitle
-        }
-    }
-    
-    var postCategory: String? {
-        didSet {
-            postCategoryLabel.text = postCategory
-        }
-    }
     
     /// 최근 검색일 경우에는 삭제 버튼이 보이지 않도록
     var isRecentPost: Bool = true {

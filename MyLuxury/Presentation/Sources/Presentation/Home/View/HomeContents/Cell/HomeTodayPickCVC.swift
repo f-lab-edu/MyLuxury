@@ -29,19 +29,8 @@ final class HomeTodayPickCVC: UICollectionViewCell {
         label.numberOfLines = 2
         return label
     }()
-    
-//    var postThumbnailImage: String? {
-//        didSet {
-//            self.postThumbnailImageView.image = UIImage(named: postThumbnailImage ?? "blackScreen")
-//        }
-//    }
-//    
-//    var postTitle: String? {
-//        didSet {
-//            self.postTitleLabel.text = postTitle
-//        }
-//    }
-    var homePostViewData: HomePostViewData? {
+
+    var homePostViewData: HomePostViewTemplate? {
         didSet {
             self.postThumbnailImageView.image = UIImage(named: homePostViewData?.postThumbnailImage ?? "blackScreen")
             self.postTitleLabel.text = homePostViewData?.postTitle

@@ -22,8 +22,8 @@ class SearchViewModel {
     var cancellables = Set<AnyCancellable>()
     weak var delegate: SearchViewModelDelegate?
     
-    var searchGridPosts: [Post] = []
-    var recentSearchPosts: [Post] = []
+    var searchGridPosts: [SearchGridPostTemplate] = []
+    var recentSearchPosts: [RecentSearchPostTemplate] = []
     
     init(postUseCase: PostUseCase) {
         print("SearchViewModel init")
@@ -90,20 +90,46 @@ class SearchViewModel {
     
     private func getSearchGridPosts() {
         postUseCase.getSearchGridPostsData()
-            .sink { [weak self] searchGridPostData in
+            .map { searchGridPostData -> [SearchGridPostTemplate] in
+                var posts: [SearchGridPostTemplate] = []
+                for post in searchGridPostData {
+                    posts.append(
+                        SearchGridPostTemplate(postId: post.post_id,
+                                               postTitle: post.postTitle,
+                                               postThumbnailImage: post.postThumbnailImage,
+                                               postCategory: post.postCategory))
+                }
+                return posts
+            }
+            .sink { [weak self] posts in
                 guard let self = self else { return }
-                self.searchGridPosts = searchGridPostData
+                self.searchGridPosts = posts
                 self.output.send(.getSearchGridPosts)
-            }.store(in: &cancellables)
+            }
+            .store(in: &cancellables)
     }
     
     private func getRecentSearchPosts() {
         postUseCase.getRecentSearchPostData()
-            .sink { [weak self] recentSearchPostData in
+            .map { recentSearchPostData -> [RecentSearchPostTemplate]  in
+                var posts: [RecentSearchPostTemplate] = []
+                for post in recentSearchPostData {
+                    posts.append(
+                        RecentSearchPostTemplate(
+                            postId: post.post_id,
+                            postTitle: post.postTitle,
+                            postThumbnailImage: post.postThumbnailImage,
+                            postCategory: post.postCategory)
+                    )
+                }
+                return posts
+            }
+            .sink { [weak self] posts in
                 guard let self = self else { return }
-                self.recentSearchPosts = recentSearchPostData
+                self.recentSearchPosts = posts
                 self.output.send(.getRecentSearchPosts)
-            }.store(in: &cancellables)
+            }
+            .store(in: &cancellables)
     }
     
     private func saveRecentSearchPosts() {
@@ -133,4 +159,19 @@ extension SearchViewModel {
         case removeRecentSearchPost(Int)
         case saveRecentSearchPosts
     }
+}
+
+/// Domain의 엔티티와 대응되는 뷰계층용 구조체입니다.
+struct SearchGridPostTemplate {
+    let postId: String
+    let postTitle: String
+    let postThumbnailImage: String
+    let postCategory: KnowledgeCategory?
+}
+
+struct RecentSearchPostTemplate {
+    let postId: String
+    let postTitle: String
+    let postThumbnailImage: String
+    let postCategory: KnowledgeCategory?
 }

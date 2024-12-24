@@ -34,7 +34,7 @@ final class HomeHorizontalCVC: UICollectionViewCell {
 //        }
 //    }
     
-    var homePostViewData: HomePostViewData? {
+    var homePostViewData: HomePostViewTemplate? {
         didSet {
             self.contentImage.image = UIImage(named: homePostViewData?.postThumbnailImage ?? "blackScreen")
             self.contentTitle.text = homePostViewData?.postTitle

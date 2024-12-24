@@ -50,7 +50,7 @@ final class HomeEditorRecommendCVC: UICollectionViewCell {
 //        }
 //    }
     
-    var homePostViewData: HomePostViewData? {
+    var homePostViewData: HomePostViewTemplate? {
         didSet {
             self.contentThumbnail.image = UIImage(named: homePostViewData?.postThumbnailImage ?? "blackScreen")
             self.contentTitle.text = homePostViewData?.postTitle
