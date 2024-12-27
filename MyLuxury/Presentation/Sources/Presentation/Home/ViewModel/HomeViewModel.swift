@@ -18,12 +18,15 @@ class HomeViewModel {
     private let output: PassthroughSubject<Output, Never> = .init()
     private let input: PassthroughSubject<Input, Never> = .init()
     private var cancellables = Set<AnyCancellable>()
-    var homePostData: HomePostViewTemplateGroup? = nil
+    // 이 코드가 homeCVVM으로 옮겨질 예정
+//    var homePostData: HomePostViewTemplateGroup? = nil
     weak var delegate: HomeViewModelDelegate?
+    var homeCVVM: HomeCVViewModel
     
     init(postUseCase: PostUseCase) {
         print("HomeViewModel init")
         self.postUseCase = postUseCase
+        self.homeCVVM = HomeCVViewModel()
     }
     
     deinit {
@@ -62,7 +65,6 @@ class HomeViewModel {
             .map { homeData -> HomePostViewTemplateGroup in
                 var dataGroup = HomePostViewTemplateGroup()
                 dataGroup.sectionIndex = homeData.sectionIndex
-                
                 func convertPostArray(posts: [Post]?) -> [HomePostViewTemplate]? {
                     posts?.map { post in
                         HomePostViewTemplate(
@@ -90,7 +92,8 @@ class HomeViewModel {
             }
             .sink { [weak self] dataGroup in
                 guard let self = self else { return }
-                self.homePostData = dataGroup
+                self.homeCVVM.homePostData = dataGroup
+                self.homeCVVM.setHomeData(sectionIndex: dataGroup.sectionIndex ?? [])
                 self.output.send(.getHomePostData)
             }
             .store(in: &cancellables)
