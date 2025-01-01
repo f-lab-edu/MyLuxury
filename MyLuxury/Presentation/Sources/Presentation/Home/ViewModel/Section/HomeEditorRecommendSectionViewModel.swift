@@ -7,10 +7,12 @@
 
 final class HomeEditorRecommendSectionViewModel: HomeSectionViewModel {
     let sectionHeaderVM = HomeSectionHeaderViewModel()
-    let sectionCellVM = HomeEditorRecommendCVCViewModel()
+    var posts: [HomePostViewTemplate] = []
     
-    init() {
+    init(posts: [HomePostViewTemplate]) {
         print("HomeEditorRecommendSectionViewModel init")
+        self.posts = posts
+        self.sectionHeaderVM.sectionTitle = "에디터 추천 지식"
     }
     
     deinit {

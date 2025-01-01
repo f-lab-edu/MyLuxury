@@ -13,18 +13,19 @@ final class HomeContentsView: UIView {
     private var homeVM: HomeViewModel
     
     private lazy var collectionView: UICollectionView = {
+        // collectionView의 레이아웃을 하단에서 생성한 CompositionalLayout 방식으로 지정
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: createLayout())
         collectionView.backgroundColor = .clear
         return collectionView
     }()
     
     private lazy var dataSource: UICollectionViewDiffableDataSource<HomeSection, HomePostViewTemplate> = {
+        // 각 섹션의 셀에 어떤 데이터가 들어갈 것인지를 결정
         var dataSource = UICollectionViewDiffableDataSource<HomeSection, HomePostViewTemplate>(collectionView: collectionView) {
-            // post는 제네릭 타입으로 주어진 Post의 인스턴스를 의미
+            // post는 제네릭 타입으로 주어진 HomePostViewTemplate의 인스턴스를 의미
             collectionView, indexPath, post in
             /// 섹션의 순서를 가져온 배열. 섹션의 순서는 사용자마자 다를 수 있음.
-            let sectionIndex = self.homeVM.homeCVVM.homePostData?.sectionIndex ?? HomeSection.allCases
-            let section = sectionIndex[indexPath.section]
+            let section = HomeSection.allCases[indexPath.section]
             switch section {
             case .todayPick:
                 let cell = collectionView.dequeueReusableCell(withReuseIdentifier: HomeTodayPickCVC.identifier, for: indexPath) as! HomeTodayPickCVC
@@ -42,28 +43,27 @@ final class HomeContentsView: UIView {
         }
         
         dataSource.supplementaryViewProvider = { collectionView, kind, indexPath in
-            guard kind == UICollectionView.elementKindSectionHeader else { return nil }
+            guard kind == UICollectionView.elementKindSectionHeader else { return UICollectionReusableView() }
             let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind,
                                                                              withReuseIdentifier: HomeContentsSectionHeaderView.identifier,
                                                                              for: indexPath) as! HomeContentsSectionHeaderView
-            let sectionIndex = self.homeVM.homeCVVM.homePostData?.sectionIndex ?? HomeSection.allCases
-            let section = sectionIndex[indexPath.section]
+            let section = HomeSection.allCases[indexPath.section]
             switch section {
             case .todayPick:
-                let sectionHeaderVM = (self.homeVM.homeCVVM.homeSectionVMs[.todayPick] as! HomeTodayPickSectionViewModel).sectionHeaderVM
-                headerView.sectionTitle = sectionHeaderVM.sectionTitle
+                let sectionHeaderVM = (self.homeVM.homeCVVM.homeSectionVMs.first(where: { $0 is HomeTodayPickSectionViewModel }) as? HomeTodayPickSectionViewModel)?.sectionHeaderVM
+                headerView.sectionTitle = sectionHeaderVM?.sectionTitle
             case .new:
-                let sectionHeaderVM = (self.homeVM.homeCVVM.homeSectionVMs[.new] as! HomeNewPostsSectionViewModel).sectionHeaderVM
-                headerView.sectionTitle = sectionHeaderVM.sectionTitle
+                let sectionHeaderVM = (self.homeVM.homeCVVM.homeSectionVMs.first(where: { $0 is HomeNewPostsSectionViewModel }) as? HomeNewPostsSectionViewModel)?.sectionHeaderVM
+                headerView.sectionTitle = sectionHeaderVM?.sectionTitle
             case .weeklyTop:
-                let sectionHeaderVM = (self.homeVM.homeCVVM.homeSectionVMs[.weeklyTop] as! HomeWeeklyTopSectionViewModel).sectionHeaderVM
-                headerView.sectionTitle = sectionHeaderVM.sectionTitle
+                let sectionHeaderVM = (self.homeVM.homeCVVM.homeSectionVMs.first(where: { $0 is HomeWeeklyTopSectionViewModel }) as? HomeWeeklyTopSectionViewModel)?.sectionHeaderVM
+                headerView.sectionTitle = sectionHeaderVM?.sectionTitle
             case .customized:
-                let sectionHeaderVM = (self.homeVM.homeCVVM.homeSectionVMs[.customized] as! HomeCustomizedSectionViewModel).sectionHeaderVM
-                headerView.sectionTitle = sectionHeaderVM.sectionTitle
+                let sectionHeaderVM = (self.homeVM.homeCVVM.homeSectionVMs.first(where: { $0 is HomeCustomizedSectionViewModel }) as? HomeCustomizedSectionViewModel)?.sectionHeaderVM
+                headerView.sectionTitle = sectionHeaderVM?.sectionTitle
             case .editorRecommendation:
-                let sectionHeaderVM = (self.homeVM.homeCVVM.homeSectionVMs[.editorRecommendation] as! HomeEditorRecommendSectionViewModel).sectionHeaderVM
-                headerView.sectionTitle = sectionHeaderVM.sectionTitle
+                let sectionHeaderVM = (self.homeVM.homeCVVM.homeSectionVMs.first(where: { $0 is HomeEditorRecommendSectionViewModel }) as? HomeEditorRecommendSectionViewModel)?.sectionHeaderVM
+                headerView.sectionTitle = sectionHeaderVM?.sectionTitle
             }
             return headerView
         }
@@ -95,36 +95,22 @@ final class HomeContentsView: UIView {
     }
     
     func applyInitialSnapshot() {
-        // 섹션 순서
-        let sectionIndex = self.homeVM.homeCVVM.homePostData?.sectionIndex
+        // 스냅샷 정의 부분에서 초기 데이터 모습을 결정. -> 섹션의 순서를 결정
         var snapshot = NSDiffableDataSourceSnapshot<HomeSection, HomePostViewTemplate>()
-        snapshot.appendSections(sectionIndex ?? [.todayPick, .new, .weeklyTop, .customized, .editorRecommendation])
-        if let todayPickSectionVM = homeVM.homeCVVM.homeSectionVMs[.todayPick] {
-            let sectionVM = todayPickSectionVM as! HomeTodayPickSectionViewModel
-            let cellVM = sectionVM.sectionCellVM
-            snapshot.appendItems([cellVM.post!], toSection: .todayPick)
+        snapshot.appendSections(self.homeVM.homeCVVM.sectionIndex)
+        for sectionVM in homeVM.homeCVVM.homeSectionVMs {
+            if let todayPickVM = sectionVM as? HomeTodayPickSectionViewModel {
+                snapshot.appendItems(todayPickVM.posts, toSection: .todayPick)
+            } else if let newPostsVM = sectionVM as? HomeNewPostsSectionViewModel {
+                snapshot.appendItems(newPostsVM.posts, toSection: .new)
+            } else if let weeklyTopVM = sectionVM as? HomeWeeklyTopSectionViewModel {
+                snapshot.appendItems(weeklyTopVM.posts, toSection: .weeklyTop)
+            } else if let customizedVM = sectionVM as? HomeCustomizedSectionViewModel {
+                snapshot.appendItems(customizedVM.posts, toSection: .customized)
+            } else if let editorRecommendVM = sectionVM as? HomeEditorRecommendSectionViewModel {
+                snapshot.appendItems(editorRecommendVM.posts, toSection: .editorRecommendation)
+            }
         }
-        if let newPostsSectionVM = homeVM.homeCVVM.homeSectionVMs[.new] {
-            let sectionVM = newPostsSectionVM as! HomeNewPostsSectionViewModel
-            let cellVM = sectionVM.sectionCellVM
-            snapshot.appendItems(cellVM.posts!, toSection: .new)
-        }
-        if let weeklyTopSectionVM = homeVM.homeCVVM.homeSectionVMs[.weeklyTop] {
-            let sectionVM = weeklyTopSectionVM as! HomeWeeklyTopSectionViewModel
-            let cellVM = sectionVM.sectionCellVM
-            snapshot.appendItems(cellVM.posts!, toSection: .weeklyTop)
-        }
-        if let customizedSectionVM = homeVM.homeCVVM.homeSectionVMs[.customized] {
-            let sectionVM = customizedSectionVM as! HomeCustomizedSectionViewModel
-            let cellVM = sectionVM.sectionCellVM
-            snapshot.appendItems(cellVM.posts!, toSection: .customized)
-        }
-        if let editorRecommendSectionVM = homeVM.homeCVVM.homeSectionVMs[.editorRecommendation] {
-            let sectionVM = editorRecommendSectionVM as! HomeEditorRecommendSectionViewModel
-            let cellVM = sectionVM.sectionCellVM
-            snapshot.appendItems(cellVM.posts!, toSection: .editorRecommendation)
-        }
-        
         dataSource.apply(snapshot)
     }
     
@@ -144,8 +130,7 @@ final class HomeContentsView: UIView {
     
     private func createLayout() -> UICollectionViewCompositionalLayout {
         return UICollectionViewCompositionalLayout { sectionIndex, _ in
-            let index = self.homeVM.homeCVVM.homePostData?.sectionIndex ?? HomeSection.allCases
-            let section = index[sectionIndex]
+            let section = HomeSection.allCases[sectionIndex]
             switch section {
             case .todayPick:
                 return self.createOneItemSection()

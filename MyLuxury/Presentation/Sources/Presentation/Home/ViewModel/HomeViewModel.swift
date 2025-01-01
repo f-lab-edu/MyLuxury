@@ -18,8 +18,6 @@ class HomeViewModel {
     private let output: PassthroughSubject<Output, Never> = .init()
     private let input: PassthroughSubject<Input, Never> = .init()
     private var cancellables = Set<AnyCancellable>()
-    // 이 코드가 homeCVVM으로 옮겨질 예정
-//    var homePostData: HomePostViewTemplateGroup? = nil
     weak var delegate: HomeViewModelDelegate?
     var homeCVVM: HomeCVViewModel
     
@@ -74,15 +72,8 @@ class HomeViewModel {
                             postCategory: post.postCategory)
                     }
                 }
-                
-                if let post = homeData.todayPickPostData {
-                    dataGroup.todayPickPostData = HomePostViewTemplate(
-                        postId: post.post_id,
-                        postTitle: post.postTitle,
-                        postThumbnailImage: post.postThumbnailImage,
-                        postCategory: post.postCategory)
-                }
-                
+
+                dataGroup.todayPickPostData = convertPostArray(posts: homeData.todayPickPostData)
                 dataGroup.newPostData = convertPostArray(posts: homeData.newPostData)
                 dataGroup.weeklyTopPostData = convertPostArray(posts: homeData.weeklyTopPostData)
                 dataGroup.customizedPostData = convertPostArray(posts: homeData.customizedPostData)
@@ -92,8 +83,7 @@ class HomeViewModel {
             }
             .sink { [weak self] dataGroup in
                 guard let self = self else { return }
-                self.homeCVVM.homePostData = dataGroup
-                self.homeCVVM.setHomeData(sectionIndex: dataGroup.sectionIndex ?? [])
+                self.homeCVVM.setHomeData(homePostData: dataGroup)
                 self.output.send(.getHomePostData)
             }
             .store(in: &cancellables)
@@ -114,7 +104,7 @@ extension HomeViewModel {
 
 struct HomePostViewTemplateGroup {
     var sectionIndex: [HomeSection]?
-    var todayPickPostData: HomePostViewTemplate?
+    var todayPickPostData: [HomePostViewTemplate]?
     var newPostData: [HomePostViewTemplate]?
     var weeklyTopPostData: [HomePostViewTemplate]?
     var customizedPostData: [HomePostViewTemplate]?

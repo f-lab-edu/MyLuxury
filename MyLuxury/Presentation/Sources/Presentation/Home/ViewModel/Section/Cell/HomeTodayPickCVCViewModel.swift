@@ -6,17 +6,17 @@
 //
 
 
-import Foundation
-import Combine
-
-class HomeTodayPickCVCViewModel {
-    var post: HomePostViewTemplate?
-    
-    init() {
-        print("HomeTodayPickCVCViewModel init")
-    }
-    
-    deinit {
-        print("HomeTodayPickCVCViewModel deinit")
-    }
-}
+//import Foundation
+//import Combine
+//
+//class HomeTodayPickCVCViewModel {
+//    var post: HomePostViewTemplate?
+//    
+//    init() {
+//        print("HomeTodayPickCVCViewModel init")
+//    }
+//    
+//    deinit {
+//        print("HomeTodayPickCVCViewModel deinit")
+//    }
+//}
