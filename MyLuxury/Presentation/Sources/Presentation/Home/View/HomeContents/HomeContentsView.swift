@@ -24,8 +24,7 @@ final class HomeContentsView: UIView {
         var dataSource = UICollectionViewDiffableDataSource<HomeSection, HomePostViewTemplate>(collectionView: collectionView) {
             // post는 제네릭 타입으로 주어진 HomePostViewTemplate의 인스턴스를 의미
             collectionView, indexPath, post in
-            /// 섹션의 순서를 가져온 배열. 섹션의 순서는 사용자마자 다를 수 있음.
-            let section = HomeSection.allCases[indexPath.section]
+            let section = self.homeVM.homeCVVM.sectionIndex[indexPath.section]
             switch section {
             case .todayPick:
                 let cell = collectionView.dequeueReusableCell(withReuseIdentifier: HomeTodayPickCVC.identifier, for: indexPath) as! HomeTodayPickCVC
@@ -47,7 +46,7 @@ final class HomeContentsView: UIView {
             let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind,
                                                                              withReuseIdentifier: HomeContentsSectionHeaderView.identifier,
                                                                              for: indexPath) as! HomeContentsSectionHeaderView
-            let section = HomeSection.allCases[indexPath.section]
+            let section = self.homeVM.homeCVVM.sectionIndex[indexPath.section]
             switch section {
             case .todayPick:
                 let sectionHeaderVM = (self.homeVM.homeCVVM.homeSectionVMs.first(where: { $0 is HomeTodayPickSectionViewModel }) as? HomeTodayPickSectionViewModel)?.sectionHeaderVM
@@ -130,7 +129,7 @@ final class HomeContentsView: UIView {
     
     private func createLayout() -> UICollectionViewCompositionalLayout {
         return UICollectionViewCompositionalLayout { sectionIndex, _ in
-            let section = HomeSection.allCases[sectionIndex]
+            let section = self.homeVM.homeCVVM.sectionIndex[sectionIndex]
             switch section {
             case .todayPick:
                 return self.createOneItemSection()

@@ -72,13 +72,11 @@ class HomeViewModel {
                             postCategory: post.postCategory)
                     }
                 }
-
                 dataGroup.todayPickPostData = convertPostArray(posts: homeData.todayPickPostData)
                 dataGroup.newPostData = convertPostArray(posts: homeData.newPostData)
                 dataGroup.weeklyTopPostData = convertPostArray(posts: homeData.weeklyTopPostData)
                 dataGroup.customizedPostData = convertPostArray(posts: homeData.customizedPostData)
                 dataGroup.editorRecommendationPostData = convertPostArray(posts: homeData.editorRecommendationPostData)
-                
                 return dataGroup
             }
             .sink { [weak self] dataGroup in
