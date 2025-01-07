@@ -9,12 +9,11 @@ final class HomeNewPostsSectionViewModel: HomeSectionViewModel {
     let sectionHeaderVM = HomeSectionHeaderViewModel()
     var posts: [HomePostViewTemplate] = []
     
-    init(posts: [HomePostViewTemplate]) {
-        print("HomeNewPostsSectionViewModel init")
-        self.posts = posts
-        self.sectionHeaderVM.sectionTitle = "새로운 게시된 지식"
+    init() {
+        print("HomeNewPostSectionViewModel init")
+        self.sectionHeaderVM.sectionTitle = "새로 게시된 지식"
     }
-    
+
     deinit {
         print("HomeNewPostsSectionViewModel deinit")
     }

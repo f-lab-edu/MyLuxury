@@ -9,10 +9,9 @@ final class HomeTodayPickSectionViewModel: HomeSectionViewModel {
     var sectionHeaderVM = HomeSectionHeaderViewModel()
     var posts: [HomePostViewTemplate] = []
     
-    init(posts: [HomePostViewTemplate]) {
+    init() {
         print("HomeTodayPickSectionViewModel init")
-        self.posts = posts
-        self.sectionHeaderVM.sectionTitle = "오늘의 Pick"
+        self.sectionHeaderVM.sectionTitle = "오늘의 PICK"
     }
     
     deinit {

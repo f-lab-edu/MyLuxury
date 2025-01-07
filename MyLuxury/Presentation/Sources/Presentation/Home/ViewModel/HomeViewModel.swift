@@ -62,7 +62,9 @@ class HomeViewModel {
         postUseCase.getHomeViewData()
             .map { homeData -> HomePostViewTemplateGroup in
                 var dataGroup = HomePostViewTemplateGroup()
-                dataGroup.sectionOrder = homeData.sectionOrder
+                dataGroup.sectionOrder = homeData.sectionOrder?.map {
+                    $0.toHomeSectionTemplate()
+                }
                 func convertPostArray(posts: [Post]?) -> [HomePostViewTemplate]? {
                     posts?.map { post in
                         HomePostViewTemplate(
@@ -101,7 +103,7 @@ extension HomeViewModel {
 }
 
 struct HomePostViewTemplateGroup {
-    var sectionOrder: [HomeSection]?
+    var sectionOrder: [HomeSectionTemplate]?
     var todayPickPostData: [HomePostViewTemplate]?
     var newPostData: [HomePostViewTemplate]?
     var weeklyTopPostData: [HomePostViewTemplate]?
@@ -111,7 +113,7 @@ struct HomePostViewTemplateGroup {
 
 /// Domain의 엔티티와 대응되는 뷰계층용 구조체입니다.
 struct HomePostViewTemplate: Hashable, @unchecked Sendable {
-    let postId: String
+    var postId: String
     let postTitle: String
     let postThumbnailImage: String
     let postCategory: KnowledgeCategory?
@@ -124,5 +126,60 @@ extension HomePostViewTemplate {
     
     public static func ==(lhs: HomePostViewTemplate, rhs: HomePostViewTemplate) -> Bool {
         return lhs.postId == rhs.postId
+    }
+}
+
+enum HomeSectionTemplate: Hashable, @unchecked Sendable {
+    case todayPick(HomeTodayPickSectionViewModel)
+    case new(HomeNewPostsSectionViewModel)
+    case weeklyTop(HomeWeeklyTopSectionViewModel)
+    case customized(HomeCustomizedSectionViewModel)
+    case editorRecommendation(HomeEditorRecommendSectionViewModel)
+    
+    // enum은 연관값을 사용할 경우 자동으로 hashable이 만족되지 않으므로 수동으로 hashable을 만족하도록 구현해줘야 함
+    func hash(into hasher: inout Hasher) {
+        switch self {
+        case .todayPick:
+            hasher.combine(0) 
+        case .new:
+            hasher.combine(1)
+        case .weeklyTop:
+            hasher.combine(2)
+        case .customized:
+            hasher.combine(3)
+        case .editorRecommendation:
+            hasher.combine(4)
+        }
+    }
+    
+    static func == (lhs: HomeSectionTemplate, rhs: HomeSectionTemplate) -> Bool {
+        switch (lhs, rhs) {
+        case (.todayPick, .todayPick),
+             (.new, .new),
+             (.weeklyTop, .weeklyTop),
+             (.customized, .customized),
+             (.editorRecommendation, .editorRecommendation):
+            return true
+        default:
+            return false
+        }
+    }
+}
+
+/// 도메인 레이어에 선언되어 있는 HomeSection을 HomeSectionTemplate으로 변환하기 위한 익스텐션
+extension HomeSection {
+    func toHomeSectionTemplate() -> HomeSectionTemplate {
+        switch self {
+        case .todayPick:
+            return .todayPick(HomeTodayPickSectionViewModel())
+        case .new:
+            return .new(HomeNewPostsSectionViewModel())
+        case .weeklyTop:
+            return .weeklyTop(HomeWeeklyTopSectionViewModel())
+        case .customized:
+            return .customized(HomeCustomizedSectionViewModel())
+        case .editorRecommendation:
+            return .editorRecommendation(HomeEditorRecommendSectionViewModel())
+        }
     }
 }

@@ -9,6 +9,11 @@ final class HomeCustomizedSectionViewModel: HomeSectionViewModel {
     let sectionHeaderVM = HomeSectionHeaderViewModel()
     var posts: [HomePostViewTemplate] = []
     
+    init() {
+        print("HomeCustomizedSectionViewModel init")
+        self.sectionHeaderVM.sectionTitle = "회원님이 좋아할 만한"
+    }
+    
     init(posts: [HomePostViewTemplate]) {
         print("HomeCustomizedSectionViewModel init")
         self.posts = posts

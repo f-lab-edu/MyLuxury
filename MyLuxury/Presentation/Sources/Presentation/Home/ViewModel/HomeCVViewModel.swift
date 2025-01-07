@@ -13,7 +13,7 @@ protocol HomeSectionViewModel: AnyObject {
 }
 
 final class HomeCVViewModel {
-    var sectionOrder: [HomeSection] = []
+    var sectionOrder: [HomeSectionTemplate] = []
     var homeSectionVMs: [HomeSectionViewModel] = []
 
     init() {
@@ -27,27 +27,32 @@ final class HomeCVViewModel {
     func setHomeData(homePostData: HomePostViewTemplateGroup) {
         if let sectionOrder = homePostData.sectionOrder {
             self.sectionOrder = sectionOrder
-            for sectioin in sectionOrder {
-                switch sectioin {
-                case .todayPick:
+            for section in sectionOrder {
+                switch section {
+                case .todayPick(let vm):
                     if let posts = homePostData.todayPickPostData {
-                        homeSectionVMs.append(HomeTodayPickSectionViewModel(posts: posts))
+                        vm.posts = posts
+                        homeSectionVMs.append(vm)
                     }
-                case .new:
+                case .new(let vm):
                     if let posts = homePostData.newPostData {
-                        homeSectionVMs.append(HomeNewPostsSectionViewModel(posts: posts))
+                        vm.posts = posts
+                        homeSectionVMs.append(vm)
                     }
-                case .weeklyTop:
+                case .weeklyTop(let vm):
                     if let posts = homePostData.weeklyTopPostData {
-                        homeSectionVMs.append(HomeWeeklyTopSectionViewModel(posts: posts))
+                        vm.posts = posts
+                        homeSectionVMs.append(vm)
                     }
-                case .customized:
+                case .customized(let vm):
                     if let posts = homePostData.customizedPostData {
-                        homeSectionVMs.append(HomeCustomizedSectionViewModel(posts: posts))
+                        vm.posts = posts
+                        homeSectionVMs.append(vm)
                     }
-                case .editorRecommendation:
+                case .editorRecommendation(let vm):
                     if let posts = homePostData.editorRecommendationPostData {
-                        homeSectionVMs.append(HomeEditorRecommendSectionViewModel(posts: posts))
+                        vm.posts = posts
+                        homeSectionVMs.append(vm)
                     }
                 }
             }

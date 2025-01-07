@@ -9,9 +9,8 @@ final class HomeWeeklyTopSectionViewModel: HomeSectionViewModel {
     let sectionHeaderVM = HomeSectionHeaderViewModel()
     var posts: [HomePostViewTemplate] = []
     
-    init(posts: [HomePostViewTemplate]) {
+    init() {
         print("HomeWeeklyTopSectionViewModel init")
-        self.posts = posts
         self.sectionHeaderVM.sectionTitle = "이번 주 TOP10"
     }
     

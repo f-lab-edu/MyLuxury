@@ -19,9 +19,9 @@ final class HomeContentsView: UIView {
         return collectionView
     }()
     
-    private lazy var dataSource: UICollectionViewDiffableDataSource<HomeSection, HomePostViewTemplate> = {
+    private lazy var dataSource: UICollectionViewDiffableDataSource<HomeSectionTemplate, HomePostViewTemplate> = {
         // 각 섹션의 셀에 어떤 데이터가 들어갈 것인지를 결정
-        var dataSource = UICollectionViewDiffableDataSource<HomeSection, HomePostViewTemplate>(collectionView: collectionView) {
+        var dataSource = UICollectionViewDiffableDataSource<HomeSectionTemplate, HomePostViewTemplate>(collectionView: collectionView) {
             // post는 제네릭 타입으로 주어진 HomePostViewTemplate의 인스턴스를 의미
             collectionView, indexPath, post in
             let section = self.homeVM.homeCVVM.sectionOrder[indexPath.section]
@@ -48,21 +48,21 @@ final class HomeContentsView: UIView {
                                                                              for: indexPath) as! HomeContentsSectionHeaderView
             let section = self.homeVM.homeCVVM.sectionOrder[indexPath.section]
             switch section {
-            case .todayPick:
-                let sectionHeaderVM = (self.homeVM.homeCVVM.homeSectionVMs.first(where: { $0 is HomeTodayPickSectionViewModel }) as? HomeTodayPickSectionViewModel)?.sectionHeaderVM
-                headerView.sectionTitle = sectionHeaderVM?.sectionTitle
-            case .new:
-                let sectionHeaderVM = (self.homeVM.homeCVVM.homeSectionVMs.first(where: { $0 is HomeNewPostsSectionViewModel }) as? HomeNewPostsSectionViewModel)?.sectionHeaderVM
-                headerView.sectionTitle = sectionHeaderVM?.sectionTitle
-            case .weeklyTop:
-                let sectionHeaderVM = (self.homeVM.homeCVVM.homeSectionVMs.first(where: { $0 is HomeWeeklyTopSectionViewModel }) as? HomeWeeklyTopSectionViewModel)?.sectionHeaderVM
-                headerView.sectionTitle = sectionHeaderVM?.sectionTitle
-            case .customized:
-                let sectionHeaderVM = (self.homeVM.homeCVVM.homeSectionVMs.first(where: { $0 is HomeCustomizedSectionViewModel }) as? HomeCustomizedSectionViewModel)?.sectionHeaderVM
-                headerView.sectionTitle = sectionHeaderVM?.sectionTitle
-            case .editorRecommendation:
-                let sectionHeaderVM = (self.homeVM.homeCVVM.homeSectionVMs.first(where: { $0 is HomeEditorRecommendSectionViewModel }) as? HomeEditorRecommendSectionViewModel)?.sectionHeaderVM
-                headerView.sectionTitle = sectionHeaderVM?.sectionTitle
+            case .todayPick(let vm):
+                let sectionHeaderVM = vm.sectionHeaderVM
+                headerView.sectionTitle = sectionHeaderVM.sectionTitle
+            case .new(let vm):
+                let sectionHeaderVM = vm.sectionHeaderVM
+                headerView.sectionTitle = sectionHeaderVM.sectionTitle
+            case .weeklyTop(let vm):
+                let sectionHeaderVM = vm.sectionHeaderVM
+                headerView.sectionTitle = sectionHeaderVM.sectionTitle
+            case .customized(let vm):
+                let sectionHeaderVM = vm.sectionHeaderVM
+                headerView.sectionTitle = sectionHeaderVM.sectionTitle
+            case .editorRecommendation(let vm):
+                let sectionHeaderVM = vm.sectionHeaderVM
+                headerView.sectionTitle = sectionHeaderVM.sectionTitle
             }
             return headerView
         }
@@ -95,19 +95,19 @@ final class HomeContentsView: UIView {
     
     func applyInitialSnapshot() {
         // 스냅샷 정의 부분에서 초기 데이터 모습을 결정. -> 섹션의 순서를 결정
-        var snapshot = NSDiffableDataSourceSnapshot<HomeSection, HomePostViewTemplate>()
+        var snapshot = NSDiffableDataSourceSnapshot<HomeSectionTemplate, HomePostViewTemplate>()
         snapshot.appendSections(self.homeVM.homeCVVM.sectionOrder)
         for sectionVM in homeVM.homeCVVM.homeSectionVMs {
             if let todayPickVM = sectionVM as? HomeTodayPickSectionViewModel {
-                snapshot.appendItems(todayPickVM.posts, toSection: .todayPick)
+                snapshot.appendItems(todayPickVM.posts, toSection: .todayPick(todayPickVM))
             } else if let newPostsVM = sectionVM as? HomeNewPostsSectionViewModel {
-                snapshot.appendItems(newPostsVM.posts, toSection: .new)
+                snapshot.appendItems(newPostsVM.posts, toSection: .new(newPostsVM))
             } else if let weeklyTopVM = sectionVM as? HomeWeeklyTopSectionViewModel {
-                snapshot.appendItems(weeklyTopVM.posts, toSection: .weeklyTop)
+                snapshot.appendItems(weeklyTopVM.posts, toSection: .weeklyTop(weeklyTopVM))
             } else if let customizedVM = sectionVM as? HomeCustomizedSectionViewModel {
-                snapshot.appendItems(customizedVM.posts, toSection: .customized)
+                snapshot.appendItems(customizedVM.posts, toSection: .customized(customizedVM))
             } else if let editorRecommendVM = sectionVM as? HomeEditorRecommendSectionViewModel {
-                snapshot.appendItems(editorRecommendVM.posts, toSection: .editorRecommendation)
+                snapshot.appendItems(editorRecommendVM.posts, toSection: .editorRecommendation(editorRecommendVM))
             }
         }
         dataSource.apply(snapshot)
