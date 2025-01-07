@@ -13,7 +13,7 @@ protocol HomeSectionViewModel: AnyObject {
 }
 
 final class HomeCVViewModel {
-    var sectionIndex: [HomeSection] = []
+    var sectionOrder: [HomeSection] = []
     var homeSectionVMs: [HomeSectionViewModel] = []
 
     init() {
@@ -25,9 +25,9 @@ final class HomeCVViewModel {
     }
     
     func setHomeData(homePostData: HomePostViewTemplateGroup) {
-        if let sectionIndex = homePostData.sectionIndex {
-            self.sectionIndex = sectionIndex
-            for sectioin in sectionIndex {
+        if let sectionOrder = homePostData.sectionOrder {
+            self.sectionOrder = sectionOrder
+            for sectioin in sectionOrder {
                 switch sectioin {
                 case .todayPick:
                     if let posts = homePostData.todayPickPostData {

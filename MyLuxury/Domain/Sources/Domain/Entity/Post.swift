@@ -79,7 +79,7 @@ public enum HomeSection: String, CaseIterable, @unchecked Sendable {
 }
 
 public struct HomePostData {
-    public var sectionIndex: [HomeSection]?
+    public var sectionOrder: [HomeSection]?
     public var todayPickPostData: [Post]?
     public var newPostData: [Post]?
     public var weeklyTopPostData: [Post]?
@@ -87,14 +87,14 @@ public struct HomePostData {
     public var editorRecommendationPostData: [Post]?
     
     public init(
-        sectionIndex: [HomeSection]? = nil,
+        sectionOrder: [HomeSection]? = nil,
         todayPickPostData: [Post]? = nil,
         newPostData: [Post]? = nil,
         weeklyTopPostData: [Post]? = nil,
         customizedPostData: [Post]? = nil,
         editorRecommendationPostData: [Post]? = nil
     ) {
-        self.sectionIndex = sectionIndex
+        self.sectionOrder = sectionOrder
         self.todayPickPostData = todayPickPostData
         self.newPostData = newPostData
         self.weeklyTopPostData = weeklyTopPostData

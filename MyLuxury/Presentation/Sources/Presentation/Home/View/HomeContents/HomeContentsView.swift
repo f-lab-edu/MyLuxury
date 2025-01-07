@@ -24,7 +24,7 @@ final class HomeContentsView: UIView {
         var dataSource = UICollectionViewDiffableDataSource<HomeSection, HomePostViewTemplate>(collectionView: collectionView) {
             // post는 제네릭 타입으로 주어진 HomePostViewTemplate의 인스턴스를 의미
             collectionView, indexPath, post in
-            let section = self.homeVM.homeCVVM.sectionIndex[indexPath.section]
+            let section = self.homeVM.homeCVVM.sectionOrder[indexPath.section]
             switch section {
             case .todayPick:
                 let cell = collectionView.dequeueReusableCell(withReuseIdentifier: HomeTodayPickCVC.identifier, for: indexPath) as! HomeTodayPickCVC
@@ -46,7 +46,7 @@ final class HomeContentsView: UIView {
             let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind,
                                                                              withReuseIdentifier: HomeContentsSectionHeaderView.identifier,
                                                                              for: indexPath) as! HomeContentsSectionHeaderView
-            let section = self.homeVM.homeCVVM.sectionIndex[indexPath.section]
+            let section = self.homeVM.homeCVVM.sectionOrder[indexPath.section]
             switch section {
             case .todayPick:
                 let sectionHeaderVM = (self.homeVM.homeCVVM.homeSectionVMs.first(where: { $0 is HomeTodayPickSectionViewModel }) as? HomeTodayPickSectionViewModel)?.sectionHeaderVM
@@ -96,7 +96,7 @@ final class HomeContentsView: UIView {
     func applyInitialSnapshot() {
         // 스냅샷 정의 부분에서 초기 데이터 모습을 결정. -> 섹션의 순서를 결정
         var snapshot = NSDiffableDataSourceSnapshot<HomeSection, HomePostViewTemplate>()
-        snapshot.appendSections(self.homeVM.homeCVVM.sectionIndex)
+        snapshot.appendSections(self.homeVM.homeCVVM.sectionOrder)
         for sectionVM in homeVM.homeCVVM.homeSectionVMs {
             if let todayPickVM = sectionVM as? HomeTodayPickSectionViewModel {
                 snapshot.appendItems(todayPickVM.posts, toSection: .todayPick)
@@ -129,7 +129,7 @@ final class HomeContentsView: UIView {
     
     private func createLayout() -> UICollectionViewCompositionalLayout {
         return UICollectionViewCompositionalLayout { sectionIndex, _ in
-            let section = self.homeVM.homeCVVM.sectionIndex[sectionIndex]
+            let section = self.homeVM.homeCVVM.sectionOrder[sectionIndex]
             switch section {
             case .todayPick:
                 return self.createOneItemSection()

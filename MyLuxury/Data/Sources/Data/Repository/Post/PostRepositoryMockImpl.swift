@@ -16,7 +16,7 @@ public class PostRepositoryMockImpl: PostRepository {
     
     public func getHomeViewData() -> AnyPublisher<HomePostData, Never> {
         let homePostData: HomePostData = HomePostData(
-            sectionIndex: [.todayPick, .new, .weeklyTop, .customized, .editorRecommendation],
+            sectionOrder: [.todayPick, .new, .weeklyTop, .customized, .editorRecommendation],
             todayPickPostData: [Post(post_id: "1", postUIType: .normal, postCategory: .art, postTitle: "흑백 사진은 언제 처음 사용되었을까???", postThumbnailImage: "testImage1")],
             newPostData: [
                 Post(post_id: "2", postUIType: .normal, postCategory: .art, postTitle: "그때 그 시절, 무엇을 하며 놀았을까요??", postThumbnailImage: "testImage2"),

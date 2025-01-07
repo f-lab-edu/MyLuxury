@@ -62,7 +62,7 @@ class HomeViewModel {
         postUseCase.getHomeViewData()
             .map { homeData -> HomePostViewTemplateGroup in
                 var dataGroup = HomePostViewTemplateGroup()
-                dataGroup.sectionIndex = homeData.sectionIndex
+                dataGroup.sectionOrder = homeData.sectionOrder
                 func convertPostArray(posts: [Post]?) -> [HomePostViewTemplate]? {
                     posts?.map { post in
                         HomePostViewTemplate(
@@ -101,7 +101,7 @@ extension HomeViewModel {
 }
 
 struct HomePostViewTemplateGroup {
-    var sectionIndex: [HomeSection]?
+    var sectionOrder: [HomeSection]?
     var todayPickPostData: [HomePostViewTemplate]?
     var newPostData: [HomePostViewTemplate]?
     var weeklyTopPostData: [HomePostViewTemplate]?
