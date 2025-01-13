@@ -7,12 +7,20 @@
 
 import UIKit
 
-//struct HomeTodayPickPostData {
-//    var postThumbnailImage: String
-//    var postTitle: String
-//}
-
 final class HomeTodayPickCVC: UICollectionViewCell {
+    struct ViewModel: Hashable {
+        let uuid: String
+        let homePostTemplate: HomePostTemplate
+        
+        func hash(into hasher: inout Hasher) {
+            hasher.combine(uuid)
+        }
+        
+        static func == (lhs: ViewModel, rhs: ViewModel) -> Bool {
+            lhs.uuid == rhs.uuid
+        }
+    }
+    
     static let identifier = "HomeTodayPickCVC"
     
     private let postThumbnailImageView: UIImageView = {
@@ -30,13 +38,6 @@ final class HomeTodayPickCVC: UICollectionViewCell {
         return label
     }()
 
-    var homePostViewData: HomePostViewTemplate? {
-        didSet {
-            self.postThumbnailImageView.image = UIImage(named: homePostViewData?.postThumbnailImage ?? "blackScreen")
-            self.postTitleLabel.text = homePostViewData?.postTitle
-        }
-    }
-    
     override init(frame: CGRect) {
         super.init(frame: frame)
         setUpHierarchy()
@@ -64,5 +65,10 @@ final class HomeTodayPickCVC: UICollectionViewCell {
             postTitleLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 15),
             postTitleLabel.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -15)
         ])
+    }
+    
+    func configure(viewModel: ViewModel) {
+        self.postTitleLabel.text = viewModel.homePostTemplate.postTitle
+        self.postThumbnailImageView.image = UIImage(named: viewModel.homePostTemplate.postThumbnailImage)
     }
 }

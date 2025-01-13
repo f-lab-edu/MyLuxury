@@ -9,7 +9,56 @@ import UIKit
 import Combine
 import Domain
 
+struct CompositeViewModel {
+    let headerVM: HomeSectionHeaderViewModel
+    let cellVMs: [HomeSectionCellViewModel]
+}
+
+enum HomeSectionHeaderViewModel: Hashable, Identifiable {
+    case todayPick(headerVM: HomeSectionHeaderView.ViewModel)
+    case newPost(headerVM: HomeSectionHeaderView.ViewModel)
+    case weeklyTop(headerVM: HomeSectionHeaderView.ViewModel)
+    case customized(headerVM: HomeSectionHeaderView.ViewModel)
+    case editorRecommend(headerVM: HomeSectionHeaderView.ViewModel)
+    
+    var id: String {
+        switch self {
+        case .todayPick:
+            return "todayPick"
+        case .newPost:
+            return "newPost"
+        case .weeklyTop:
+            return "weeklyTop"
+        case .customized:
+            return "customized"
+        case .editorRecommend:
+            return "editorRecommend"
+        }
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+    
+    static func == (lhs: HomeSectionHeaderViewModel, rhs: HomeSectionHeaderViewModel) -> Bool {
+        return lhs.id == rhs.id
+    }
+}
+
+enum HomeSectionCellViewModel: Hashable, Sendable {
+    case todayPick(cellVM: HomeTodayPickCVC.ViewModel)
+    case newPost(cellVM: HomeHorizontalCVC.ViewModel)
+    case weeklyTop(cellVM: HomeHorizontalCVC.ViewModel)
+    case customized(cellVM: HomeHorizontalCVC.ViewModel)
+    case editorRecommend(cellVM: HomeEditorRecommendCVC.ViewModel)
+}
+
+
 final class HomeContentsView: UIView {
+    struct ViewModel {
+        let sections: [CompositeViewModel]
+    }
+    
     private var homeVM: HomeViewModel
     
     private lazy var collectionView: UICollectionView = {
@@ -19,50 +68,52 @@ final class HomeContentsView: UIView {
         return collectionView
     }()
     
-    private lazy var dataSource: UICollectionViewDiffableDataSource<HomeSectionTemplate, HomePostViewTemplate> = {
-        // 각 섹션의 셀에 어떤 데이터가 들어갈 것인지를 결정
-        var dataSource = UICollectionViewDiffableDataSource<HomeSectionTemplate, HomePostViewTemplate>(collectionView: collectionView) {
-            // post는 제네릭 타입으로 주어진 HomePostViewTemplate의 인스턴스를 의미
-            collectionView, indexPath, post in
-            let section = self.homeVM.homeCVVM.sectionOrder[indexPath.section]
-            switch section {
-            case .todayPick:
+    private lazy var dataSource: UICollectionViewDiffableDataSource<HomeSectionHeaderViewModel, HomeSectionCellViewModel> = {
+        var dataSource = UICollectionViewDiffableDataSource<HomeSectionHeaderViewModel, HomeSectionCellViewModel>(collectionView: collectionView) {
+            collectionView, indexPath, cellViewModel in
+            switch cellViewModel {
+            case .todayPick(cellVM: let cellVM):
                 let cell = collectionView.dequeueReusableCell(withReuseIdentifier: HomeTodayPickCVC.identifier, for: indexPath) as! HomeTodayPickCVC
-                cell.homePostViewData = post
+                cell.configure(viewModel: cellVM)
                 return cell
-            case .editorRecommendation:
-                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: HomeEditorRecommendCVC.identifier, for: indexPath) as! HomeEditorRecommendCVC
-                cell.homePostViewData = post
-                return cell
-            default:
+            case .newPost(cellVM: let cellVM):
                 let cell = collectionView.dequeueReusableCell(withReuseIdentifier: HomeHorizontalCVC.identifier, for: indexPath) as! HomeHorizontalCVC
-                cell.homePostViewData = post
+                cell.configure(viewModel: cellVM)
+                return cell
+            case .weeklyTop(cellVM: let cellVM):
+                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: HomeHorizontalCVC.identifier, for: indexPath) as! HomeHorizontalCVC
+                cell.configure(viewModel: cellVM)
+                return cell
+            case .customized(cellVM: let cellVM):
+                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: HomeHorizontalCVC.identifier, for: indexPath) as! HomeHorizontalCVC
+                cell.configure(viewModel: cellVM)
+                return cell
+            case .editorRecommend(cellVM: let cellVM):
+                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: HomeEditorRecommendCVC.identifier, for: indexPath) as! HomeEditorRecommendCVC
+                cell.configure(viewModel: cellVM)
                 return cell
             }
         }
         
         dataSource.supplementaryViewProvider = { collectionView, kind, indexPath in
             guard kind == UICollectionView.elementKindSectionHeader else { return UICollectionReusableView() }
-            let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind,
-                                                                             withReuseIdentifier: HomeContentsSectionHeaderView.identifier,
-                                                                             for: indexPath) as! HomeContentsSectionHeaderView
-            let section = self.homeVM.homeCVVM.sectionOrder[indexPath.section]
+            let headerView = collectionView.dequeueReusableSupplementaryView(
+                ofKind: kind,
+                withReuseIdentifier: HomeSectionHeaderView.identifier,
+                for: indexPath) as! HomeSectionHeaderView
+            
+            let section = dataSource.snapshot().sectionIdentifiers[indexPath.section]
             switch section {
-            case .todayPick(let vm):
-                let sectionHeaderVM = vm.sectionHeaderVM
-                headerView.sectionTitle = sectionHeaderVM.sectionTitle
-            case .new(let vm):
-                let sectionHeaderVM = vm.sectionHeaderVM
-                headerView.sectionTitle = sectionHeaderVM.sectionTitle
-            case .weeklyTop(let vm):
-                let sectionHeaderVM = vm.sectionHeaderVM
-                headerView.sectionTitle = sectionHeaderVM.sectionTitle
-            case .customized(let vm):
-                let sectionHeaderVM = vm.sectionHeaderVM
-                headerView.sectionTitle = sectionHeaderVM.sectionTitle
-            case .editorRecommendation(let vm):
-                let sectionHeaderVM = vm.sectionHeaderVM
-                headerView.sectionTitle = sectionHeaderVM.sectionTitle
+            case .todayPick(headerVM: let headerVM):
+                headerView.configure(viewModel: headerVM)
+            case .newPost(headerVM: let headerVM):
+                headerView.configure(viewModel: headerVM)
+            case .weeklyTop(headerVM: let headerVM):
+                headerView.configure(viewModel: headerVM)
+            case .customized(headerVM: let headerVM):
+                headerView.configure(viewModel: headerVM)
+            case .editorRecommend(headerVM: let headerVM):
+                headerView.configure(viewModel: headerVM)
             }
             return headerView
         }
@@ -87,30 +138,19 @@ final class HomeContentsView: UIView {
     
     private func setUpCollectionView() {
         collectionView.delegate = self
-        collectionView.register(HomeContentsSectionHeaderView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: HomeContentsSectionHeaderView.identifier)
+        collectionView.register(HomeSectionHeaderView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: HomeSectionHeaderView.identifier)
         collectionView.register(HomeTodayPickCVC.self, forCellWithReuseIdentifier: HomeTodayPickCVC.identifier)
         collectionView.register(HomeHorizontalCVC.self, forCellWithReuseIdentifier: HomeHorizontalCVC.identifier)
         collectionView.register(HomeEditorRecommendCVC.self, forCellWithReuseIdentifier: HomeEditorRecommendCVC.identifier)
     }
-    
-    func applyInitialSnapshot() {
-        // 스냅샷 정의 부분에서 초기 데이터 모습을 결정. -> 섹션의 순서를 결정
-        var snapshot = NSDiffableDataSourceSnapshot<HomeSectionTemplate, HomePostViewTemplate>()
-        snapshot.appendSections(self.homeVM.homeCVVM.sectionOrder)
-        for sectionVM in homeVM.homeCVVM.homeSectionVMs {
-            if let todayPickVM = sectionVM as? HomeTodayPickSectionViewModel {
-                snapshot.appendItems(todayPickVM.posts, toSection: .todayPick(todayPickVM))
-            } else if let newPostsVM = sectionVM as? HomeNewPostsSectionViewModel {
-                snapshot.appendItems(newPostsVM.posts, toSection: .new(newPostsVM))
-            } else if let weeklyTopVM = sectionVM as? HomeWeeklyTopSectionViewModel {
-                snapshot.appendItems(weeklyTopVM.posts, toSection: .weeklyTop(weeklyTopVM))
-            } else if let customizedVM = sectionVM as? HomeCustomizedSectionViewModel {
-                snapshot.appendItems(customizedVM.posts, toSection: .customized(customizedVM))
-            } else if let editorRecommendVM = sectionVM as? HomeEditorRecommendSectionViewModel {
-                snapshot.appendItems(editorRecommendVM.posts, toSection: .editorRecommendation(editorRecommendVM))
-            }
+
+    func configureSnapshot(viewModel: ViewModel) {
+        var snapshot = NSDiffableDataSourceSnapshot<HomeSectionHeaderViewModel, HomeSectionCellViewModel>()
+        viewModel.sections.forEach { viewModel in
+            snapshot.appendSections([viewModel.headerVM])
+            snapshot.appendItems(viewModel.cellVMs, toSection: viewModel.headerVM)
         }
-        dataSource.apply(snapshot)
+        dataSource.apply(snapshot, animatingDifferences: true)
     }
     
     private func setUpHierarchy() {
@@ -129,14 +169,18 @@ final class HomeContentsView: UIView {
     
     private func createLayout() -> UICollectionViewCompositionalLayout {
         return UICollectionViewCompositionalLayout { sectionIndex, _ in
-            let section = self.homeVM.homeCVVM.sectionOrder[sectionIndex]
+            let section = self.dataSource.snapshot().sectionIdentifiers[sectionIndex]
             switch section {
             case .todayPick:
                 return self.createOneItemSection()
-            case .editorRecommendation:
-                return self.createVerticalSection()
-            default:
+            case .newPost:
                 return self.createHorizontalSection()
+            case .weeklyTop:
+                return self.createHorizontalSection()
+            case .customized:
+                return self.createHorizontalSection()
+            case .editorRecommend:
+                return self.createVerticalSection()
             }
         }
     }
@@ -200,7 +244,18 @@ final class HomeContentsView: UIView {
 extension HomeContentsView: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if let post = dataSource.itemIdentifier(for: indexPath) {
-            homeVM.sendInputEvent(input: .postTapped(post.postId))
+            switch post {
+            case .todayPick(cellVM: let cellVM):
+                homeVM.sendInputEvent(input: .postTapped(cellVM.homePostTemplate.postId))
+            case .newPost(cellVM: let cellVM):
+                homeVM.sendInputEvent(input: .postTapped(cellVM.homePostTemplate.postId))
+            case .weeklyTop(cellVM: let cellVM):
+                homeVM.sendInputEvent(input: .postTapped(cellVM.homePostTemplate.postId))
+            case .customized(cellVM: let cellVM):
+                homeVM.sendInputEvent(input: .postTapped(cellVM.homePostTemplate.postId))
+            case .editorRecommend(cellVM: let cellVM):
+                homeVM.sendInputEvent(input: .postTapped(cellVM.homePostTemplate.postId))
+            }
         }
     }
 }

@@ -56,8 +56,8 @@ final class HomeViewController: UIViewController {
             .sink { [weak self] event in
                 guard let self = self else { return }
                 switch event {
-                case .getHomePostData:
-                    self.rootView.contentView.applyInitialSnapshot()
+                case .getHomePostData(let viewModel):
+                    self.rootView.contentView.configureSnapshot(viewModel: viewModel)
                 case .goToPost(let post):
                     self.homeVM.delegate?.goToPost(postId: post)
                 }
