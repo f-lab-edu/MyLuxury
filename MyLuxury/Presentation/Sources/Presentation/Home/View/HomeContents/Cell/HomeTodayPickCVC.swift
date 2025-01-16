@@ -12,10 +12,16 @@ final class HomeTodayPickCVC: UICollectionViewCell {
         let uuid: String
         let homePostTemplate: HomePostTemplate
         
+        // DiffableDataSource는 내부적으로 Hashable과 Equtable을 사용하여
+        // 이전 스냅샷과 새로운 스냅샷을 비교함.
+        
+        // hash와 == 메소드는 항상 일관성을 유지해야함.
         func hash(into hasher: inout Hasher) {
             hasher.combine(uuid)
         }
         
+        // title이 업데이트 될 수 있는 상황이라면
+        // equtable에서 title도 비교를 해줘야 함.
         static func == (lhs: ViewModel, rhs: ViewModel) -> Bool {
             lhs.uuid == rhs.uuid
         }
