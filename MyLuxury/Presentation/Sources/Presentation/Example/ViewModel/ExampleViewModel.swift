@@ -1,0 +1,52 @@
+//
+//  ExampleViewModel.swift
+//  MyLuxury
+//
+//  Created by KoSungmin on 10/3/24.
+//
+
+import Combine
+import Domain
+
+//final class ExampleViewModel {
+//    
+//    enum Input {
+//        
+//        case viewDidAppear
+//    }
+//    
+//    enum Output {
+//        
+//        case fetchData(value: String)
+//    }
+//    
+//    private let exampleUseCase: ExampleUseCase
+//    private let output: PassthroughSubject<Output, Never> = .init()
+//    private var cancellables = Set<AnyCancellable>()
+//    
+//    init(exampleUseCase: ExampleUseCase) {
+//        self.exampleUseCase = exampleUseCase
+//    }
+//    
+//    func transform(input: AnyPublisher<Input, Never>) -> AnyPublisher<Output, Never> {
+//        
+//        input.sink { event in
+//            
+//            switch event {
+//                
+//            case .viewDidAppear:
+//                self.fetchData()
+//            }
+//        }.store(in: &cancellables)
+//        
+//        return output.eraseToAnyPublisher()
+//    }
+//    
+//    private func fetchData() {
+//        
+//        exampleUseCase.fetchData().sink { entity in
+//            
+//            self.output.send(.fetchData(value: entity.value))
+//        }.store(in: &cancellables)
+//    }
+//}
