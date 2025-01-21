@@ -9,62 +9,123 @@ import UIKit
 import Combine
 import Domain
 
+struct HomeSectionCompositeViewModel {
+    let headerVM: HomeSectionHeaderViewModel
+    let cellVMs: [HomeSectionCellViewModel]
+}
+
+enum HomeSectionHeaderViewModel: Hashable, Identifiable {
+    case todayPick(headerVM: HomeSectionHeaderView.ViewModel)
+    case newPost(headerVM: HomeSectionHeaderView.ViewModel)
+    case weeklyTop(headerVM: HomeSectionHeaderView.ViewModel)
+    case customized(headerVM: HomeSectionHeaderView.ViewModel)
+    case editorRecommend(headerVM: HomeSectionHeaderView.ViewModel)
+    
+    var id: String {
+        switch self {
+        case .todayPick:
+            return "todayPick"
+        case .newPost:
+            return "newPost"
+        case .weeklyTop:
+            return "weeklyTop"
+        case .customized:
+            return "customized"
+        case .editorRecommend:
+            return "editorRecommend"
+        }
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+    
+    static func == (lhs: HomeSectionHeaderViewModel, rhs: HomeSectionHeaderViewModel) -> Bool {
+        return lhs.id == rhs.id
+    }
+}
+
+enum HomeSectionCellViewModel: Hashable, Sendable {
+    case todayPick(cellVM: HomeTodayPickCVC.ViewModel)
+    case newPost(cellVM: HomeHorizontalCVC.ViewModel)
+    case weeklyTop(cellVM: HomeHorizontalCVC.ViewModel)
+    case customized(cellVM: HomeHorizontalCVC.ViewModel)
+    case editorRecommend(cellVM: HomeEditorRecommendCVC.ViewModel)
+}
+
+
 final class HomeContentsView: UIView {
+    struct ViewModel {
+        let sections: [HomeSectionCompositeViewModel]
+    }
+    
     private var homeVM: HomeViewModel
     
-    private let scrollView: UIScrollView = {
-        let scrollView = UIScrollView()
-        scrollView.showsVerticalScrollIndicator = false
-        return scrollView
+    private lazy var collectionView: UICollectionView = {
+        // collectionView의 레이아웃을 하단에서 생성한 CompositionalLayout 방식으로 지정
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: createLayout())
+        collectionView.backgroundColor = .clear
+        return collectionView
     }()
     
-    private let stackView: UIStackView = {
-        let stackView = UIStackView()
-        stackView.axis = .vertical
-        stackView.distribution = .fill
-        stackView.alignment = .fill
-        stackView.spacing = 30
-        return stackView
+    private lazy var dataSource: UICollectionViewDiffableDataSource<HomeSectionHeaderViewModel, HomeSectionCellViewModel> = {
+        var dataSource = UICollectionViewDiffableDataSource<HomeSectionHeaderViewModel, HomeSectionCellViewModel>(collectionView: collectionView) {
+            collectionView, indexPath, cellViewModel in
+            switch cellViewModel {
+            case .todayPick(cellVM: let cellVM):
+                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: HomeTodayPickCVC.identifier, for: indexPath) as! HomeTodayPickCVC
+                cell.configure(viewModel: cellVM)
+                return cell
+            case .newPost(cellVM: let cellVM):
+                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: HomeHorizontalCVC.identifier, for: indexPath) as! HomeHorizontalCVC
+                cell.configure(viewModel: cellVM)
+                return cell
+            case .weeklyTop(cellVM: let cellVM):
+                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: HomeHorizontalCVC.identifier, for: indexPath) as! HomeHorizontalCVC
+                cell.configure(viewModel: cellVM)
+                return cell
+            case .customized(cellVM: let cellVM):
+                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: HomeHorizontalCVC.identifier, for: indexPath) as! HomeHorizontalCVC
+                cell.configure(viewModel: cellVM)
+                return cell
+            case .editorRecommend(cellVM: let cellVM):
+                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: HomeEditorRecommendCVC.identifier, for: indexPath) as! HomeEditorRecommendCVC
+                cell.configure(viewModel: cellVM)
+                return cell
+            }
+        }
+        
+        dataSource.supplementaryViewProvider = { collectionView, kind, indexPath in
+            guard kind == UICollectionView.elementKindSectionHeader else { return UICollectionReusableView() }
+            let headerView = collectionView.dequeueReusableSupplementaryView(
+                ofKind: kind,
+                withReuseIdentifier: HomeSectionHeaderView.identifier,
+                for: indexPath) as! HomeSectionHeaderView
+            
+            let section = dataSource.snapshot().sectionIdentifiers[indexPath.section]
+            switch section {
+            case .todayPick(headerVM: let headerVM):
+                headerView.configure(viewModel: headerVM)
+            case .newPost(headerVM: let headerVM):
+                headerView.configure(viewModel: headerVM)
+            case .weeklyTop(headerVM: let headerVM):
+                headerView.configure(viewModel: headerVM)
+            case .customized(headerVM: let headerVM):
+                headerView.configure(viewModel: headerVM)
+            case .editorRecommend(headerVM: let headerVM):
+                headerView.configure(viewModel: headerVM)
+            }
+            return headerView
+        }
+        return dataSource
     }()
     
-    var homePostData: HomePostData? {
-        didSet {
-            updateContentsSections()
-        }
-    }
-
-    private var contentsSections: [any HomeContentsSectionView] = []
-    
-    /// 섹션 추가는 이 곳에서 하시면 됩니다.
-    private func updateContentsSections() {
-        if let data = homePostData?.todayPickPostData {
-            contentsSections.append(HomeTodayPickView(homeVM: homeVM, sectionTitle: "오늘의 PICK", postData: data))
-        }
-        if let data = homePostData?.newPostData {
-            contentsSections.append(HomeHorizontalCollectionView(homeVM: homeVM, sectionTitle: "새로 게시된 지식", postData: data))
-        }
-        if let data = homePostData?.weeklyTopPostData {
-            contentsSections.append(HomeHorizontalCollectionView(homeVM: homeVM, sectionTitle: "이번 주 TOP10", postData: data))
-        }
-        if let data = homePostData?.customizedPostData {
-            contentsSections.append(HomeHorizontalCollectionView(homeVM: homeVM, sectionTitle: "회원님이 좋아할 만한", postData: data))
-        }
-        if let data = homePostData?.editorRecommendationPostData {
-            contentsSections.append(HomeEditorRecommendCollectionView(homeVM: homeVM, sectionTitle: "에디터 추천 지식", postData: data))
-        }
-
-        for section in contentsSections {
-            stackView.addArrangedSubview(section)
-        }
-    }
-
     init(homeVM: HomeViewModel) {
         self.homeVM = homeVM
         super.init(frame: .zero)
+        setUpCollectionView()
         setUpHierarchy()
         setUpLayout()
-        scrollView.backgroundColor = .black
-        stackView.backgroundColor = .clear
     }
     
     override init(frame: CGRect) {
@@ -75,25 +136,126 @@ final class HomeContentsView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
+    private func setUpCollectionView() {
+        collectionView.delegate = self
+        collectionView.register(HomeSectionHeaderView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: HomeSectionHeaderView.identifier)
+        collectionView.register(HomeTodayPickCVC.self, forCellWithReuseIdentifier: HomeTodayPickCVC.identifier)
+        collectionView.register(HomeHorizontalCVC.self, forCellWithReuseIdentifier: HomeHorizontalCVC.identifier)
+        collectionView.register(HomeEditorRecommendCVC.self, forCellWithReuseIdentifier: HomeEditorRecommendCVC.identifier)
+    }
+
+    func configureSnapshot(viewModel: ViewModel) {
+        var snapshot = NSDiffableDataSourceSnapshot<HomeSectionHeaderViewModel, HomeSectionCellViewModel>()
+        viewModel.sections.forEach { viewModel in
+            snapshot.appendSections([viewModel.headerVM])
+            snapshot.appendItems(viewModel.cellVMs, toSection: viewModel.headerVM)
+        }
+        dataSource.apply(snapshot, animatingDifferences: true)
+    }
+    
     private func setUpHierarchy() {
-        self.addSubview(scrollView)
-        scrollView.addSubview(stackView)
+        self.addSubview(collectionView)
     }
     
     private func setUpLayout() {
-        scrollView.translatesAutoresizingMaskIntoConstraints = false
-        stackView.translatesAutoresizingMaskIntoConstraints = false
-
+        collectionView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            scrollView.topAnchor.constraint(equalTo: self.topAnchor),
-            scrollView.leadingAnchor.constraint(equalTo: self.leadingAnchor),
-            scrollView.trailingAnchor.constraint(equalTo: self.trailingAnchor),
-            scrollView.bottomAnchor.constraint(equalTo: self.bottomAnchor),
-            stackView.topAnchor.constraint(equalTo: scrollView.topAnchor),
-            stackView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
-            stackView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
-            stackView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
-            stackView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
+            collectionView.topAnchor.constraint(equalTo: self.topAnchor),
+            collectionView.bottomAnchor.constraint(equalTo: self.bottomAnchor),
+            collectionView.leadingAnchor.constraint(equalTo: self.leadingAnchor),
+            collectionView.trailingAnchor.constraint(equalTo: self.trailingAnchor)
         ])
+    }
+    
+    private func createLayout() -> UICollectionViewCompositionalLayout {
+        return UICollectionViewCompositionalLayout { sectionIndex, _ in
+            let section = self.dataSource.snapshot().sectionIdentifiers[sectionIndex]
+            switch section {
+            case .todayPick:
+                return self.createOneItemSection()
+            case .newPost:
+                return self.createHorizontalSection()
+            case .weeklyTop:
+                return self.createHorizontalSection()
+            case .customized:
+                return self.createHorizontalSection()
+            case .editorRecommend:
+                return self.createVerticalSection()
+            }
+        }
+    }
+    
+    // 셀간 간격: group.interItemSpacing
+    // 그룹간 간격: section.interGroupSpacing
+    
+    private func createOneItemSection() -> NSCollectionLayoutSection {
+        let itemSize = NSCollectionLayoutSize(widthDimension: .absolute(hometodayPickViewWidth), heightDimension: .absolute(hometodayPickViewHeight))
+        let item = NSCollectionLayoutItem(layoutSize: itemSize)
+        let groupSize = NSCollectionLayoutSize(widthDimension: .absolute(hometodayPickViewWidth), heightDimension: .absolute(hometodayPickViewHeight))
+        let group = NSCollectionLayoutGroup.vertical(layoutSize: groupSize, subitems: [item])
+        let section = NSCollectionLayoutSection(group: group)
+        section.orthogonalScrollingBehavior = .none
+        section.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 15, bottom: 35, trailing: 15)
+        let headerSize = NSCollectionLayoutSize(widthDimension: .absolute(screenWidth), heightDimension: .absolute(50))
+        let header = NSCollectionLayoutBoundarySupplementaryItem(
+            layoutSize: headerSize,
+            elementKind: UICollectionView.elementKindSectionHeader,
+            alignment: .top)
+        section.boundarySupplementaryItems = [header]
+        return section
+    }
+    
+    private func createHorizontalSection() -> NSCollectionLayoutSection {
+        let itemSize = NSCollectionLayoutSize(widthDimension: .absolute(homeHorizontalCVCLength), heightDimension: .absolute(homeHorizontalCVCLength))
+        let item = NSCollectionLayoutItem(layoutSize: itemSize)
+        let groupSize = NSCollectionLayoutSize(widthDimension: .absolute(homeHorizontalCVCLength), heightDimension: .absolute(homeHorizontalCVCLength))
+        let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
+        let section = NSCollectionLayoutSection(group: group)
+        section.orthogonalScrollingBehavior = .continuous
+        section.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 15, bottom: 60, trailing: 15)
+        section.interGroupSpacing = 15
+        let headerSize = NSCollectionLayoutSize(widthDimension: .absolute(screenWidth), heightDimension: .absolute(50))
+        let header = NSCollectionLayoutBoundarySupplementaryItem(
+            layoutSize: headerSize,
+            elementKind: UICollectionView.elementKindSectionHeader,
+            alignment: .top)
+        section.boundarySupplementaryItems = [header]
+        return section
+    }
+    
+    private func createVerticalSection() -> NSCollectionLayoutSection {
+        let itemSize = NSCollectionLayoutSize(widthDimension: .absolute(homeEditorRecommendCVCLength), heightDimension: .absolute(homeEditorRecommendCVCLength))
+        let item = NSCollectionLayoutItem(layoutSize: itemSize)
+        let groupSize = NSCollectionLayoutSize(widthDimension: .absolute(homeEditorRecommendCVCLength), heightDimension: .absolute(homeEditorRecommendCVCLength))
+        let group = NSCollectionLayoutGroup.vertical(layoutSize: groupSize, subitems: [item])
+        let section = NSCollectionLayoutSection(group: group)
+        section.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 15, bottom: 0, trailing: 15)
+        section.interGroupSpacing = 20
+        let headerSize = NSCollectionLayoutSize(widthDimension: .absolute(screenWidth), heightDimension: .absolute(50))
+        let header = NSCollectionLayoutBoundarySupplementaryItem(
+            layoutSize: headerSize,
+            elementKind: UICollectionView.elementKindSectionHeader,
+            alignment: .top)
+        section.boundarySupplementaryItems = [header]
+        return section
+    }
+}
+
+extension HomeContentsView: UICollectionViewDelegate {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        if let post = dataSource.itemIdentifier(for: indexPath) {
+            switch post {
+            case .todayPick(cellVM: let cellVM):
+                homeVM.sendInputEvent(input: .postTapped(cellVM.homePostTemplate.postId))
+            case .newPost(cellVM: let cellVM):
+                homeVM.sendInputEvent(input: .postTapped(cellVM.homePostTemplate.postId))
+            case .weeklyTop(cellVM: let cellVM):
+                homeVM.sendInputEvent(input: .postTapped(cellVM.homePostTemplate.postId))
+            case .customized(cellVM: let cellVM):
+                homeVM.sendInputEvent(input: .postTapped(cellVM.homePostTemplate.postId))
+            case .editorRecommend(cellVM: let cellVM):
+                homeVM.sendInputEvent(input: .postTapped(cellVM.homePostTemplate.postId))
+            }
+        }
     }
 }

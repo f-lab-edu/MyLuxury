@@ -61,11 +61,11 @@ public class SearchCoordinatorImpl: SearchCoordinator, @preconcurrency SearchVie
     }
     
     @MainActor
-    func goToPostView(post: Post) {
+    func goToPostView(postId: String) {
         let postCoordinator = self.dependency.postCoordinator
         postCoordinator.delegate = self
         childCoordinators.append(postCoordinator)
-        let postVC = postCoordinator.start(post: post)
+        let postVC = postCoordinator.start(postId: postId)
         self.navigationController.pushViewController(postVC, animated: true)
     }
     

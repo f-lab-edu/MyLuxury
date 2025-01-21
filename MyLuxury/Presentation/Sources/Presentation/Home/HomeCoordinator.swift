@@ -51,11 +51,11 @@ public class HomeCoordinatorImpl: HomeCoordinator, @preconcurrency HomeViewModel
     }
     
     @MainActor
-    func goToPost(post: Post) {
+    func goToPost(postId: String) {
         let postCoordinator = self.dependency.postCoordinator
         childCoordinators.append(postCoordinator)
         postCoordinator.delegate = self
-        let postVC = postCoordinator.start(post: post)
+        let postVC = postCoordinator.start(postId: postId)
         self.navigationController.pushViewController(postVC, animated: true)
     }
     

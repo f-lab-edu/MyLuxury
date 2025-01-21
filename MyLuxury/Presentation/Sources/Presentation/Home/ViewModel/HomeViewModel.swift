@@ -10,7 +10,7 @@ import Combine
 import Domain
 
 protocol HomeViewModelDelegate: AnyObject {
-    func goToPost(post: Post)
+    func goToPost(postId: String)
 }
 
 class HomeViewModel {
@@ -18,8 +18,8 @@ class HomeViewModel {
     private let output: PassthroughSubject<Output, Never> = .init()
     private let input: PassthroughSubject<Input, Never> = .init()
     private var cancellables = Set<AnyCancellable>()
-    var homePostData: HomePostData? = nil
     weak var delegate: HomeViewModelDelegate?
+    private var homePostTemplateGroup: [HomePostTemplateGroup] = []
     
     init(postUseCase: PostUseCase) {
         print("HomeViewModel init")
@@ -36,9 +36,9 @@ class HomeViewModel {
             guard let self = self else { return }
             switch event {
             case .viewLoaded:
-                self.getHomeViewData()
+                self.getHomePostData()
             case .viewReload:
-                self.getHomeViewData()
+                self.getHomePostData()
             case .postTapped(let post):
                 self.output.send(.goToPost(post))
             }
@@ -56,14 +56,113 @@ class HomeViewModel {
             self.input.send(.postTapped(post))
         }
     }
-    
-    func getHomeViewData() {
+
+    func getHomePostData() {
         postUseCase.getHomeViewData()
-            .sink { [weak self] homeData in
+            .map { homePostData -> [HomePostTemplateGroup] in
+                var homePostTemplateGroup: [HomePostTemplateGroup] = []
+                if let sectionOrder = homePostData.sectionOrder {
+                    for section in sectionOrder {
+                        switch section {
+                        case .todayPick:
+                            if let todayPickPostData = homePostData.todayPickPostData {
+                                homePostTemplateGroup.append(HomePostTemplateGroup(
+                                    type: .todayPick,
+                                    homePosts: todayPickPostData.map { $0.toHomePostTemplate() }))
+                            }
+                        case .new:
+                            if let newPostData = homePostData.newPostData {
+                                homePostTemplateGroup.append(HomePostTemplateGroup(
+                                    type: .newPost,
+                                    homePosts: newPostData.map { $0.toHomePostTemplate() }))
+                            }
+                        case .weeklyTop:
+                            if let weeklyTopPostData = homePostData.weeklyTopPostData {
+                                homePostTemplateGroup.append(HomePostTemplateGroup(
+                                    type: .weeklyTop,
+                                    homePosts: weeklyTopPostData.map { $0.toHomePostTemplate() }))
+                            }
+                        case .customized:
+                            if let customizedPostData = homePostData.customizedPostData {
+                                homePostTemplateGroup.append(HomePostTemplateGroup(
+                                    type: .customized,
+                                    homePosts: customizedPostData.map { $0.toHomePostTemplate() }))
+                            }
+                        case .editorRecommendation:
+                            if let editorRecommendationPostData = homePostData.editorRecommendationPostData {
+                                homePostTemplateGroup.append(HomePostTemplateGroup(
+                                    type: .editorRecommend,
+                                    homePosts: editorRecommendationPostData.map { $0.toHomePostTemplate() }))
+                            }
+                        }
+                    }
+                }
+                return homePostTemplateGroup
+            }
+            .sink { [weak self] homePostTemplateGroup in
                 guard let self = self else { return }
-                self.homePostData = homeData
-                self.output.send(.getHomePostData)
-            }.store(in: &cancellables)
+                self.homePostTemplateGroup = homePostTemplateGroup
+                self.output.send(.getHomePostData(vm: makeViewModel()))
+            }
+            .store(in: &cancellables)
+    }
+    
+    private func makeViewModel() -> HomeContentsView.ViewModel {
+        let sections = homePostTemplateGroup.map { group -> HomeSectionCompositeViewModel in
+            switch group.type {
+            case .todayPick:
+                return .init(headerVM: .todayPick(headerVM: .init(sectionTitle: group.type.title)),
+                             cellVMs: group.homePosts.map {
+                                .todayPick(cellVM: .init(uuid: $0.uuid.uuidString,
+                                    homePostTemplate: .init(
+                                        postId: $0.postId,
+                                        postTitle: $0.postTitle,
+                                        postThumbnailImage: $0.postThumbnailImage,
+                                        postCategory: $0.postCategory)))
+                })
+            case .newPost:
+                return .init(headerVM: .newPost(headerVM: .init(sectionTitle: group.type.title)),
+                             cellVMs: group.homePosts.map {
+                                .newPost(cellVM: .init(uuid: $0.uuid.uuidString,
+                                    homePostTemplate: .init(
+                                        postId: $0.postId,
+                                        postTitle: $0.postTitle,
+                                        postThumbnailImage: $0.postThumbnailImage,
+                                        postCategory: $0.postCategory)))
+                })
+            case .weeklyTop:
+                return .init(headerVM: .weeklyTop(headerVM: .init(sectionTitle: group.type.title)),
+                             cellVMs: group.homePosts.map {
+                                .weeklyTop(cellVM: .init(uuid: $0.uuid.uuidString,
+                                    homePostTemplate: .init(
+                                        postId: $0.postId,
+                                        postTitle: $0.postTitle,
+                                        postThumbnailImage: $0.postThumbnailImage,
+                                        postCategory: $0.postCategory)))
+                })
+            case .customized:
+                return .init(headerVM: .customized(headerVM: .init(sectionTitle: group.type.title)),
+                             cellVMs: group.homePosts.map {
+                                .customized(cellVM: .init(uuid: $0.uuid.uuidString,
+                                    homePostTemplate: .init(
+                                        postId: $0.postId,
+                                        postTitle: $0.postTitle,
+                                        postThumbnailImage: $0.postThumbnailImage,
+                                        postCategory: $0.postCategory)))
+                })
+            case .editorRecommend:
+                return .init(headerVM: .editorRecommend(headerVM: .init(sectionTitle: group.type.title)),
+                             cellVMs: group.homePosts.map {
+                                .editorRecommend(cellVM: .init(uuid: $0.uuid.uuidString,
+                                    homePostTemplate: .init(
+                                        postId: $0.postId,
+                                        postTitle: $0.postTitle,
+                                        postThumbnailImage: $0.postThumbnailImage,
+                                        postCategory: $0.postCategory)))
+                })
+            }
+        }
+        return .init(sections: sections)
     }
 }
 
@@ -71,10 +170,55 @@ extension HomeViewModel {
     enum Input {
         case viewLoaded
         case viewReload
-        case postTapped(Post)
+        case postTapped(String)
     }
     enum Output {
-        case getHomePostData
-        case goToPost(Post)
+        case getHomePostData(vm: HomeContentsView.ViewModel)
+        case goToPost(String)
+    }
+}
+
+struct HomePostTemplate: Sendable {
+    let uuid = UUID()
+    let postId: String
+    let postTitle: String
+    let postThumbnailImage: String
+    let postCategory: String
+}
+
+struct HomePostTemplateGroup {
+    enum GroupType {
+        case todayPick
+        case newPost
+        case weeklyTop
+        case customized
+        case editorRecommend
+        
+        var title: String {
+            switch self {
+            case .todayPick:
+                return "오늘의 PICK"
+            case .newPost:
+                return "새로 게시된 지식"
+            case .weeklyTop:
+                return "이번 주 TOP10"
+            case .customized:
+                return "회원님이 좋아할 만한"
+            case .editorRecommend:
+                return "에디터 추천 지식"
+            }
+        }
+    }
+    let type: GroupType
+    let homePosts: [HomePostTemplate]
+}
+
+extension Post {
+    func toHomePostTemplate() -> HomePostTemplate {
+        return HomePostTemplate(
+            postId: self.post_id,
+            postTitle: self.postTitle,
+            postThumbnailImage: self.postThumbnailImage,
+            postCategory: self.postCategory.name)
     }
 }

@@ -39,7 +39,7 @@ final class SearchGridView: UIView {
         return collectionView
     }()
     
-    var posts: [Post] = [] {
+    var posts: [SearchGridPostTemplate] = [] {
         didSet {
             self.postGridCollectionView.reloadData()
         }
@@ -113,14 +113,13 @@ extension SearchGridView: UICollectionViewDataSource, UICollectionViewDelegateFl
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let post = self.posts[indexPath.row]
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "SearchGridCVC", for: indexPath) as! SearchGridCVC
-        cell.postImage = post.postThumbnailImage
-        cell.postTitle = post.postTitle
+        cell.searchGridPost = post
         return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let post = posts[indexPath.row]
-        searchVM.sendInputEvent(input: .postTappedFromGrid(post))
+        searchVM.sendInputEvent(input: .postTappedFromGrid(post.postId))
     }
     
     /// 각 셀의 크기를 동적으로 지정

@@ -37,7 +37,6 @@ final class HomeViewController: UIViewController {
     /// 두 번째로 호출
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         bindData()
         homeVM.sendInputEvent(input: .viewLoaded)
     }
@@ -57,10 +56,10 @@ final class HomeViewController: UIViewController {
             .sink { [weak self] event in
                 guard let self = self else { return }
                 switch event {
-                case .getHomePostData:
-                    self.rootView.contentView.homePostData = self.homeVM.homePostData
+                case .getHomePostData(let viewModel):
+                    self.rootView.contentView.configureSnapshot(viewModel: viewModel)
                 case .goToPost(let post):
-                    self.homeVM.delegate?.goToPost(post: post)
+                    self.homeVM.delegate?.goToPost(postId: post)
                 }
             }.store(in: &cancellabes)
     }

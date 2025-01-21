@@ -16,13 +16,13 @@ final class SearchResultView: UIView {
     @Published private var isRecentSearch: Bool = true
     
     /// 최근 검색
-    var recentSearchPosts: [Post] = [] {
+    var recentSearchPosts: [RecentSearchPostTemplate] = [] {
         didSet {
             resultCollectionView.reloadData()
         }
     }
     /// 검색 결과
-    var searchResultPosts: [Post] = [] {
+    var searchResultPosts: [RecentSearchPostTemplate] = [] {
         didSet {
             resultCollectionView.reloadData()
         }
@@ -185,21 +185,17 @@ extension SearchResultView: UICollectionViewDataSource, UICollectionViewDelegate
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "SearchResultCVC", for: indexPath) as! SearchResultCVC
+        let post = recentSearchPosts[indexPath.row]
         if isRecentSearch {
-            let post = recentSearchPosts[indexPath.row]
             cell.isRecentPost = true
-            cell.postCategory = post.postCategory.tagName
-            cell.thumbnailImage = post.postThumbnailImage
-            cell.postTitle = post.postTitle
+            cell.searchResultPost = post
             cell.onDeleteRecentSearchPost = { [weak self] in
                 guard let self = self else { return }
                 self.searchVM.sendInputEvent(input: .deleteRecentSearchPostBtnTapped(indexPath.row))
             }
         } else {
             cell.isRecentPost = false
-            cell.postCategory = "#인문"
-            cell.thumbnailImage = "testImage3"
-            cell.postTitle = "그래서 이 아저씨가 누군데?"
+            cell.searchResultPost = post
         }
         return cell
     }
@@ -207,7 +203,7 @@ extension SearchResultView: UICollectionViewDataSource, UICollectionViewDelegate
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if isRecentSearch {
             let post = recentSearchPosts[indexPath.row]
-            searchVM.sendInputEvent(input: .postTappedFromRecentSearch(post))
+            searchVM.sendInputEvent(input: .postTappedFromRecentSearch(post.postId))
         } else {
 
         }

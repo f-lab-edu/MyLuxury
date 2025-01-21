@@ -60,7 +60,7 @@ public class AppComponent: CoordinatorDependency {
         print("AppComponent init")
         self.window = window
         self.memberRepository = MemberRepositoryImpl()
-        self.postRepository = PostRepositoryImpl()
+        self.postRepository = PostRepositoryMockImpl()
         self.memberUseCase = MemberUseCaseImpl(memberRepository: memberRepository)
         self.postUseCase = PostUseCaseImpl(postRepository: postRepository)
     }

@@ -63,8 +63,8 @@ final class PostViewController: UIViewController {
                 switch event {
                 case .goToBackScreen:
                     self.postVM.delegate?.goToBackScreen()
-                case .getPostOneData:
-                    self.rootView.post = self.postVM.post
+                case .getPostOneData(let viewModel):
+                    self.rootView.configureSnapshot(viewModel: viewModel)
                 }
             }.store(in: &cancellable)
     }

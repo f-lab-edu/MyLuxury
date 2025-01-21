@@ -13,7 +13,7 @@ public protocol PostCoordinatorDelegate: AnyObject {
 }
 
 public protocol PostCoordinator: Coordinator {
-    func start(post: Post) -> UIViewController
+    func start(postId: String) -> UIViewController
     var delegate: PostCoordinatorDelegate? { get set }
 }
 
@@ -29,9 +29,13 @@ public class PostCoordinatorImpl: PostCoordinator, @preconcurrency PostViewModel
         print("PostCoordinatorImpl init")
         self.dependency = dependency
     }
+    
+    deinit {
+        print("PostCoordinatorImpl deinit")
+    }
 
-    public func start(post: Post) -> UIViewController {
-        let postVM = PostViewModel(post: post, postUseCase: self.dependency.postUseCase)
+    public func start(postId: String) -> UIViewController {
+        let postVM = PostViewModel(postId: postId, postUseCase: self.dependency.postUseCase)
         postVM.delegate = self
         let postVC = PostViewController(postVM: postVM)
         return postVC
