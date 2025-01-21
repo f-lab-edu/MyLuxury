@@ -9,7 +9,7 @@ import UIKit
 import Combine
 import Domain
 
-struct CompositeViewModel {
+struct HomeSectionCompositeViewModel {
     let headerVM: HomeSectionHeaderViewModel
     let cellVMs: [HomeSectionCellViewModel]
 }
@@ -56,7 +56,7 @@ enum HomeSectionCellViewModel: Hashable, Sendable {
 
 final class HomeContentsView: UIView {
     struct ViewModel {
-        let sections: [CompositeViewModel]
+        let sections: [HomeSectionCompositeViewModel]
     }
     
     private var homeVM: HomeViewModel

@@ -108,7 +108,7 @@ class HomeViewModel {
     }
     
     private func makeViewModel() -> HomeContentsView.ViewModel {
-        let sections = homePostTemplateGroup.map { group -> CompositeViewModel in
+        let sections = homePostTemplateGroup.map { group -> HomeSectionCompositeViewModel in
             switch group.type {
             case .todayPick:
                 return .init(headerVM: .todayPick(headerVM: .init(sectionTitle: group.type.title)),
