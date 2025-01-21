@@ -10,6 +10,24 @@ import Domain
 import Combine
 
 final class PostTitleCVC: UICollectionViewCell {
+    struct ViewModel: Hashable {
+        let uuid: String
+        let title: String?
+        let editorProfileImage: String?
+        let thumbnailImage: String?
+        let editorName: String?
+        let postCreatedAt: String?
+        let postCategory: String?
+        
+        func hash(into hasher: inout Hasher) {
+            hasher.combine(uuid)
+        }
+        
+        static func == (lhs: PostTitleCVC.ViewModel, rhs: PostTitleCVC.ViewModel) -> Bool {
+            lhs.uuid == rhs.uuid
+        }
+    }
+    
     static let identifier = "postTitleCVC"
     
     let backImageView: UIImageView = {
@@ -61,42 +79,6 @@ final class PostTitleCVC: UICollectionViewCell {
         label.textColor = .white
         return label
     }()
-    
-    var title: String? {
-        didSet {
-            self.titleLabel.text = title
-        }
-    }
-    
-    var editorProfileImage: String? {
-        didSet {
-            self.editorProfileImageView.image = UIImage(named: editorProfileImage ?? "blackScreen")
-        }
-    }
-    
-    var thumbnailImage: String? {
-        didSet {
-            self.backImageView.image = UIImage(named: thumbnailImage ?? "blackScreen")
-        }
-    }
-    
-    var editorName: String? {
-        didSet {
-            self.editorNameLabel.text = editorName
-        }
-    }
-    
-    var postCreatedAt: String? {
-        didSet {
-            self.postCreatedAtLabel.text = postCreatedAt
-        }
-    }
-    
-    var postCategory: String? {
-        didSet {
-            self.postCategoryLabel.text = postCategory
-        }
-    }
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -150,5 +132,14 @@ final class PostTitleCVC: UICollectionViewCell {
             postCategoryLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 15),
             postCategoryLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 15)
         ])
+    }
+    
+    func configure(viewModel: ViewModel) {
+        self.titleLabel.text = viewModel.title
+        self.editorProfileImageView.image = UIImage(named: viewModel.editorProfileImage ?? "blackScreen")
+        self.backImageView.image = UIImage(named: viewModel.thumbnailImage ?? "blackScreen")
+        self.editorNameLabel.text = viewModel.editorName
+        self.postCreatedAtLabel.text = viewModel.postCreatedAt
+        self.postCategoryLabel.text = viewModel.postCategory
     }
 }

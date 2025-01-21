@@ -8,8 +8,17 @@
 import UIKit
 import Domain
 
+enum PostCellViewModel: Hashable {
+    case title(cellVM: PostTitleCVC.ViewModel)
+    case content(cellVM: PostContentCVC.ViewModel)
+}
+
 final class PostView: UIView {
-    let postVM: PostViewModel
+    private let postVM: PostViewModel
+    
+    struct ViewModel {
+        let viewModels: [PostCellViewModel]
+    }
     
     private let header: UIView = {
         let view = UIView()
@@ -46,11 +55,21 @@ final class PostView: UIView {
         return pageControl
     }()
     
-    var post: Post? {
-        didSet {
-            contentCollectionView.reloadData()
+    private lazy var dataSource: UICollectionViewDiffableDataSource<Int, PostCellViewModel> = {
+        var datasource = UICollectionViewDiffableDataSource<Int, PostCellViewModel>(collectionView: contentCollectionView) { collectionView, indexPath, cellViewModel in
+            switch cellViewModel {
+            case .title(cellVM: let cellVM):
+                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PostTitleCVC.identifier, for: indexPath) as! PostTitleCVC
+                cell.configure(viewModel: cellVM)
+                return cell
+            case .content(cellVM: let cellVM):
+                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PostContentCVC.identifier, for: indexPath) as! PostContentCVC
+                cell.configure(viewModel: cellVM)
+                return cell
+            }
         }
-    }
+        return datasource
+    }()
 
     init(postVM: PostViewModel) {
         self.postVM = postVM
@@ -69,6 +88,14 @@ final class PostView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
+    func configureSnapshot(viewModel: ViewModel) {
+        var snapshot = NSDiffableDataSourceSnapshot<Int, PostCellViewModel>()
+        // 섹션이 하나밖에 없는 뷰입니다.
+        snapshot.appendSections([0])
+        snapshot.appendItems(viewModel.viewModels, toSection: 0)
+        dataSource.apply(snapshot, animatingDifferences: true)
+    }
+    
     private func setUpHierarchy() {
         addSubview(contentCollectionView)
         addSubview(pageControl)
@@ -77,10 +104,9 @@ final class PostView: UIView {
     }
     
     private func setUpCollectionView() {
-        self.contentCollectionView.dataSource = self
         self.contentCollectionView.delegate = self
-        self.contentCollectionView.register(PostTitleCVC.self, forCellWithReuseIdentifier: "postTitleCVC")
-        self.contentCollectionView.register(PostContentCVC.self, forCellWithReuseIdentifier: "postContentCVC")
+        self.contentCollectionView.register(PostTitleCVC.self, forCellWithReuseIdentifier: PostTitleCVC.identifier)
+        self.contentCollectionView.register(PostContentCVC.self, forCellWithReuseIdentifier: PostContentCVC.identifier)
     }
     
     private func setUpLayout() {
@@ -110,32 +136,7 @@ final class PostView: UIView {
     }
 }
 
-extension PostView: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout{
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        let count = (post?.postImages?.count ?? 1) + 1
-        self.pageControl.numberOfPages = count
-        return count
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let row = indexPath.row
-        if row == 0 {
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "postTitleCVC", for: indexPath) as! PostTitleCVC
-            cell.thumbnailImage = post?.postThumbnailImage
-            cell.title = post?.postTitle
-            cell.editorProfileImage = post?.postEditorProfileImage
-            cell.editorName = post?.postEditor
-            cell.postCreatedAt = convertDateToString(date: post?.postCreatedAt ?? nil)
-            cell.postCategory = "\(post?.postCategory.tagName ?? "")"
-            return cell
-        } else {
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "postContentCVC", for: indexPath) as! PostContentCVC
-            cell.postContentImage = post?.postImages?[row-1]
-            cell.postContentImageSource = post?.postImageSources?[row-1]
-            cell.postContent = post?.postContents?[row-1]
-            return cell
-        }
-    }
+extension PostView: UICollectionViewDelegateFlowLayout{
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         return CGSize(width: collectionView.frame.width, height: collectionView.frame.height)

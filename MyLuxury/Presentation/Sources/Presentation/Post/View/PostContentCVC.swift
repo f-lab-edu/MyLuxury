@@ -10,6 +10,21 @@ import Domain
 import Combine
 
 final class PostContentCVC: UICollectionViewCell {
+    struct ViewModel: Hashable {
+        let uuid: String
+        let postContentImage: String?
+        let postContentImageSource: String?
+        let postContentText: String?
+        
+        func hash(into hasher: inout Hasher) {
+            hasher.combine(uuid)
+        }
+        
+        static func == (lhs: PostContentCVC.ViewModel, rhs: PostContentCVC.ViewModel) -> Bool {
+            lhs.uuid == rhs.uuid
+        }
+    }
+    
     static let identifier = "postContentCVC"
     
     private let backImageView: UIImageView = {
@@ -53,25 +68,6 @@ final class PostContentCVC: UICollectionViewCell {
         label.numberOfLines = 0
         return label
     }()
-    
-    var postContentImage: String? {
-        didSet {
-            backImageView.image = UIImage(named: postContentImage ?? "blackScreen")
-            postContentImageView.image = UIImage(named: postContentImage ?? "blackScreen")
-        }
-    }
-    
-    var postContentImageSource: String? {
-        didSet {
-            postContentImageSourceLabel.text = postContentImageSource
-        }
-    }
-    
-    var postContent: String? {
-        didSet {
-            postContentLabel.text = postContent
-        }
-    }
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -124,5 +120,12 @@ final class PostContentCVC: UICollectionViewCell {
             postContentLabel.bottomAnchor.constraint(equalTo: pageContentScrollView.bottomAnchor),
             postContentLabel.widthAnchor.constraint(equalTo: pageContentScrollView.widthAnchor)
         ])
+    }
+    
+    func configure(viewModel: ViewModel) {
+        self.backImageView.image = UIImage(named: viewModel.postContentImage ?? "blackScreen")
+        self.postContentImageView.image = UIImage(named: viewModel.postContentImage ?? "blackScreen")
+        self.postContentImageSourceLabel.text = viewModel.postContentImageSource
+        self.postContentLabel.text = viewModel.postContentText
     }
 }
