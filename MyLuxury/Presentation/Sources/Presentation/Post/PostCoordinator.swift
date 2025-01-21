@@ -29,6 +29,10 @@ public class PostCoordinatorImpl: PostCoordinator, @preconcurrency PostViewModel
         print("PostCoordinatorImpl init")
         self.dependency = dependency
     }
+    
+    deinit {
+        print("PostCoordinatorImpl deinit")
+    }
 
     public func start(postId: String) -> UIViewController {
         let postVM = PostViewModel(postId: postId, postUseCase: self.dependency.postUseCase)
